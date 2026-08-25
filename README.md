@@ -1,1 +1,1 @@
-# Phishing-Security-Analysis
+# SOC Analyst Toolkit-Security-Analysis
