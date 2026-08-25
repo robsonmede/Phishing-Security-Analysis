@@ -10,7 +10,7 @@ st.set_page_config(
 )
 
 # Título e Descrição
-st.title("🛡️ Email Header Security Analyzer")
+st.title("🛡️ Email Header Security Analyzer - by Cyber Threat Research")
 st.markdown("Ferramenta de análise rápida de cabeçalhos de e-mail para suporte a equipes de **SOC** e **Análise de Phishing**.")
 
 st.sidebar.header("Instruções")
@@ -97,3 +97,4 @@ if st.button("Analisar Cabeçalho", type="primary"):
             st.dataframe(df_hops, use_container_width=True)
         else:
             st.info("Nenhuma linha 'Received:' foi identificada no cabeçalho fornecido.")
+st.markdown("TOOL BLUE TEAM - SOC BY Cyber Threat Research - https://ctrdefense.blog")
