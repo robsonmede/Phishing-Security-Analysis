@@ -165,7 +165,7 @@ VT_API_KEY = st.session_state.get("active_vt_key", st.session_state.get("vt_key_
 # -----------------------------------------------------------------------------
 # 4. HEADER DA APLICAÇÃO & STATUS DA API
 # -----------------------------------------------------------------------------
-st.markdown('<div class="main-header">🛡️ Cyber Threat Research - Caçador de Ameaças V1.2</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header">🛡️ Cyber Threat Research - Caçador de Ameaças V1.3</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-header">Threat Hunting, Detection Engineering & Dynamic Threat Mapping</div>', unsafe_allow_html=True)
 
 status_col1, status_col2 = st.columns([3, 1])
