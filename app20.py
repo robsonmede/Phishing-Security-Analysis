@@ -655,3 +655,61 @@ with tab_xposed:
                                 date_raw = b.get("xposed_date", "N/A")
                                 details = b.get("details", "Sem detalhes adicionais disponíveis.")
                                 st.markdown(f"- **{name}** ({date_raw}): {details}")
+
+# =============================================================================
+# ABA 9: CRUZAMENTO DE INTELIGÊNCIA (CROSS-INTEL)
+# =============================================================================
+with tab_cross_intel:
+    st.header("🔗 Cruzamento de Inteligência (IP)")
+    st.caption("Consulte simultaneamente VirusTotal, AbuseIPDB e GreyNoise para obter um contexto unificado da ameaça.")
+    
+    cross_ip = st.text_input("Insira o Endereço IP para correlação:", placeholder="1.1.1.1", key="cross_ip_input")
+    
+    if st.button("🚀 Iniciar Correlação", type="primary"):
+        if cross_ip:
+            with st.spinner("Consultando múltiplas fontes de inteligência..."):
+                vt_res = parse_vt_details(get_vt_data("ip_addresses", cross_ip))
+                abuse_res = check_abuseipdb(cross_ip)
+                gn_res = check_greynoise(cross_ip)
+
+                st.subheader("🎯 Resultado Consolidado")
+                
+                vt_verdict = vt_res.get("verdict", "N/A")
+                
+                abuse_score = abuse_res.get("score", "N/A") if isinstance(abuse_res, dict) else "Erro"
+                abuse_isp = abuse_res.get("isp", "N/A") if isinstance(abuse_res, dict) else "N/A"
+                
+                if "error" in gn_res:
+                    gn_class = f"Erro: {gn_res['error']}"
+                    gn_actor = "N/A"
+                elif "message" in gn_res:
+                    gn_class = "Não Catalogado (Limpo/Desconhecido)"
+                    gn_actor = "N/A"
+                else:
+                    gn_class = str(gn_res.get("classification", "Desconhecido")).upper()
+                    gn_actor = gn_res.get("actor", gn_res.get("name", "Desconhecido"))
+
+                col_c1, col_c2, col_c3 = st.columns(3)
+                col_c1.info(f"**VirusTotal**\n\nVeredito: {vt_verdict}")
+                col_c2.warning(f"**AbuseIPDB**\n\nScore de Abuso: {abuse_score}\n\nISP: {abuse_isp}")
+                col_c3.error(f"**GreyNoise**\n\nClassificação: {gn_class}\n\nAtor: {gn_actor}")
+
+                st.markdown("### 📋 Tabela de Atributos Cruzados")
+                cross_data = {
+                    "Fonte": ["VirusTotal", "AbuseIPDB", "GreyNoise"],
+                    "Indicador Principal": [vt_verdict, abuse_score, gn_class],
+                    "Contexto Adicional": [
+                        vt_res.get("tags", "Sem tags"),
+                        abuse_isp,
+                        gn_actor
+                    ]
+                }
+                st.dataframe(pd.DataFrame(cross_data), use_container_width=True, hide_index=True)
+                
+                st.markdown(f"""
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <a href="https://www.virustotal.com/gui/ip-address/{cross_ip}" target="_blank" style="text-decoration:none;"><button style="cursor:pointer; padding:6px 12px; border-radius:5px; border:1px solid #38bdf8; background:transparent; color:#38bdf8;">Abrir no VirusTotal</button></a>
+                    <a href="https://www.abuseipdb.com/check/{cross_ip}" target="_blank" style="text-decoration:none;"><button style="cursor:pointer; padding:6px 12px; border-radius:5px; border:1px solid #38bdf8; background:transparent; color:#38bdf8;">Abrir no AbuseIPDB</button></a>
+                    <a href="https://viz.greynoise.io/ip/{cross_ip}" target="_blank" style="text-decoration:none;"><button style="cursor:pointer; padding:6px 12px; border-radius:5px; border:1px solid #38bdf8; background:transparent; color:#38bdf8;">Abrir no GreyNoise</button></a>
+                </div>
+                """, unsafe_allow_html=True)
