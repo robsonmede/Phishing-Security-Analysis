@@ -13,7 +13,7 @@ Git (opcional, para clonar o repositório).
 Pip (gerenciador de pacotes do Python).
 🚀 Passo a Passo para Execução Local
 1. Clonar ou Baixar o Repositório
-Se estiver usando Git: bash git clone [https://github.com/seu-usuario/seu-repositorio.git]
+git clone projeto.git
 
 LINUX
 python3 -m venv venv source venv/bin/activate
