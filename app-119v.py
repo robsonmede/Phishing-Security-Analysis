@@ -280,11 +280,11 @@ def check_abuseipdb(ip_address):
 # --- GreyNoise (Comunitário e Enterprise/Business) ---
 def check_greynoise(ip_address):
     if GREYNOISE_API_KEY:
-        # Endpoint Business Context (Informações Ricas)
-        url = f"https://api.greynoise.io/v2/noise/context/{ip_address}"
+        # Endpoint Business Context Atualizado (V3)
+        url = f"https://api.greynoise.io/v3/noise/context/{ip_address}"
         headers = {"Accept": "application/json", "key": GREYNOISE_API_KEY}
     else:
-        # Endpoint Comunitário Gratuito
+        # Endpoint Comunitário Gratuito (V3)
         url = f"https://api.greynoise.io/v3/community/{ip_address}"
         headers = {"Accept": "application/json"}
 
@@ -297,7 +297,9 @@ def check_greynoise(ip_address):
         elif res.status_code == 401:
             return {"error": "Chave API do GreyNoise inválida ou sem permissão."}
         elif res.status_code == 429:
-            return {"error": "Limite de requisições atinto no GreyNoise."}
+            return {"error": "Limite de requisições atingido no GreyNoise."}
+        elif res.status_code == 410:
+            return {"error": "Erro 410: O endpoint utilizado foi descontinuado pela GreyNoise."}
         return {"error": f"HTTP {res.status_code}: {res.text}"}
     except Exception as e:
         return {"error": str(e)}
