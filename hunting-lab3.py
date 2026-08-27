@@ -284,8 +284,8 @@ tab_iocs, tab_hypotheses, tab_queries, tab_entropy, tab_email, tab_decoder, tab_
 # ABA 1: EXTRATOR & VIRUSTOTAL
 # =============================================================================
 with tab_iocs:
-    st.header("🔍 Extrator de IOCs & Reputação Threat Intel")
-    raw_text = st.text_area("Cole os logs, e-mails ou payloads aqui para análise:", height=150, placeholder="Ex: 192.168.1.1, powershell.exe -enc ..., http://badsite.com")
+    st.header("🔍 Extrator de IOCs & VirusTotal")
+    raw_text = st.text_area("Cole o Hash, Ip, Domain, e-mail para análise:", height=150, placeholder="Ex: 192.168.1.1, d8392154f991f865f57a97495b6a7d ..., http://badsite.com")
 
     def extract_iocs(text):
         ip_pattern = r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b'
