@@ -829,3 +829,12 @@ with tab_cross_intel:
                     <a href="https://viz.greynoise.io/ip/{cross_ip}" target="_blank" style="text-decoration:none;"><button style="cursor:pointer; padding:6px 12px; border-radius:5px; border:1px solid #38bdf8; background:transparent; color:#38bdf8;">Abrir no GreyNoise</button></a>
                 </div>
                 """, unsafe_allow_html=True)
+
+# -----------------------------------------------------------------------------
+# 8. RODAPÉ
+# -----------------------------------------------------------------------------
+st.markdown("""
+    <div class="footer-text">
+        CTRDEFENSE.BLOG &copy; 2026 | Cyber Threat Research - Caçador de Ameaças V1.9
+    </div>
+""", unsafe_allow_html=True)
