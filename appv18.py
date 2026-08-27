@@ -10,7 +10,7 @@ import streamlit as st
 # 1. CONFIGURAÇÃO DA PÁGINA
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="Cyber Threat Research - Caçador de Ameaças V1.4",
+    page_title="Cyber Threat Research - Caçador de Ameaças V1.8",
     page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -323,8 +323,8 @@ tab_iocs, tab_hypotheses, tab_queries, tab_urlscan, tab_greynoise, tab_entropy, 
 # ABA 1: EXTRATOR, VIRUSTOTAL & ABUSEIPDB
 # =============================================================================
 with tab_iocs:
-    st.header("🔍 Extrator de IOCs & Threat Intelligence")
-    raw_text = st.text_area("Cole os IOCs para análise (IP, Domain, MD5, SHA256):", height=120)
+    st.header("🔍 Extrator de IOCs + AbuseIP")
+    raw_text = st.text_area("Cole os IOCs para análise e banimentos (IP, Domain, MD5, SHA256):", height=120)
 
     def extract_iocs(text):
         ip_pattern = r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b'
@@ -591,6 +591,6 @@ with tab_xposed:
 # -----------------------------------------------------------------------------
 st.markdown("""
     <div class="footer-text">
-        CTRDEFENSE.BLOG &copy; 2026 | Cyber Threat Research - Caçador de Ameaças V1.4
+        CTRDEFENSE.BLOG &copy; 2026 | Cyber Threat Research - Caçador de Ameaças V1.8
     </div>
 """, unsafe_allow_html=True)
