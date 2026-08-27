@@ -343,6 +343,7 @@ tab_iocs, tab_hypotheses, tab_queries, tab_urlscan, tab_greynoise, tab_entropy, 
     "📊 Entropia",
     "📧 Cabeçalho E-mail",
     "🔓 XposedOrNot"
+    "🔗 Cruzamento Intel"
 ])
 
 # =============================================================================
