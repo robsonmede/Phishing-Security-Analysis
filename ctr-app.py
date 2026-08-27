@@ -12,7 +12,7 @@ import streamlit as st
 # 1. CONFIGURAÇÃO DA PÁGINA
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="Cyber Threat Research - Caçador de Ameaças V2.1",
+    page_title="CTR - Caçador de Ameaças V2.3",
     page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -186,7 +186,7 @@ GREYNOISE_API_KEY = st.session_state.get("active_greynoise_key", st.session_stat
 # -----------------------------------------------------------------------------
 # 4. HEADER DA APLICAÇÃO & STATUS DA API
 # -----------------------------------------------------------------------------
-st.markdown('<div class="main-header">🛡️ Cyber Threat Research - Caçador de Ameaças V2.1</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header">🛡️ CTR - Caçador de Ameaças V2.3</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-header">Threat Hunting, Detection Engineering & Dynamic Threat Mapping</div>', unsafe_allow_html=True)
 
 status_cols = st.columns(5)
