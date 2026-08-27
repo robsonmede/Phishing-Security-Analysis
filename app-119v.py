@@ -497,14 +497,15 @@ with tab_urlscan:
                     st.markdown(f"🔗 [Clique aqui para acompanhar o resultado completo no urlscan.io]({res['result']})")
 
 # =============================================================================
-# ABA 5: GREYNOISE (MODO BUSINESS / ENTERPRISE CORRIGIDO)
+# =============================================================================
+# ABA 5: GREYNOISE (MODO BUSINESS / ENTERPRISE)
 # =============================================================================
 with tab_greynoise:
     st.header("📡 GreyNoise - Filtro de Ruído da Internet")
     st.caption("Descubra se o IP examinado é um scanner inofensivo conhecido, botnet ou IP malicioso.")
     
     if not GREYNOISE_API_KEY:
-        st.info("ℹ️ **Modo Comunitário Gratuito Ativo:** Exibindo dados básicos. Adicione uma API Key na barra lateral para habilitar o modo Business Ricos.")
+        st.info("ℹ️ **Modo Comunitário Gratuito Ativo:** Exibindo dados básicos. Adicione uma API Key na barra lateral para habilitar todos os campos enriquecidos.")
     else:
         st.success("🔑 **Modo Autenticado Business/Enterprise Ativo:** Trazendo contexto completo de inteligência.")
 
@@ -525,46 +526,41 @@ with tab_greynoise:
                     noise = gn_res.get("noise", gn_res.get("seen", False))
                     riot = gn_res.get("riot", False)
 
-                    col1.metric("Classificação", classification)
-                    col2.metric("Noise (Scanner Conhecido)", "Sim" if noise else "Não")
-                    col3.metric("RIOT (Serviço Confiável)", "Sim" if riot else "Não")
+                    col1.metric("Classification", classification)
+                    col2.metric("Noise (Scanner)", "Sim" if noise else "Não")
+                    col3.metric("RIOT (Confiável)", "Sim" if riot else "Não")
 
-                    st.markdown("### 📋 Detalhes do Endereço IP")
+                    st.markdown("### 📋 Detalhes Avançados do IP")
                     
-                    # Parsing ajustado para suportar respostas Community e Business/Context
-                    actor = gn_res.get("actor", gn_res.get("name", "N/D"))
-                    organization = gn_res.get("organization", "N/D")
-                    asn = gn_res.get("asn", "N/D")
-                    country = gn_res.get("country", gn_res.get("country_code", "N/D"))
+                    # Tratamento estrutural para garantir a extração (V3 Community vs V3 Context)
+                    actor = gn_res.get("actor", gn_res.get("name", "Desconhecido"))
                     last_seen = gn_res.get("last_seen", "Desconhecido")
-                    first_seen = gn_res.get("first_seen", "Desconhecido")
                     
-                    st.markdown(f"**👤 Ator / Nome:** `{actor}`")
-                    st.markdown(f"**🏢 Organização:** `{organization}`")
-                    st.markdown(f"**🌐 ASN / País:** `{asn}` ({country})")
-                    st.markdown(f"**⏳ Primeira Visto:** `{first_seen}` | **Última Visto:** `{last_seen}`")
+                    metadata = gn_res.get("metadata", {})
+                    organization = metadata.get("organization", gn_res.get("organization", "Desconhecido / Requer API Key"))
+                    country = metadata.get("country", gn_res.get("country", gn_res.get("country_code", "Desconhecido")))
+                    asn = metadata.get("asn", gn_res.get("asn", "Desconhecido"))
                     
-                    # Exibição de Tags
+                    st.markdown(f"**👤 Actor:** `{actor}`")
+                    st.markdown(f"**🏢 Organization:** `{organization}`")
+                    st.markdown(f"**🌍 Source Country:** `{country}`")
+                    st.markdown(f"**⏳ Last Seen:** `{last_seen}`")
+                    st.markdown(f"**🌐 ASN:** `{asn}`")
+                    
                     raw_tags = gn_res.get("tags", [])
                     if raw_tags:
                         st.markdown("**🏷️ Tags Associadas:**")
                         tags_list = raw_tags if isinstance(raw_tags, list) else [raw_tags]
                         tags_html = "".join([f"<span style='background-color:#1e293b; border: 1px solid #38bdf8; padding: 4px 8px; border-radius: 4px; margin-right: 6px; font-family: monospace; font-size: 0.85em;'>{t}</span>" for t in tags_list])
                         st.markdown(tags_html, unsafe_allow_html=True)
-                    else:
-                        st.markdown("**🏷️ Tags:** `Sem tags associadas`")
 
-                    # Exibição de Vulnerabilidades/CVEs (se presente no modo Business)
                     cves = gn_res.get("cve", [])
                     if cves:
                         st.markdown(f"**⚠️ CVEs Exploradas:** `{', '.join(cves)}`")
 
                     st.write("---")
                     gn_link = gn_res.get("link", f"https://viz.greynoise.io/ip/{gn_ip}")
-                    st.markdown(f"🔗 [Visualizar análise detalhada no GreyNoise Viz]({gn_link})")
-
-                    with st.expander("🔍 Resposta JSON Bruta"):
-                        st.json(gn_res)
+                    st.markdown(f"🔗 [Visualizar no GreyNoise Viz]({gn_link})")
 
 # =============================================================================
 # ABA 6: CALCULADOR DE ENTROPIA
@@ -668,6 +664,70 @@ with tab_xposed:
                                 with st.expander(f"🔴 **{name}** (Data/Ano: {date_raw})"):
                                     st.markdown(f"**Dados Expostos:** {b.get('xposed_data', 'N/A')}")
                                     st.markdown(f"**Descrição do Incidente:**\n{desc}")
+
+
+# =============================================================================
+# ABA 9: CRUZAMENTO DE INTELIGÊNCIA (CROSS-INTEL)
+# =============================================================================
+with tab_cross_intel:
+    st.header("🔗 Cruzamento de Inteligência (IP)")
+    st.caption("Consulte simultaneamente VirusTotal, AbuseIPDB e GreyNoise para obter um contexto unificado da ameaça.")
+    
+    cross_ip = st.text_input("Insira o Endereço IP para correlação:", placeholder="1.1.1.1", key="cross_ip_input")
+    
+    if st.button("🚀 Iniciar Correlação", type="primary"):
+        if cross_ip:
+            with st.spinner("Consultando múltiplas fontes de inteligência..."):
+                # Executa as 3 consultas
+                vt_res = parse_vt_details(get_vt_data("ip_addresses", cross_ip))
+                abuse_res = check_abuseipdb(cross_ip)
+                gn_res = check_greynoise(cross_ip)
+
+                st.subheader("🎯 Resultado Consolidado")
+                
+                # Extração de dados para a tabela cruzada
+                vt_verdict = vt_res.get("verdict", "N/A")
+                
+                abuse_score = abuse_res.get("score", "N/A") if isinstance(abuse_res, dict) else "Erro"
+                abuse_isp = abuse_res.get("isp", "N/A") if isinstance(abuse_res, dict) else "N/A"
+                
+                if "error" in gn_res:
+                    gn_class = f"Erro: {gn_res['error']}"
+                    gn_actor = "N/A"
+                elif "message" in gn_res:
+                    gn_class = "Não Catalogado (Limpo/Desconhecido)"
+                    gn_actor = "N/A"
+                else:
+                    gn_class = str(gn_res.get("classification", "Desconhecido")).upper()
+                    gn_actor = gn_res.get("actor", gn_res.get("name", "Desconhecido"))
+
+                # Montagem da Tabela de Correlação
+                col_c1, col_c2, col_c3 = st.columns(3)
+                col_c1.info(f"**VirusTotal**\n\nVeredito: {vt_verdict}")
+                col_c2.warning(f"**AbuseIPDB**\n\nScore de Abuso: {abuse_score}\n\nISP: {abuse_isp}")
+                col_c3.error(f"**GreyNoise**\n\nClassificação: {gn_class}\n\nAtor: {gn_actor}")
+
+                # Tabela Consolidada
+                st.markdown("### 📋 Tabela de Atributos Cruzados")
+                cross_data = {
+                    "Fonte": ["VirusTotal", "AbuseIPDB", "GreyNoise"],
+                    "Indicador Principal": [vt_verdict, abuse_score, gn_class],
+                    "Contexto Adicional": [
+                        vt_res.get("tags", "Sem tags"),
+                        abuse_isp,
+                        gn_actor
+                    ]
+                }
+                st.dataframe(pd.DataFrame(cross_data), use_container_width=True, hide_index=True)
+                
+                # Botões de Acesso Rápido
+                st.markdown(f"""
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <a href="https://www.virustotal.com/gui/ip-address/{cross_ip}" target="_blank" style="text-decoration:none;"><button style="cursor:pointer; padding:6px 12px; border-radius:5px; border:1px solid #38bdf8; background:transparent; color:#38bdf8;">Abrir no VirusTotal</button></a>
+                    <a href="https://www.abuseipdb.com/check/{cross_ip}" target="_blank" style="text-decoration:none;"><button style="cursor:pointer; padding:6px 12px; border-radius:5px; border:1px solid #38bdf8; background:transparent; color:#38bdf8;">Abrir no AbuseIPDB</button></a>
+                    <a href="https://viz.greynoise.io/ip/{cross_ip}" target="_blank" style="text-decoration:none;"><button style="cursor:pointer; padding:6px 12px; border-radius:5px; border:1px solid #38bdf8; background:transparent; color:#38bdf8;">Abrir no GreyNoise</button></a>
+                </div>
+                """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
 # 8. RODAPÉ
