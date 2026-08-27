@@ -131,7 +131,7 @@ st.markdown("""
 # 3. GERENCIAMENTO SEGURO DAS API KEYS NA SIDEBAR
 # -----------------------------------------------------------------------------
 with st.sidebar:
-    st.markdown("### 🔑 Credenciais Threat Intel")
+    st.markdown("### 🔑 Credenciais API")
     
     # Defaults do secrets.toml se existirem
     def_vt = st.secrets.get("VIRUSTOTAL_API_KEY", "")
@@ -172,7 +172,7 @@ GREYNOISE_API_KEY = st.session_state.get("active_greynoise_key", st.session_stat
 # -----------------------------------------------------------------------------
 # 4. HEADER DA APLICAÇÃO & STATUS DA API
 # -----------------------------------------------------------------------------
-st.markdown('<div class="main-header">🛡️ Cyber Threat Research - Caçador de Ameaças V1.4</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header">🛡️ Cyber Threat Research - Caçador de Ameaças V1.8</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-header">Threat Hunting, Detection Engineering & Dynamic Threat Mapping</div>', unsafe_allow_html=True)
 
 status_cols = st.columns(5)
@@ -309,7 +309,7 @@ def check_xposedornot_analytics(email):
 # 7. NAVEGAÇÃO POR ABAS OPERACIONAIS
 # -----------------------------------------------------------------------------
 tab_iocs, tab_hypotheses, tab_queries, tab_urlscan, tab_greynoise, tab_entropy, tab_email, tab_xposed = st.tabs([
-    "🔍 Extrator & VT",
+    "🔍 Extrator & AbuseIP",
     "🎯 Central de Hipóteses",
     "🎯 SIEM Queries",
     "🌐 urlscan.io",
