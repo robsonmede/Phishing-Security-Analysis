@@ -615,8 +615,15 @@ with tab_xposed:
                 elif res.get("Error") == "Not found" or res.get("status") == "clean":
                     st.success("✅ **Nenhum vazamento encontrado para esta conta!**")
                 else:
-                    details = res.get("ExposedBreaches", {})
-                    breaches_list = details.get("breaches_details", [])
+                    # TRATAMENTO SEGURO CONTRA AttributeError
+                    raw_breaches = res.get("ExposedBreaches", [])
+                    if isinstance(raw_breaches, dict):
+                        breaches_list = raw_breaches.get("breaches_details", raw_breaches.get("breaches", []))
+                    elif isinstance(raw_breaches, list):
+                        breaches_list = raw_breaches
+                    else:
+                        breaches_list = []
+
                     total_breaches = len(breaches_list)
                     
                     m1, m2 = st.columns(2)
@@ -628,11 +635,16 @@ with tab_xposed:
                         
                         table_rows = []
                         for b in breaches_list:
-                            name = b.get("breach", "N/A")
-                            date_raw = b.get("xposed_date", b.get("breach_date", "Data desconhecida"))
-                            industry = b.get("domain", "N/A")
-                            records = b.get("xposed_records", 0)
-                            data_types = b.get("xposed_data", "N/A")
+                            if isinstance(b, dict):
+                                name = b.get("breach", "N/A")
+                                date_raw = b.get("xposed_date", b.get("breach_date", "Data desconhecida"))
+                                industry = b.get("domain", "N/A")
+                                records = b.get("xposed_records", 0)
+                                data_types = b.get("xposed_data", "N/A")
+                            else:
+                                # Caso a lista contenha apenas strings (nomes dos vazamentos)
+                                name = str(b)
+                                date_raw, industry, records, data_types = "N/A", "N/A", "N/A", "N/A"
 
                             table_rows.append({
                                 "Data / Ano": date_raw,
@@ -646,13 +658,14 @@ with tab_xposed:
 
                         st.subheader("📝 Detalhes e Descrições dos Incidentes")
                         for b in breaches_list:
-                            name = b.get("breach", "Desconhecido")
-                            date_raw = b.get("xposed_date", "N/A")
-                            desc = b.get("xposed_desc", "Sem descrição disponível.")
-                            
-                            with st.expander(f"🔴 **{name}** (Data/Ano: {date_raw})"):
-                                st.markdown(f"**Dados Expostos:** {b.get('xposed_data', 'N/A')}")
-                                st.markdown(f"**Descrição do Incidente:**\n{desc}")
+                            if isinstance(b, dict):
+                                name = b.get("breach", "Desconhecido")
+                                date_raw = b.get("xposed_date", "N/A")
+                                desc = b.get("xposed_desc", "Sem descrição disponível.")
+                                
+                                with st.expander(f"🔴 **{name}** (Data/Ano: {date_raw})"):
+                                    st.markdown(f"**Dados Expostos:** {b.get('xposed_data', 'N/A')}")
+                                    st.markdown(f"**Descrição do Incidente:**\n{desc}")
 
 # -----------------------------------------------------------------------------
 # 8. RODAPÉ
