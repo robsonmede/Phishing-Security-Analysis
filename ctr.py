@@ -454,7 +454,6 @@ st.divider()
 # -----------------------------------------------------------------------------
 
 def is_valid_ipv4(ip_address):
-    """Valida IPv4 para evitar consultas inválidas às APIs."""
     try:
         return ipaddress.ip_address(ip_address).version == 4
     except ValueError:
@@ -462,25 +461,14 @@ def is_valid_ipv4(ip_address):
 
 
 def render_country_field(container, label, value, extra=""):
-    """Exibe um campo curto (País, Cidade, IP, AS...) com fonte reduzida."""
-    extra_html = f'<div class="mini-field-extra">{extra}</div>' if extra else ""
-    container.markdown(
-        f"""<div class="mini-field">
-                <div class="mini-field-label">{label}</div>
-                <div class="mini-field-value">{value}</div>
-                {extra_html}
-            </div>""",
-        unsafe_allow_html=True,
-    )
+    """Método auxiliar para exibir campos pequenos com formatação simples."""
+    text = f"**{label}:** {value}"
+    if extra:
+        text += f" ({extra})"
+    container.markdown(text)
 
-
-# -----------------------------------------------------------------------------
-# 6.1 FONTES OSINT 100% SEM CHAVE DE API (FALLBACK AUTOMÁTICO)
-# -----------------------------------------------------------------------------
 
 def check_shodan_internetdb(ip_address):
-    """Consulta a Shodan InternetDB (https://internetdb.shodan.io) — gratuita,
-    sem necessidade de conta ou API key."""
     if not is_valid_ipv4(ip_address):
         return {"error": "IPv4 inválido."}
     try:
@@ -497,7 +485,6 @@ def check_shodan_internetdb(ip_address):
 
 
 def check_ip_api_geo(ip_address):
-    """Consulta o ip-api.com (endpoint gratuito, sem chave, ~45 req/min)."""
     if not is_valid_ipv4(ip_address):
         return {"error": "IPv4 inválido."}
     try:
@@ -520,7 +507,6 @@ def check_ip_api_geo(ip_address):
 
 
 def get_free_ip_context(ip_address):
-    """Combina Shodan InternetDB + ip-api.com em um único contexto OSINT 'sem chave'."""
     shodan_data = check_shodan_internetdb(ip_address)
     geo_data = check_ip_api_geo(ip_address)
 
@@ -699,7 +685,7 @@ def check_abuseipdb(ip_address):
     except Exception as e:
         return {"error": str(e)}
 
-# --- GreyNoise (Community e API autenticada v3) ---
+# --- GreyNoise ---
 def check_greynoise(ip_address):
     if not is_valid_ipv4(ip_address):
         return {"error": "IPv4 inválido."}
@@ -726,7 +712,6 @@ def check_greynoise(ip_address):
             return {"message": "IP não catalogado no GreyNoise."}
         if res.status_code == 429:
             return {"error": "Limite de requisições atingido no GreyNoise."}
-
         return {"error": f"HTTP {res.status_code}: {res.text[:300]}"}
     except requests.RequestException as exc:
         return {"error": f"Falha de comunicação com GreyNoise: {exc}"}
@@ -748,13 +733,11 @@ def extract_greynoise_report(gn_res):
         bsi = gn_res.get("business_service_intelligence", {}) or {}
         meta = isi.get("metadata", {}) or {}
         raw = isi.get("raw_data", {}) or {}
-
         found_scanner = bool(isi.get("found"))
         found_business = bool(bsi.get("found"))
         classification = (isi.get("classification") or "").strip()
         if not classification:
             classification = "benign" if found_business else ("unknown" if not found_scanner else "unknown")
-
         return {
             "mode": "full",
             "ip": gn_res.get("ip", "N/D"),
@@ -797,7 +780,6 @@ def extract_greynoise_report(gn_res):
             "business_trust_level": bsi.get("trust_level") or "N/D",
             "link": f"https://viz.greynoise.io/ip/{gn_res.get('ip', '')}",
         }
-
     return {
         "mode": "community",
         "ip": gn_res.get("ip", "N/D"),
@@ -1129,17 +1111,25 @@ def extract_urlscan_summary(result):
 
 
 def extract_urlscan_location(result):
+    """Localização e rede enriquecidas a partir dos dados da página."""
     page = result.get("page", {}) or {}
-    country = page.get("country", "") or ""
+    geo = page.get("geoip", {}) or {}
+    country = page.get("country") or geo.get("country") or ""
+    city = page.get("city") or geo.get("city") or "—"
     return {
         "country": country or "N/D",
         "flag": _country_flag(country),
-        "city": page.get("city") or "—",
+        "city": city,
         "ip": page.get("ip", "N/D"),
         "asn": page.get("asn", "N/D"),
         "asnname": page.get("asnname", "N/D"),
         "server": page.get("server") or "N/D",
         "ptr": page.get("ptr") or "—",
+        "continent": page.get("continent") or geo.get("continent") or "",
+        "region": page.get("region") or geo.get("region") or "",
+        "latitude": page.get("latitude") or geo.get("latitude"),
+        "longitude": page.get("longitude") or geo.get("longitude"),
+        "domain": page.get("domain") or "",
     }
 
 
@@ -1223,6 +1213,7 @@ def render_urlscan_report(result, target_scan_url):
     location = extract_urlscan_location(result)
     history = extract_urlscan_history(result)
     transactions = extract_urlscan_transactions(result)
+
     st.subheader("🎯 Resumo (Summary)")
     getattr(st, verdict["level"])(f"**{verdict['label']}**  ·  Score de Maliciosidade: `{verdict['score']}`")
     extra_bits = []
@@ -1234,30 +1225,47 @@ def render_urlscan_report(result, target_scan_url):
         extra_bits.append("Tags: " + ", ".join(str(t) for t in verdict["tags"]))
     if extra_bits:
         st.caption(" • ".join(extra_bits))
+
     m1, m2, m3, m4 = st.columns(4)
     m1.metric("Requisições HTTP", summary["total_requests"])
     m2.metric("Recursos Maliciosos", summary["malicious_resources"])
     m3.metric("Países Únicos", summary["unique_countries"])
     m4.metric("Houve Redirecionamento?", "Sim" if summary["redirected"] else "Não")
+
     st.markdown(f"**📄 Título da Página:** {summary['title']}")
     st.markdown(f"**🔗 URL Submetida:** `{summary['submitted_url']}`")
     st.markdown(f"**🏁 URL Final:** `{summary['final_url']}`")
     st.markdown(f"**🕒 Data/Hora do Scan:** {summary['scan_time']}")
     st.markdown(f"**📑 Relatório Completo no urlscan.io:** [{summary['report_url']}]({summary['report_url']})")
+
     st.divider()
     st.markdown("### 📍 Localização (Located) & Rede")
-    l1, l2, l3, l4 = st.columns(4)
-    render_country_field(l1, "País", f"{location['flag']} {location['country']}")
-    render_country_field(l2, "Cidade", location['city'])
-    render_country_field(l3, "IP", f"`{location['ip']}`")
-    render_country_field(l4, "AS (ASN)", f"`{location['asn']}` · {location['asnname']}")
-    st.caption(f"🖥️ Servidor (HTTP Server header): {location['server']}  ·  📛 PTR: {location['ptr']}")
+
+    # Exibição robusta com métricas nativas
+    col_loc1, col_loc2, col_loc3, col_loc4, col_loc5 = st.columns(5)
+    col_loc1.metric("País", f"{location['flag']} {location['country']}")
+    col_loc2.metric("Cidade", location['city'])
+    col_loc3.metric("IP", location['ip'])
+    col_loc4.metric("ASN", location['asn'])
+    col_loc5.metric("Organização AS", location['asnname'])
+
+    st.markdown(f"**Servidor (HTTP Server header):** {location['server']}  ·  **PTR:** {location['ptr']}")
+    if location.get('continent'):
+        st.markdown(f"**Continente:** {location['continent']}")
+    if location.get('region'):
+        st.markdown(f"**Região:** {location['region']}")
+    if location.get('latitude') and location.get('longitude'):
+        st.markdown(f"**Coordenadas:** {location['latitude']}, {location['longitude']}")
+    if location.get('domain'):
+        st.markdown(f"**Domínio:** {location['domain']}")
+
     st.divider()
     st.markdown("### 🧭 Histórico de URL da Página (Page URL History)")
     if history:
         st.dataframe(pd.DataFrame(history), use_container_width=True, hide_index=True)
     else:
         st.caption("Nenhum redirecionamento detectado — a URL carregou diretamente.")
+
     st.divider()
     st.markdown(f"### 📡 Transações HTTP (HTTP Transactions) — {len(transactions)} requisições capturadas")
     if transactions:
@@ -1269,6 +1277,7 @@ def render_urlscan_report(result, target_scan_url):
         st.download_button("⬇️ Exportar Transações (CSV)", df_tx.to_csv(index=False).encode("utf-8"), file_name=f"urlscan_transactions_{urllib.parse.urlparse(target_scan_url).netloc or 'scan'}.csv", mime="text/csv")
     else:
         st.caption("Nenhuma transação HTTP foi capturada para esta página.")
+
     if summary.get("screenshot_url"):
         with st.expander("🖼️ Screenshot da Página Capturada"):
             try:
@@ -1280,6 +1289,7 @@ def render_urlscan_report(result, target_scan_url):
                     st.caption(f"Não foi possível carregar o screenshot (HTTP {shot.status_code}).")
             except requests.RequestException:
                 st.caption("Não foi possível carregar o screenshot no momento.")
+
     with st.expander("🔍 Ver JSON bruto completo (debug)"):
         st.json(result)
 
@@ -1603,7 +1613,7 @@ with tab_extrator:
             st.dataframe(pd.DataFrame(ip_data), column_config={"Link VT": st.column_config.LinkColumn("VT ↗")}, use_container_width=True, hide_index=True)
 
 # =============================================================================
-# ABA 2: ABUSEIPDB (CONSULTA INDIVIDUAL)
+# ABA 2: ABUSEIPDB
 # =============================================================================
 with tab_abuseipdb:
     st.header(lang["tab_abuseipdb"])
