@@ -340,6 +340,7 @@ def is_valid_ipv4(ip_address):
 
 
 def render_country_field(container, label, value, extra=""):
+    """Exibe um campo curto (País, Cidade, IP, AS...) com fonte reduzida."""
     extra_html = f'<div class="mini-field-extra">{extra}</div>' if extra else ""
     container.markdown(
         f"""<div class="mini-field">
@@ -351,7 +352,14 @@ def render_country_field(container, label, value, extra=""):
     )
 
 
+# -----------------------------------------------------------------------------
+# 6.1 FONTES OSINT 100% SEM CHAVE DE API (FALLBACK AUTOMÁTICO)
+# -----------------------------------------------------------------------------
+
 def check_shodan_internetdb(ip_address):
+    """Consulta a Shodan InternetDB (https://internetdb.shodan.io) — gratuita,
+    sem necessidade de conta ou API key. Retorna portas abertas, CPEs,
+    hostnames, tags e CVEs associados ao IP."""
     if not is_valid_ipv4(ip_address):
         return {"error": "IPv4 inválido."}
     try:
@@ -368,6 +376,8 @@ def check_shodan_internetdb(ip_address):
 
 
 def check_ip_api_geo(ip_address):
+    """Consulta o ip-api.com (endpoint gratuito, sem chave, ~45 req/min) para
+    geolocalização, ASN/ISP e sinalização de proxy/hosting/mobile do IP."""
     if not is_valid_ipv4(ip_address):
         return {"error": "IPv4 inválido."}
     try:
@@ -390,6 +400,9 @@ def check_ip_api_geo(ip_address):
 
 
 def get_free_ip_context(ip_address):
+    """Combina Shodan InternetDB + ip-api.com em um único contexto OSINT
+    'sem chave', usado como complemento (ou substituto) do VirusTotal/AbuseIPDB
+    quando essas chaves não estão configuradas."""
     shodan_data = check_shodan_internetdb(ip_address)
     geo_data = check_ip_api_geo(ip_address)
 
@@ -422,6 +435,7 @@ def get_free_ip_context(ip_address):
     }
 
 
+# --- VirusTotal ---
 def get_vt_data(endpoint, item_id):
     if not VT_API_KEY:
         return {"error": "Chave API não configurada"}
@@ -513,6 +527,7 @@ def parse_vt_details(vt_response):
         base.update(_VT_IP_DEFAULTS)
         return base
 
+# --- AbuseIPDB ---
 ABUSEIPDB_CATEGORIES = {
     1: "DNS Compromise", 2: "DNS Poisoning", 3: "Fraud Orders", 4: "DDoS Attack",
     5: "FTP Brute-Force", 6: "Ping of Death", 7: "Phishing", 8: "Fraud VoIP",
@@ -535,12 +550,14 @@ def check_abuseipdb(ip_address):
         response = requests.get(url, headers=headers, params=params, timeout=8)
         if response.status_code == 200:
             data = response.json()["data"]
+
             category_counts = {}
             for rep in data.get("reports", []) or []:
                 for cat_id in rep.get("categories", []) or []:
                     name = ABUSEIPDB_CATEGORIES.get(cat_id, f"Categoria {cat_id}")
                     category_counts[name] = category_counts.get(name, 0) + 1
             top_categories = sorted(category_counts.items(), key=lambda kv: kv[1], reverse=True)[:5]
+
             return {
                 "score": f"{data.get('abuseConfidenceScore', 0)}%",
                 "score_raw": data.get("abuseConfidenceScore", 0),
@@ -564,18 +581,21 @@ def check_abuseipdb(ip_address):
     except Exception as e:
         return {"error": str(e)}
 
-
+# --- GreyNoise (Community e API autenticada v3) ---
 def check_greynoise(ip_address):
     if not is_valid_ipv4(ip_address):
         return {"error": "IPv4 inválido."}
+
     if GREYNOISE_API_KEY:
         url = f"https://api.greynoise.io/v3/ip/{ip_address}"
         headers = {"Accept": "application/json", "key": GREYNOISE_API_KEY}
     else:
         url = f"https://api.greynoise.io/v3/community/{ip_address}"
         headers = {"Accept": "application/json"}
+
     try:
         res = requests.get(url, headers=headers, timeout=10)
+
         if res.status_code == 200:
             return res.json()
         if res.status_code == 400:
@@ -588,6 +608,7 @@ def check_greynoise(ip_address):
             return {"message": "IP não catalogado no GreyNoise."}
         if res.status_code == 429:
             return {"error": "Limite de requisições atingido no GreyNoise."}
+
         return {"error": f"HTTP {res.status_code}: {res.text[:300]}"}
     except requests.RequestException as exc:
         return {"error": f"Falha de comunicação com GreyNoise: {exc}"}
@@ -609,11 +630,13 @@ def extract_greynoise_report(gn_res):
         bsi = gn_res.get("business_service_intelligence", {}) or {}
         meta = isi.get("metadata", {}) or {}
         raw = isi.get("raw_data", {}) or {}
+
         found_scanner = bool(isi.get("found"))
         found_business = bool(bsi.get("found"))
         classification = (isi.get("classification") or "").strip()
         if not classification:
             classification = "benign" if found_business else ("unknown" if not found_scanner else "unknown")
+
         return {
             "mode": "full",
             "ip": gn_res.get("ip", "N/D"),
@@ -656,6 +679,7 @@ def extract_greynoise_report(gn_res):
             "business_trust_level": bsi.get("trust_level") or "N/D",
             "link": f"https://viz.greynoise.io/ip/{gn_res.get('ip', '')}",
         }
+
     return {
         "mode": "community",
         "ip": gn_res.get("ip", "N/D"),
@@ -782,6 +806,7 @@ def render_greynoise_report(gn_res, queried_ip):
         st.json(gn_res)
 
 
+# --- urlscan.io ---
 def submit_urlscan(target_url):
     target_url = target_url.strip()
     parsed = urllib.parse.urlparse(target_url)
@@ -1386,19 +1411,6 @@ def render_osint_unified_report(query_value, query_kind, results):
         st.json(results)
 
 
-def render_tool_osint_card(name, category, mode, description, url=None, requirements="N/D"):
-    st.markdown(f"### {name}")
-    c1, c2, c3 = st.columns(3)
-    c1.markdown(f"**Categoria:** {category}")
-    c2.markdown(f"**Integração:** {mode}")
-    c3.markdown(f"**Requisito:** {requirements}")
-    st.write(description)
-    if url:
-        st.link_button("Abrir projeto / documentação", url)
-    else:
-        st.caption("🔒 Sem API integrada: consulta somente via execução local.")
-
-
 def check_xposedornot_analytics(email):
     email = email.strip()
     if not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", email):
@@ -1419,7 +1431,6 @@ def check_xposedornot_analytics(email):
 # -----------------------------------------------------------------------------
 # 7. NAVEGAÇÃO POR ABAS OPERACIONAIS
 # -----------------------------------------------------------------------------
-# Abas: Extrator, AbuseIPDB, Central de Hipóteses, urlscan.io, GreyNoise, Vazamento-Email, APT-Hunter & OSINT, Cross-Intel
 (
     tab_extrator,
     tab_abuseipdb,
@@ -1791,25 +1802,6 @@ with tab_osint:
     if last:
         st.divider()
         render_osint_unified_report(last["value"], last["kind"], last["results"])
-    st.divider()
-    st.subheader("🧰 Ferramentas locais / integrações")
-    left, right = st.columns(2)
-    with left:
-        render_tool_osint_card("🕵️ APT-Hunter", "Threat Hunting / DFIR", "Local / EVTX", "Analisa Windows Event Logs/EVTX com regras de detecção e estatísticas para evidenciar movimentos APT e produzir timelines.", None, "Python 3 + EVTX")
-        render_tool_osint_card("🧪 DeepBlueCLI", "Threat Hunting", "Local / PowerShell", "Hunting sobre Windows Security, System, PowerShell e Sysmon, incluindo obfuscação, password spraying e comportamento suspeito.", None, "PowerShell + logs")
-        render_tool_osint_card("🧰 Automater", "OSINT / IOC Enrichment", "Local", "Ferramenta de enriquecimento que funciona por chamadas às fontes configuradas, mas não oferece uma API própria integrada nesta aplicação.", None, "Execução local")
-        render_tool_osint_card("🎣 Phishing Catcher", "Phishing / CT", "Local / CertStream", "Monitora Certificate Transparency e pontua domínios potencialmente ligados a phishing.", None, "Python + CertStream")
-    with right:
-        render_tool_osint_card("🦠 Cuckoo Sandbox", "Malware Analysis", "API local", "A integração consulta hashes que já existem na instância configurada; não envia amostras automaticamente.", "https://cuckoosandbox.org/", "API HTTP local")
-        render_tool_osint_card("🤖 BotScout", "Bot / IP / Email Reputation", "REST API", "Consulta IP ou e-mail na base BotScout, com ou sem chave dentro das cotas permitidas.", "https://botscout.com/api.htm", "API Key opcional")
-    st.divider()
-    st.subheader("🔌 Status das integrações locais")
-    c1, c2 = st.columns(2)
-    with c1:
-        ck = check_cuckoo_health()
-        st.metric("Cuckoo", "🟢 Online" if ck.get("reachable") else ("🟡 Configurado" if ck.get("configured") else "⚪ Não configurado"))
-        if ck.get("configured") and not ck.get("reachable"):
-            st.caption(ck.get("error", "Instância não respondeu."))
 
 # =============================================================================
 # ABA 8: CRUZAMENTO DE INTELIGÊNCIA (CROSS-INTEL)
