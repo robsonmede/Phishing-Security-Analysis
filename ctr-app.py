@@ -15,7 +15,7 @@ import streamlit as st
 # 1. CONFIGURAÇÃO DA PÁGINA
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="Cyber Threat Research - Caçador de Ameaças V3.5",
+    page_title="Cyber Threat Research - Caçador de Ameaças V3.7",
     page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -200,58 +200,182 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
+# 3. INTERNACIONALIZAÇÃO (i18n)
+# -----------------------------------------------------------------------------
+translations = {
+    "Português": {
+        "app_title": "Cyber Threat Research - Caçador de Ameaças V3.7",
+        "app_subtitle": "Threat Hunting, Detection Engineering & Dynamic Threat Mapping",
+        "sidebar_credentials": "🔑 Credenciais API",
+        "vt_key": "VirusTotal API Key:",
+        "abuse_key": "AbuseIPDB API Key:",
+        "urlscan_key": "urlscan.io API Key:",
+        "greynoise_key": "GreyNoise API Key (Business/Enterprise):",
+        "botscout_key": "BotScout API Key (opcional):",
+        "save": "💾 Salvar",
+        "clear": "🗑️ Limpar",
+        "home": "🏠 Home",
+        "quick_hub": "🔗 Quick-Access Threat Intel & Investigation Hub",
+        "tab_extrator": "🔍 Extrator de IOCs",
+        "tab_abuseipdb": "🛡️ AbuseIPDB",
+        "tab_hypotheses": "🎯 Central de Hipóteses",
+        "tab_urlscan": "🌐 urlscan.io",
+        "tab_greynoise": "📡 GreyNoise",
+        "tab_vazamento": "🔓 Vazamento-Email",
+        "tab_osint": "🧭 APT-Hunter & OSINT",
+        "tab_cross": "🔗 Cross-Intel",
+        "footer": "CTRDEFENSE.BLOG © 2026 | Cyber Threat Research - Caçador de Ameaças V3.7"
+    },
+    "English": {
+        "app_title": "Cyber Threat Research - Threat Hunter V3.7",
+        "app_subtitle": "Threat Hunting, Detection Engineering & Dynamic Threat Mapping",
+        "sidebar_credentials": "🔑 API Credentials",
+        "vt_key": "VirusTotal API Key:",
+        "abuse_key": "AbuseIPDB API Key:",
+        "urlscan_key": "urlscan.io API Key:",
+        "greynoise_key": "GreyNoise API Key (Business/Enterprise):",
+        "botscout_key": "BotScout API Key (optional):",
+        "save": "💾 Save",
+        "clear": "🗑️ Clear",
+        "home": "🏠 Home",
+        "quick_hub": "🔗 Quick-Access Threat Intel & Investigation Hub",
+        "tab_extrator": "🔍 IOC Extractor",
+        "tab_abuseipdb": "🛡️ AbuseIPDB",
+        "tab_hypotheses": "🎯 Hypothesis Center",
+        "tab_urlscan": "🌐 urlscan.io",
+        "tab_greynoise": "📡 GreyNoise",
+        "tab_vazamento": "🔓 Email Leak",
+        "tab_osint": "🧭 APT-Hunter & OSINT",
+        "tab_cross": "🔗 Cross-Intel",
+        "footer": "CTRDEFENSE.BLOG © 2026 | Cyber Threat Research - Threat Hunter V3.7"
+    },
+    "Español": {
+        "app_title": "Cyber Threat Research - Cazador de Amenazas V3.7",
+        "app_subtitle": "Threat Hunting, Detection Engineering & Dynamic Threat Mapping",
+        "sidebar_credentials": "🔑 Credenciales API",
+        "vt_key": "Clave API VirusTotal:",
+        "abuse_key": "Clave API AbuseIPDB:",
+        "urlscan_key": "Clave API urlscan.io:",
+        "greynoise_key": "Clave API GreyNoise (Business/Enterprise):",
+        "botscout_key": "Clave API BotScout (opcional):",
+        "save": "💾 Guardar",
+        "clear": "🗑️ Limpiar",
+        "home": "🏠 Inicio",
+        "quick_hub": "🔗 Acceso rápido a Inteligencia de Amenazas",
+        "tab_extrator": "🔍 Extractor de IOCs",
+        "tab_abuseipdb": "🛡️ AbuseIPDB",
+        "tab_hypotheses": "🎯 Centro de Hipótesis",
+        "tab_urlscan": "🌐 urlscan.io",
+        "tab_greynoise": "📡 GreyNoise",
+        "tab_vazamento": "🔓 Fuga de Email",
+        "tab_osint": "🧭 APT-Hunter & OSINT",
+        "tab_cross": "🔗 Cross-Intel",
+        "footer": "CTRDEFENSE.BLOG © 2026 | Cyber Threat Research - Cazador de Amenazas V3.7"
+    },
+    "Français": {
+        "app_title": "Cyber Threat Research - Chasseur de Menaces V3.7",
+        "app_subtitle": "Threat Hunting, Detection Engineering & Dynamic Threat Mapping",
+        "sidebar_credentials": "🔑 Identifiants API",
+        "vt_key": "Clé API VirusTotal :",
+        "abuse_key": "Clé API AbuseIPDB :",
+        "urlscan_key": "Clé API urlscan.io :",
+        "greynoise_key": "Clé API GreyNoise (Business/Enterprise) :",
+        "botscout_key": "Clé API BotScout (optionnel) :",
+        "save": "💾 Enregistrer",
+        "clear": "🗑️ Effacer",
+        "home": "🏠 Accueil",
+        "quick_hub": "🔗 Accès rapide aux renseignements sur les menaces",
+        "tab_extrator": "🔍 Extracteur d'IOC",
+        "tab_abuseipdb": "🛡️ AbuseIPDB",
+        "tab_hypotheses": "🎯 Centre d'hypothèses",
+        "tab_urlscan": "🌐 urlscan.io",
+        "tab_greynoise": "📡 GreyNoise",
+        "tab_vazamento": "🔓 Fuite d'email",
+        "tab_osint": "🧭 APT-Hunter & OSINT",
+        "tab_cross": "🔗 Cross-Intel",
+        "footer": "CTRDEFENSE.BLOG © 2026 | Cyber Threat Research - Chasseur de Menaces V3.7"
+    },
+    "Deutsch": {
+        "app_title": "Cyber Threat Research - Bedrohungsjäger V3.7",
+        "app_subtitle": "Threat Hunting, Detection Engineering & Dynamic Threat Mapping",
+        "sidebar_credentials": "🔑 API-Zugangsdaten",
+        "vt_key": "VirusTotal API-Schlüssel:",
+        "abuse_key": "AbuseIPDB API-Schlüssel:",
+        "urlscan_key": "urlscan.io API-Schlüssel:",
+        "greynoise_key": "GreyNoise API-Schlüssel (Business/Enterprise):",
+        "botscout_key": "BotScout API-Schlüssel (optional):",
+        "save": "💾 Speichern",
+        "clear": "🗑️ Löschen",
+        "home": "🏠 Startseite",
+        "quick_hub": "🔗 Schnellzugriff auf Threat Intel",
+        "tab_extrator": "🔍 IOC-Extraktor",
+        "tab_abuseipdb": "🛡️ AbuseIPDB",
+        "tab_hypotheses": "🎯 Hypothesen-Zentrum",
+        "tab_urlscan": "🌐 urlscan.io",
+        "tab_greynoise": "📡 GreyNoise",
+        "tab_vazamento": "🔓 E-Mail-Leck",
+        "tab_osint": "🧭 APT-Hunter & OSINT",
+        "tab_cross": "🔗 Cross-Intel",
+        "footer": "CTRDEFENSE.BLOG © 2026 | Cyber Threat Research - Bedrohungsjäger V3.7"
+    }
+}
+
+# Seletor de idioma na sidebar (antes das credenciais)
+with st.sidebar:
+    st.markdown("### 🌐 Idioma / Language")
+    selected_lang = st.selectbox(
+        "Idioma / Language",
+        options=list(translations.keys()),
+        index=0,
+        key="language_selector"
+    )
+    lang = translations[selected_lang]
+
+# -----------------------------------------------------------------------------
 # 3. GERENCIAMENTO SEGURO DAS API KEYS NA SIDEBAR
 # -----------------------------------------------------------------------------
 def get_secret(name):
-    """Obtém um segredo sem derrubar a aplicação quando secrets.toml não existe."""
     try:
         return st.secrets.get(name, "")
     except Exception:
         return ""
 
 with st.sidebar:
-    st.markdown("### 🔑 Credenciais API")
+    st.markdown(f"### {lang['sidebar_credentials']}")
 
     def_vt = get_secret("VIRUSTOTAL_API_KEY")
     def_abuse = get_secret("ABUSEIPDB_API_KEY")
     def_urlscan = get_secret("URLSCAN_API_KEY")
     def_greynoise = get_secret("GREYNOISE_API_KEY")
     def_botscout = get_secret("BOTSCOUT_API_KEY")
-    def_cuckoo_url = get_secret("CUCKOO_API_URL")
-    def_cuckoo_key = get_secret("CUCKOO_API_KEY")
 
-    user_vt_key = st.text_input("VirusTotal API Key:", value=st.session_state.get("vt_key_input", def_vt), type="password", key="vt_key_input")
-    user_abuse_key = st.text_input("AbuseIPDB API Key:", value=st.session_state.get("abuse_key_input", def_abuse), type="password", key="abuse_key_input")
-    user_urlscan_key = st.text_input("urlscan.io API Key:", value=st.session_state.get("urlscan_key_input", def_urlscan), type="password", key="urlscan_key_input")
-    user_greynoise_key = st.text_input("GreyNoise API Key (Business/Enterprise):", value=st.session_state.get("greynoise_key_input", def_greynoise), type="password", key="greynoise_key_input")
-    user_botscout_key = st.text_input("BotScout API Key (opcional):", value=st.session_state.get("botscout_key_input", def_botscout), type="password", key="botscout_key_input")
-    user_cuckoo_url = st.text_input("Cuckoo API URL (opcional):", value=st.session_state.get("cuckoo_url_input", def_cuckoo_url), key="cuckoo_url_input", placeholder="http://127.0.0.1:8090")
-    user_cuckoo_key = st.text_input("Cuckoo API Key (opcional):", value=st.session_state.get("cuckoo_key_input", def_cuckoo_key), type="password", key="cuckoo_key_input")
+    user_vt_key = st.text_input(lang["vt_key"], value=st.session_state.get("vt_key_input", def_vt), type="password", key="vt_key_input")
+    user_abuse_key = st.text_input(lang["abuse_key"], value=st.session_state.get("abuse_key_input", def_abuse), type="password", key="abuse_key_input")
+    user_urlscan_key = st.text_input(lang["urlscan_key"], value=st.session_state.get("urlscan_key_input", def_urlscan), type="password", key="urlscan_key_input")
+    user_greynoise_key = st.text_input(lang["greynoise_key"], value=st.session_state.get("greynoise_key_input", def_greynoise), type="password", key="greynoise_key_input")
+    user_botscout_key = st.text_input(lang["botscout_key"], value=st.session_state.get("botscout_key_input", def_botscout), type="password", key="botscout_key_input")
 
     col_btn1, col_btn2 = st.columns(2)
     with col_btn1:
-        if st.button("💾 Salvar", use_container_width=True):
+        if st.button(lang["save"], use_container_width=True):
             st.session_state["active_vt_key"] = user_vt_key
             st.session_state["active_abuse_key"] = user_abuse_key
             st.session_state["active_urlscan_key"] = user_urlscan_key
             st.session_state["active_greynoise_key"] = user_greynoise_key
             st.session_state["active_botscout_key"] = user_botscout_key
-            st.session_state["active_cuckoo_url"] = user_cuckoo_url
-            st.session_state["active_cuckoo_key"] = user_cuckoo_key
-            st.success("Salvas!")
+            st.success("✅")
             st.rerun()
 
     with col_btn2:
-        if st.button("🗑️ Limpar", use_container_width=True):
-            # Limpar corretamente as chaves, removendo-as do session_state
+        if st.button(lang["clear"], use_container_width=True):
             keys_to_clear = ["vt_key_input", "abuse_key_input", "urlscan_key_input",
-                            "greynoise_key_input", "botscout_key_input", "cuckoo_url_input", "cuckoo_key_input",
+                            "greynoise_key_input", "botscout_key_input",
                             "active_vt_key", "active_abuse_key", "active_urlscan_key", "active_greynoise_key",
-                            "active_botscout_key", "active_cuckoo_url", "active_cuckoo_key"]
+                            "active_botscout_key"]
             for k in keys_to_clear:
                 if k in st.session_state:
-                    del st.session_state[k]  # remover completamente para forçar default
-            st.warning("Removidas!")
+                    del st.session_state[k]
+            st.warning("✅")
             st.rerun()
 
     st.divider()
@@ -261,66 +385,59 @@ ABUSE_API_KEY = st.session_state.get("active_abuse_key", st.session_state.get("a
 URLSCAN_API_KEY = st.session_state.get("active_urlscan_key", st.session_state.get("urlscan_key_input", def_urlscan))
 GREYNOISE_API_KEY = st.session_state.get("active_greynoise_key", st.session_state.get("greynoise_key_input", def_greynoise))
 BOTSCOUT_API_KEY = st.session_state.get("active_botscout_key", st.session_state.get("botscout_key_input", def_botscout))
-CUCKOO_API_URL = st.session_state.get("active_cuckoo_url", st.session_state.get("cuckoo_url_input", def_cuckoo_url)).strip().rstrip("/")
-CUCKOO_API_KEY = st.session_state.get("active_cuckoo_key", st.session_state.get("cuckoo_key_input", def_cuckoo_key))
 
 # -----------------------------------------------------------------------------
 # 4. HEADER DA APLICAÇÃO & STATUS DA API
 # -----------------------------------------------------------------------------
-st.markdown('<div class="main-header">🛡️ Cyber Threat Research - Caçador de Ameaças V3.5</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-header">Threat Hunting, Detection Engineering & Dynamic Threat Mapping</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="main-header">🛡️ {lang["app_title"]}</div>', unsafe_allow_html=True)
+st.markdown(f'<div class="sub-header">{lang["app_subtitle"]}</div>', unsafe_allow_html=True)
 
 # Botão Home
-if st.button("🏠 Home", key="home_button"):
-    # Limpar estados de navegação ou filtros, se houver, e recarregar
-    st.session_state.clear()  # limpa todos os estados
+if st.button(lang["home"], key="home_button"):
+    st.session_state.clear()
     st.rerun()
 
 status_cols = st.columns(7)
-status_cols[0].caption("🟢 VT (chave)" if VT_API_KEY else "🟡 VT (fallback OSINT)")
-status_cols[1].caption("🟢 AbuseIPDB (chave)" if ABUSE_API_KEY else "🟡 AbuseIPDB (fallback OSINT)")
-status_cols[2].caption("🟢 urlscan (chave)" if URLSCAN_API_KEY else "🟢 urlscan (sem chave)")
-status_cols[3].caption("🟢 GreyNoise (Business)" if GREYNOISE_API_KEY else "🟢 GreyNoise (Public)")
-status_cols[4].caption("🟢 XposedOrNot (Free)")
-status_cols[5].caption("🟢 Shodan InternetDB (sem chave)")
-status_cols[6].caption("🟢 ip-api.com (sem chave)")
+status_cols[0].caption("🟢 VT" if VT_API_KEY else "🟡 VT")
+status_cols[1].caption("🟢 AbuseIPDB" if ABUSE_API_KEY else "🟡 AbuseIPDB")
+status_cols[2].caption("🟢 urlscan" if URLSCAN_API_KEY else "🟢 urlscan")
+status_cols[3].caption("🟢 GreyNoise" if GREYNOISE_API_KEY else "🟢 GreyNoise")
+status_cols[4].caption("🟢 XposedOrNot")
+status_cols[5].caption("🟢 Shodan InternetDB")
+status_cols[6].caption("🟢 ip-api.com")
 
 if not VT_API_KEY or not ABUSE_API_KEY:
-    st.caption(
-        "🟡 VirusTotal e AbuseIPDB exigem, por política dos próprios provedores, uma chave gratuita — "
-        "não existe endpoint público sem chave para essas duas fontes. Enquanto a chave não é cadastrada, "
-        "IPs são automaticamente enriquecidos com Shodan InternetDB + ip-api.com (100% gratuitos, sem chave)."
-    )
+    st.caption("🟡 VirusTotal e AbuseIPDB exigem chave. Fallback OSINT ativo para IPs.")
 
 # -----------------------------------------------------------------------------
-# 5. QUICK-ACCESS THREAT INTEL HUB (ÚNICO MARKDOWN)
+# 5. QUICK-ACCESS THREAT INTEL HUB
 # -----------------------------------------------------------------------------
-with st.expander("🔗 **Quick-Access Threat Intel & Investigation Hub**", expanded=False):
+with st.expander(lang["quick_hub"], expanded=False):
     st.markdown("""
         <div class="tool-grid">
             <a href="https://www.phishtool.com/" target="_blank" class="tool-card">
                 <div class="tool-title">📧 PhishTool</div>
-                <div class="tool-desc">Triagem de e-mails maliciosos.</div>
+                <div class="tool-desc">Email triage</div>
             </a>
             <a href="https://bazaar.abuse.ch/" target="_blank" class="tool-card">
                 <div class="tool-title">☣️ MalwareBazaar</div>
-                <div class="tool-desc">Amostras abertas de malware.</div>
+                <div class="tool-desc">Malware samples</div>
             </a>
             <a href="https://www.hybrid-analysis.com/" target="_blank" class="tool-card">
                 <div class="tool-title">🔬 Hybrid Analysis</div>
-                <div class="tool-desc">Sandbox dinâmica gratuita.</div>
+                <div class="tool-desc">Free sandbox</div>
             </a>
             <a href="https://www.shodan.io/" target="_blank" class="tool-card">
                 <div class="tool-title">🌐 Shodan</div>
-                <div class="tool-desc">Exposição de serviços de rede.</div>
+                <div class="tool-desc">Network exposure</div>
             </a>
             <a href="https://www.verexif.com/" target="_blank" class="tool-card">
-                <div class="tool-title">📷 VerExif Online</div>
-                <div class="tool-desc">Metadados de imagem.</div>
+                <div class="tool-title">📷 VerExif</div>
+                <div class="tool-desc">Image metadata</div>
             </a>
             <a href="https://mxtoolbox.com/" target="_blank" class="tool-card">
                 <div class="tool-title">🛠️ MXToolbox</div>
-                <div class="tool-desc">Análise DNS, MX, SPF, DKIM.</div>
+                <div class="tool-desc">DNS, MX, SPF, DKIM</div>
             </a>
         </div>
     """, unsafe_allow_html=True)
@@ -332,7 +449,6 @@ st.divider()
 # -----------------------------------------------------------------------------
 
 def is_valid_ipv4(ip_address):
-    """Valida IPv4 para evitar consultas inválidas às APIs."""
     try:
         return ipaddress.ip_address(ip_address).version == 4
     except ValueError:
@@ -340,26 +456,13 @@ def is_valid_ipv4(ip_address):
 
 
 def render_country_field(container, label, value, extra=""):
-    """Exibe um campo curto (País, Cidade, IP, AS...) com fonte reduzida."""
-    extra_html = f'<div class="mini-field-extra">{extra}</div>' if extra else ""
-    container.markdown(
-        f"""<div class="mini-field">
-                <div class="mini-field-label">{label}</div>
-                <div class="mini-field-value">{value}</div>
-                {extra_html}
-            </div>""",
-        unsafe_allow_html=True,
-    )
+    text = f"**{label}:** {value}"
+    if extra:
+        text += f" ({extra})"
+    container.markdown(text)
 
-
-# -----------------------------------------------------------------------------
-# 6.1 FONTES OSINT 100% SEM CHAVE DE API (FALLBACK AUTOMÁTICO)
-# -----------------------------------------------------------------------------
 
 def check_shodan_internetdb(ip_address):
-    """Consulta a Shodan InternetDB (https://internetdb.shodan.io) — gratuita,
-    sem necessidade de conta ou API key. Retorna portas abertas, CPEs,
-    hostnames, tags e CVEs associados ao IP."""
     if not is_valid_ipv4(ip_address):
         return {"error": "IPv4 inválido."}
     try:
@@ -376,8 +479,6 @@ def check_shodan_internetdb(ip_address):
 
 
 def check_ip_api_geo(ip_address):
-    """Consulta o ip-api.com (endpoint gratuito, sem chave, ~45 req/min) para
-    geolocalização, ASN/ISP e sinalização de proxy/hosting/mobile do IP."""
     if not is_valid_ipv4(ip_address):
         return {"error": "IPv4 inválido."}
     try:
@@ -400,9 +501,6 @@ def check_ip_api_geo(ip_address):
 
 
 def get_free_ip_context(ip_address):
-    """Combina Shodan InternetDB + ip-api.com em um único contexto OSINT
-    'sem chave', usado como complemento (ou substituto) do VirusTotal/AbuseIPDB
-    quando essas chaves não estão configuradas."""
     shodan_data = check_shodan_internetdb(ip_address)
     geo_data = check_ip_api_geo(ip_address)
 
@@ -581,7 +679,7 @@ def check_abuseipdb(ip_address):
     except Exception as e:
         return {"error": str(e)}
 
-# --- GreyNoise (Community e API autenticada v3) ---
+# --- GreyNoise ---
 def check_greynoise(ip_address):
     if not is_valid_ipv4(ip_address):
         return {"error": "IPv4 inválido."}
@@ -608,7 +706,6 @@ def check_greynoise(ip_address):
             return {"message": "IP não catalogado no GreyNoise."}
         if res.status_code == 429:
             return {"error": "Limite de requisições atingido no GreyNoise."}
-
         return {"error": f"HTTP {res.status_code}: {res.text[:300]}"}
     except requests.RequestException as exc:
         return {"error": f"Falha de comunicação com GreyNoise: {exc}"}
@@ -630,13 +727,11 @@ def extract_greynoise_report(gn_res):
         bsi = gn_res.get("business_service_intelligence", {}) or {}
         meta = isi.get("metadata", {}) or {}
         raw = isi.get("raw_data", {}) or {}
-
         found_scanner = bool(isi.get("found"))
         found_business = bool(bsi.get("found"))
         classification = (isi.get("classification") or "").strip()
         if not classification:
             classification = "benign" if found_business else ("unknown" if not found_scanner else "unknown")
-
         return {
             "mode": "full",
             "ip": gn_res.get("ip", "N/D"),
@@ -679,7 +774,6 @@ def extract_greynoise_report(gn_res):
             "business_trust_level": bsi.get("trust_level") or "N/D",
             "link": f"https://viz.greynoise.io/ip/{gn_res.get('ip', '')}",
         }
-
     return {
         "mode": "community",
         "ip": gn_res.get("ip", "N/D"),
@@ -1011,17 +1105,25 @@ def extract_urlscan_summary(result):
 
 
 def extract_urlscan_location(result):
+    """Localização e rede enriquecidas a partir dos dados da página."""
     page = result.get("page", {}) or {}
-    country = page.get("country", "") or ""
+    geo = page.get("geoip", {}) or {}
+    country = page.get("country") or geo.get("country") or ""
+    city = page.get("city") or geo.get("city") or "—"
     return {
         "country": country or "N/D",
         "flag": _country_flag(country),
-        "city": page.get("city") or "—",
+        "city": city,
         "ip": page.get("ip", "N/D"),
         "asn": page.get("asn", "N/D"),
         "asnname": page.get("asnname", "N/D"),
         "server": page.get("server") or "N/D",
         "ptr": page.get("ptr") or "—",
+        "continent": page.get("continent") or geo.get("continent") or "",
+        "region": page.get("region") or geo.get("region") or "",
+        "latitude": page.get("latitude") or geo.get("latitude"),
+        "longitude": page.get("longitude") or geo.get("longitude"),
+        "domain": page.get("domain") or "",
     }
 
 
@@ -1105,6 +1207,7 @@ def render_urlscan_report(result, target_scan_url):
     location = extract_urlscan_location(result)
     history = extract_urlscan_history(result)
     transactions = extract_urlscan_transactions(result)
+
     st.subheader("🎯 Resumo (Summary)")
     getattr(st, verdict["level"])(f"**{verdict['label']}**  ·  Score de Maliciosidade: `{verdict['score']}`")
     extra_bits = []
@@ -1116,30 +1219,47 @@ def render_urlscan_report(result, target_scan_url):
         extra_bits.append("Tags: " + ", ".join(str(t) for t in verdict["tags"]))
     if extra_bits:
         st.caption(" • ".join(extra_bits))
+
     m1, m2, m3, m4 = st.columns(4)
     m1.metric("Requisições HTTP", summary["total_requests"])
     m2.metric("Recursos Maliciosos", summary["malicious_resources"])
     m3.metric("Países Únicos", summary["unique_countries"])
     m4.metric("Houve Redirecionamento?", "Sim" if summary["redirected"] else "Não")
+
     st.markdown(f"**📄 Título da Página:** {summary['title']}")
     st.markdown(f"**🔗 URL Submetida:** `{summary['submitted_url']}`")
     st.markdown(f"**🏁 URL Final:** `{summary['final_url']}`")
     st.markdown(f"**🕒 Data/Hora do Scan:** {summary['scan_time']}")
     st.markdown(f"**📑 Relatório Completo no urlscan.io:** [{summary['report_url']}]({summary['report_url']})")
+
     st.divider()
     st.markdown("### 📍 Localização (Located) & Rede")
-    l1, l2, l3, l4 = st.columns(4)
-    render_country_field(l1, "País", f"{location['flag']} {location['country']}")
-    render_country_field(l2, "Cidade", location['city'])
-    render_country_field(l3, "IP", f"`{location['ip']}`")
-    render_country_field(l4, "AS (ASN)", f"`{location['asn']}` · {location['asnname']}")
-    st.caption(f"🖥️ Servidor (HTTP Server header): {location['server']}  ·  📛 PTR: {location['ptr']}")
+
+    # Exibição robusta com métricas nativas
+    col_loc1, col_loc2, col_loc3, col_loc4, col_loc5 = st.columns(5)
+    col_loc1.metric("País", f"{location['flag']} {location['country']}")
+    col_loc2.metric("Cidade", location['city'])
+    col_loc3.metric("IP", location['ip'])
+    col_loc4.metric("ASN", location['asn'])
+    col_loc5.metric("Organização AS", location['asnname'])
+
+    st.markdown(f"**Servidor (HTTP Server header):** {location['server']}  ·  **PTR:** {location['ptr']}")
+    if location.get('continent'):
+        st.markdown(f"**Continente:** {location['continent']}")
+    if location.get('region'):
+        st.markdown(f"**Região:** {location['region']}")
+    if location.get('latitude') and location.get('longitude'):
+        st.markdown(f"**Coordenadas:** {location['latitude']}, {location['longitude']}")
+    if location.get('domain'):
+        st.markdown(f"**Domínio:** {location['domain']}")
+
     st.divider()
     st.markdown("### 🧭 Histórico de URL da Página (Page URL History)")
     if history:
         st.dataframe(pd.DataFrame(history), use_container_width=True, hide_index=True)
     else:
         st.caption("Nenhum redirecionamento detectado — a URL carregou diretamente.")
+
     st.divider()
     st.markdown(f"### 📡 Transações HTTP (HTTP Transactions) — {len(transactions)} requisições capturadas")
     if transactions:
@@ -1151,6 +1271,7 @@ def render_urlscan_report(result, target_scan_url):
         st.download_button("⬇️ Exportar Transações (CSV)", df_tx.to_csv(index=False).encode("utf-8"), file_name=f"urlscan_transactions_{urllib.parse.urlparse(target_scan_url).netloc or 'scan'}.csv", mime="text/csv")
     else:
         st.caption("Nenhuma transação HTTP foi capturada para esta página.")
+
     if summary.get("screenshot_url"):
         with st.expander("🖼️ Screenshot da Página Capturada"):
             try:
@@ -1162,6 +1283,7 @@ def render_urlscan_report(result, target_scan_url):
                     st.caption(f"Não foi possível carregar o screenshot (HTTP {shot.status_code}).")
             except requests.RequestException:
                 st.caption("Não foi possível carregar o screenshot no momento.")
+
     with st.expander("🔍 Ver JSON bruto completo (debug)"):
         st.json(result)
 
@@ -1205,19 +1327,6 @@ def check_botscout_email(email):
         return {"matched": (m.group(1).upper() == "Y") if m else None, "count": int(c.group(1)) if c else None, "raw": body}
     except requests.RequestException as exc:
         return {"error": f"Falha de comunicação com BotScout: {exc}"}
-
-
-def check_cuckoo_health():
-    if not CUCKOO_API_URL:
-        return {"configured": False, "message": "Cuckoo não configurado."}
-    headers = {"Accept": "application/json"}
-    if CUCKOO_API_KEY:
-        headers["Authorization"] = f"Bearer {CUCKOO_API_KEY}"
-    try:
-        res = requests.get(f"{CUCKOO_API_URL}/", headers=headers, timeout=8)
-        return {"configured": True, "status_code": res.status_code, "reachable": res.ok, "body": res.text[:500]}
-    except requests.RequestException as exc:
-        return {"configured": True, "reachable": False, "error": str(exc)}
 
 
 def detect_osint_query_type(value):
@@ -1273,26 +1382,6 @@ def query_urlscan_universal(value, kind):
     if kind == "URL":
         return search_urlscan(f'page.url:"{value}"', size=10)
     return {"error": f"urlscan não oferece busca apropriada para {kind}."}
-
-
-def query_cuckoo_hash(value, kind):
-    if not CUCKOO_API_URL:
-        return {"configured": False, "message": "Cuckoo não configurado."}
-    if kind not in {"MD5", "SHA1", "SHA256"}:
-        return {"error": "Cuckoo: a consulta integrada usa hash de amostra já existente."}
-    headers = {"Accept": "application/json"}
-    if CUCKOO_API_KEY:
-        headers["Authorization"] = f"Bearer {CUCKOO_API_KEY}"
-    try:
-        path_kind = kind.lower()
-        res = requests.get(f"{CUCKOO_API_URL.rstrip('/')}/files/view/{path_kind}/{value}", headers=headers, timeout=12)
-        if res.status_code == 200:
-            return res.json()
-        if res.status_code == 404:
-            return {"message": "Hash não encontrado na instância Cuckoo configurada."}
-        return {"error": f"Cuckoo HTTP {res.status_code}: {res.text[:300]}"}
-    except requests.RequestException as exc:
-        return {"error": f"Falha de comunicação com Cuckoo: {exc}"}
 
 
 def render_osint_unified_report(query_value, query_kind, results):
@@ -1401,12 +1490,6 @@ def render_osint_unified_report(query_value, query_kind, results):
         if isinstance(breaches, dict):
             breaches = breaches.get("breaches_details") or breaches.get("breaches") or []
         st.metric("Vazamentos encontrados", len(breaches) if isinstance(breaches, list) else 0)
-    ck = results.get("Cuckoo", {})
-    if isinstance(ck, dict) and (query_kind in {"MD5","SHA1","SHA256"}):
-        st.markdown("#### 🦠 Cuckoo Sandbox")
-        if "error" in ck: st.warning(ck["error"])
-        elif "message" in ck: st.info(ck["message"])
-        else: st.json(ck)
     with st.expander("🔍 JSON consolidado (debug)"):
         st.json(results)
 
@@ -1429,7 +1512,7 @@ def check_xposedornot_analytics(email):
 
 
 # -----------------------------------------------------------------------------
-# 7. NAVEGAÇÃO POR ABAS OPERACIONAIS
+# 7. NAVEGAÇÃO POR ABAS OPERACIONAIS (SEM A ABA MANUAL)
 # -----------------------------------------------------------------------------
 (
     tab_extrator,
@@ -1439,23 +1522,23 @@ def check_xposedornot_analytics(email):
     tab_greynoise,
     tab_vazamento,
     tab_osint,
-    tab_cross_intel,
+    tab_cross,
 ) = st.tabs([
-    "🔍 Extrator de IOCs",
-    "🛡️ AbuseIPDB",
-    "🎯 Central de Hipóteses",
-    "🌐 urlscan.io",
-    "📡 GreyNoise",
-    "🔓 Vazamento-Email",
-    "🧭 APT-Hunter & OSINT",
-    "🔗 Cross-Intel",
+    lang["tab_extrator"],
+    lang["tab_abuseipdb"],
+    lang["tab_hypotheses"],
+    lang["tab_urlscan"],
+    lang["tab_greynoise"],
+    lang["tab_vazamento"],
+    lang["tab_osint"],
+    lang["tab_cross"],
 ])
 
 # =============================================================================
 # ABA 1: EXTRATOR DE IOCs
 # =============================================================================
 with tab_extrator:
-    st.header("🔍 Extrator de IOCs")
+    st.header(lang["tab_extrator"])
     raw_text = st.text_area("Cole os IOCs para análise e banimentos (IP, Domain, MD5, SHA256):", height=120)
 
     def extract_iocs(text):
@@ -1522,10 +1605,10 @@ with tab_extrator:
             st.dataframe(pd.DataFrame(ip_data), column_config={"Link VT": st.column_config.LinkColumn("VT ↗")}, use_container_width=True, hide_index=True)
 
 # =============================================================================
-# ABA 2: ABUSEIPDB (CONSULTA INDIVIDUAL)
+# ABA 2: ABUSEIPDB
 # =============================================================================
 with tab_abuseipdb:
-    st.header("🛡️ AbuseIPDB - Consulta Individual de IP")
+    st.header(lang["tab_abuseipdb"])
     st.caption("Verifique a reputação de um endereço IP específico na base do AbuseIPDB.")
     if not ABUSE_API_KEY:
         st.warning("🔑 É necessária uma API Key do AbuseIPDB para consultas. Cadastre na barra lateral.")
@@ -1559,7 +1642,7 @@ with tab_abuseipdb:
 # ABA 3: CENTRAL DE HIPÓTESES
 # =============================================================================
 with tab_hypotheses:
-    st.header("🎯 Central de Hipóteses de Threat Hunting")
+    st.header(lang["tab_hypotheses"])
     st.caption("Cadastre e gerencie hipóteses de caça baseadas no framework MITRE ATT&CK.")
     if "hypotheses_db" not in st.session_state:
         st.session_state["hypotheses_db"] = []
@@ -1605,7 +1688,7 @@ with tab_hypotheses:
 # ABA 4: URLSCAN.IO
 # =============================================================================
 with tab_urlscan:
-    st.header("🌐 urlscan.io - Análise de URLs")
+    st.header(lang["tab_urlscan"])
     st.caption("Submeta URLs suspeitas para verificação dinâmica, requisições HTTP e screenshots.")
     if URLSCAN_API_KEY:
         st.success("🔑 **Modo Autenticado:** usando sua API Key — cota completa de envios e buscas.")
@@ -1668,7 +1751,7 @@ with tab_urlscan:
 # ABA 5: GREYNOISE
 # =============================================================================
 with tab_greynoise:
-    st.header("📡 GreyNoise - Filtro de Ruído da Internet")
+    st.header(lang["tab_greynoise"])
     st.caption("Descubra se o IP examinado é um scanner inofensivo conhecido, botnet ou IP malicioso.")
     if not GREYNOISE_API_KEY:
         st.info("ℹ️ **Modo Comunitário Gratuito Ativo:** Exibindo dados básicos. Adicione uma API Key na barra lateral para habilitar todos os campos enriquecidos.")
@@ -1694,7 +1777,7 @@ with tab_greynoise:
 # ABA 6: VAZAMENTO-EMAIL (XposedOrNot)
 # =============================================================================
 with tab_vazamento:
-    st.header("🔓 Vazamento-Email (XposedOrNot)")
+    st.header(lang["tab_vazamento"])
     st.caption("Consulte credenciais expostas e vazamentos públicos de dados sem a necessidade de chave de API.")
     target_email = st.text_input("Endereço de e-mail para investigação:", placeholder="usuario@empresa.com", key="xon_email_input")
     if st.button("🔍 Verificar Vazamentos", type="primary"):
@@ -1750,9 +1833,9 @@ with tab_vazamento:
 # ABA 7: APT-HUNTER & OSINT
 # =============================================================================
 with tab_osint:
-    st.header("🧭 APT-Hunter & OSINT")
+    st.header(lang["tab_osint"])
     st.caption("Consulta unificada: informe um IP, domínio, URL, hash, e-mail ou CVE e a aplicação executará todas as integrações compatíveis.")
-    st.info("A consulta automática usa somente integrações que realmente retornam dados: VirusTotal, AbuseIPDB, GreyNoise, urlscan.io, Shodan InternetDB, ip-api.com, BotScout, XposedOrNot, e Cuckoo (se configurado).")
+    st.info("A consulta automática usa somente integrações que realmente retornam dados: VirusTotal, AbuseIPDB, GreyNoise, urlscan.io, Shodan InternetDB, ip-api.com, BotScout, XposedOrNot.")
     query_value = st.text_input("🔎 Indicador para investigação:", placeholder="Ex.: 8.8.8.8 | exemplo.com | https://exemplo.com | SHA256 | usuario@empresa.com | CVE-2024-21410", key="osint_unified_query")
     auto_kind = detect_osint_query_type(query_value)
     st.caption(f"Tipo detectado automaticamente: **{auto_kind}**")
@@ -1789,8 +1872,6 @@ with tab_osint:
                         if kind == "EMAIL":
                             futures["BotScout"] = executor.submit(check_botscout_email, raw)
                             futures["XposedOrNot"] = executor.submit(check_xposedornot_analytics, raw)
-                        if kind in {"MD5", "SHA1", "SHA256"} and CUCKOO_API_URL:
-                            futures["Cuckoo"] = executor.submit(query_cuckoo_hash, raw, kind)
                         unified = {}
                         for source, future in futures.items():
                             try:
@@ -1804,10 +1885,10 @@ with tab_osint:
         render_osint_unified_report(last["value"], last["kind"], last["results"])
 
 # =============================================================================
-# ABA 8: CRUZAMENTO DE INTELIGÊNCIA (CROSS-INTEL)
+# ABA 8: CROSS-INTEL
 # =============================================================================
-with tab_cross_intel:
-    st.header("🔗 Cruzamento de Inteligência (IP)")
+with tab_cross:
+    st.header(lang["tab_cross"])
     st.caption("Consulte simultaneamente VirusTotal, AbuseIPDB, GreyNoise e urlscan.io para obter um contexto unificado da ameaça.")
     st.caption("🟢 GreyNoise, urlscan.io, Shodan InternetDB e ip-api.com funcionam mesmo sem chave. VT e AbuseIPDB exigem chave própria.")
     cross_ip = st.text_input("Insira o indicador para correlação:", placeholder="IP, domínio, URL, hash, e-mail ou CVE", key="cross_ip_input")
@@ -2045,8 +2126,8 @@ with tab_cross_intel:
 # -----------------------------------------------------------------------------
 # 8. RODAPÉ
 # -----------------------------------------------------------------------------
-st.markdown("""
+st.markdown(f"""
     <div class="footer-text">
-        CTRDEFENSE.BLOG &copy; 2026 | Cyber Threat Research - Caçador de Ameaças V3.5
+        {lang["footer"]}
     </div>
 """, unsafe_allow_html=True)
