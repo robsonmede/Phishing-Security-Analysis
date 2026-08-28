@@ -15,7 +15,7 @@ import streamlit as st
 # 1. CONFIGURAÇÃO DA PÁGINA
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="Cyber Threat Research - Caçador de Ameaças V3.4",
+    page_title="Cyber Threat Research - Caçador de Ameaças V3.0",
     page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -210,6 +210,11 @@ with st.sidebar:
     user_urlscan_key = st.text_input("urlscan.io API Key:", value=st.session_state.get("urlscan_key_input", def_urlscan), type="password", key="urlscan_key_input")
     user_greynoise_key = st.text_input("GreyNoise API Key (Business/Enterprise):", value=st.session_state.get("greynoise_key_input", def_greynoise), type="password", key="greynoise_key_input")
     user_attackerkb_key = st.text_input("AttackerKB API Key:", value=st.session_state.get("attackerkb_key_input", def_attackerkb), type="password", key="attackerkb_key_input")
+    user_botscout_key = st.text_input("BotScout API Key (opcional):", value=st.session_state.get("botscout_key_input", def_botscout), type="password", key="botscout_key_input")
+    user_cuckoo_url = st.text_input("Cuckoo API URL (opcional):", value=st.session_state.get("cuckoo_url_input", def_cuckoo_url), key="cuckoo_url_input", placeholder="http://127.0.0.1:8090")
+    user_cuckoo_key = st.text_input("Cuckoo API Key (opcional):", value=st.session_state.get("cuckoo_key_input", def_cuckoo_key), type="password", key="cuckoo_key_input")
+    user_theharvester_url = st.text_input("theHarvester REST API URL (opcional):", value=st.session_state.get("theharvester_url_input", def_theharvester_url), key="theharvester_url_input", placeholder="http://127.0.0.1:5000")
+    user_theharvester_key = st.text_input("theHarvester API Key (opcional):", value=st.session_state.get("theharvester_key_input", def_theharvester_key), type="password", key="theharvester_key_input")
 
     col_btn1, col_btn2 = st.columns(2)
     with col_btn1:
@@ -255,7 +260,7 @@ THEHARVESTER_API_KEY = st.session_state.get("active_theharvester_key", st.sessio
 # -----------------------------------------------------------------------------
 # 4. HEADER DA APLICAÇÃO & STATUS DA API
 # -----------------------------------------------------------------------------
-st.markdown('<div class="main-header">🛡️ Cyber Threat Research - Caçador de Ameaças V3.4</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header">🛡️ Cyber Threat Research - Caçador de Ameaças V3.0</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-header">Threat Hunting, Detection Engineering & Dynamic Threat Mapping</div>', unsafe_allow_html=True)
 
 status_cols = st.columns(9)
