@@ -15,7 +15,7 @@ import streamlit as st
 # 1. CONFIGURAÇÃO DA PÁGINA
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="Cyber Threat Research - Caçador de Ameaças V3.0",
+    page_title="Cyber Threat Research - Caçador de Ameaças V3.5",
     page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -136,8 +136,6 @@ st.markdown("""
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* Campo compacto (usado para País/Cidade/IP/AS) — fonte bem menor que st.metric,
-           que renderiza valores grandes demais para textos como nomes de país. */
         .mini-field {
             background: rgba(15, 23, 42, 0.55);
             border: 1px solid rgba(51, 65, 85, 0.5);
@@ -166,7 +164,6 @@ st.markdown("""
             margin-top: 1px;
         }
 
-        /* Badge para indicar fontes que funcionam sem chave de API */
         .no-key-badge {
             display: inline-block;
             font-family: 'JetBrains Mono', monospace;
@@ -177,6 +174,27 @@ st.markdown("""
             border-radius: 999px;
             padding: 1px 8px;
             margin-left: 6px;
+        }
+
+        .home-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            border-radius: 8px;
+            color: #00f2fe;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .home-button:hover {
+            border-color: #00f2fe;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+            transform: translateY(-2px);
         }
     </style>
 """, unsafe_allow_html=True)
@@ -198,23 +216,17 @@ with st.sidebar:
     def_abuse = get_secret("ABUSEIPDB_API_KEY")
     def_urlscan = get_secret("URLSCAN_API_KEY")
     def_greynoise = get_secret("GREYNOISE_API_KEY")
-    def_attackerkb = get_secret("ATTACKERKB_API_KEY")
     def_botscout = get_secret("BOTSCOUT_API_KEY")
     def_cuckoo_url = get_secret("CUCKOO_API_URL")
     def_cuckoo_key = get_secret("CUCKOO_API_KEY")
-    def_theharvester_url = get_secret("THEHARVESTER_API_URL")
-    def_theharvester_key = get_secret("THEHARVESTER_API_KEY")
 
     user_vt_key = st.text_input("VirusTotal API Key:", value=st.session_state.get("vt_key_input", def_vt), type="password", key="vt_key_input")
     user_abuse_key = st.text_input("AbuseIPDB API Key:", value=st.session_state.get("abuse_key_input", def_abuse), type="password", key="abuse_key_input")
     user_urlscan_key = st.text_input("urlscan.io API Key:", value=st.session_state.get("urlscan_key_input", def_urlscan), type="password", key="urlscan_key_input")
     user_greynoise_key = st.text_input("GreyNoise API Key (Business/Enterprise):", value=st.session_state.get("greynoise_key_input", def_greynoise), type="password", key="greynoise_key_input")
-    user_attackerkb_key = st.text_input("AttackerKB API Key:", value=st.session_state.get("attackerkb_key_input", def_attackerkb), type="password", key="attackerkb_key_input")
     user_botscout_key = st.text_input("BotScout API Key (opcional):", value=st.session_state.get("botscout_key_input", def_botscout), type="password", key="botscout_key_input")
     user_cuckoo_url = st.text_input("Cuckoo API URL (opcional):", value=st.session_state.get("cuckoo_url_input", def_cuckoo_url), key="cuckoo_url_input", placeholder="http://127.0.0.1:8090")
     user_cuckoo_key = st.text_input("Cuckoo API Key (opcional):", value=st.session_state.get("cuckoo_key_input", def_cuckoo_key), type="password", key="cuckoo_key_input")
-    user_theharvester_url = st.text_input("theHarvester REST API URL (opcional):", value=st.session_state.get("theharvester_url_input", def_theharvester_url), key="theharvester_url_input", placeholder="http://127.0.0.1:5000")
-    user_theharvester_key = st.text_input("theHarvester API Key (opcional):", value=st.session_state.get("theharvester_key_input", def_theharvester_key), type="password", key="theharvester_key_input")
 
     col_btn1, col_btn2 = st.columns(2)
     with col_btn1:
@@ -223,24 +235,22 @@ with st.sidebar:
             st.session_state["active_abuse_key"] = user_abuse_key
             st.session_state["active_urlscan_key"] = user_urlscan_key
             st.session_state["active_greynoise_key"] = user_greynoise_key
-            st.session_state["active_attackerkb_key"] = user_attackerkb_key
             st.session_state["active_botscout_key"] = user_botscout_key
             st.session_state["active_cuckoo_url"] = user_cuckoo_url
             st.session_state["active_cuckoo_key"] = user_cuckoo_key
-            st.session_state["active_theharvester_url"] = user_theharvester_url
-            st.session_state["active_theharvester_key"] = user_theharvester_key
             st.success("Salvas!")
             st.rerun()
 
     with col_btn2:
         if st.button("🗑️ Limpar", use_container_width=True):
-            for k in ["vt_key_input", "abuse_key_input", "urlscan_key_input", "greynoise_key_input",
-                      "attackerkb_key_input", "botscout_key_input", "cuckoo_url_input", "cuckoo_key_input",
-                      "theharvester_url_input", "theharvester_key_input",
-                      "active_vt_key", "active_abuse_key", "active_urlscan_key", "active_greynoise_key",
-                      "active_attackerkb_key", "active_botscout_key", "active_cuckoo_url", "active_cuckoo_key",
-                      "active_theharvester_url", "active_theharvester_key"]:
-                st.session_state[k] = ""
+            # Limpar corretamente as chaves, removendo-as do session_state
+            keys_to_clear = ["vt_key_input", "abuse_key_input", "urlscan_key_input",
+                            "greynoise_key_input", "botscout_key_input", "cuckoo_url_input", "cuckoo_key_input",
+                            "active_vt_key", "active_abuse_key", "active_urlscan_key", "active_greynoise_key",
+                            "active_botscout_key", "active_cuckoo_url", "active_cuckoo_key"]
+            for k in keys_to_clear:
+                if k in st.session_state:
+                    del st.session_state[k]  # remover completamente para forçar default
             st.warning("Removidas!")
             st.rerun()
 
@@ -250,20 +260,23 @@ VT_API_KEY = st.session_state.get("active_vt_key", st.session_state.get("vt_key_
 ABUSE_API_KEY = st.session_state.get("active_abuse_key", st.session_state.get("abuse_key_input", def_abuse))
 URLSCAN_API_KEY = st.session_state.get("active_urlscan_key", st.session_state.get("urlscan_key_input", def_urlscan))
 GREYNOISE_API_KEY = st.session_state.get("active_greynoise_key", st.session_state.get("greynoise_key_input", def_greynoise))
-ATTACKERKB_API_KEY = st.session_state.get("active_attackerkb_key", st.session_state.get("attackerkb_key_input", def_attackerkb))
 BOTSCOUT_API_KEY = st.session_state.get("active_botscout_key", st.session_state.get("botscout_key_input", def_botscout))
 CUCKOO_API_URL = st.session_state.get("active_cuckoo_url", st.session_state.get("cuckoo_url_input", def_cuckoo_url)).strip().rstrip("/")
 CUCKOO_API_KEY = st.session_state.get("active_cuckoo_key", st.session_state.get("cuckoo_key_input", def_cuckoo_key))
-THEHARVESTER_API_URL = st.session_state.get("active_theharvester_url", st.session_state.get("theharvester_url_input", def_theharvester_url)).strip().rstrip("/")
-THEHARVESTER_API_KEY = st.session_state.get("active_theharvester_key", st.session_state.get("theharvester_key_input", def_theharvester_key))
 
 # -----------------------------------------------------------------------------
 # 4. HEADER DA APLICAÇÃO & STATUS DA API
 # -----------------------------------------------------------------------------
-st.markdown('<div class="main-header">🛡️ Cyber Threat Research - Caçador de Ameaças V3.0</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header">🛡️ Cyber Threat Research - Caçador de Ameaças V3.5</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-header">Threat Hunting, Detection Engineering & Dynamic Threat Mapping</div>', unsafe_allow_html=True)
 
-status_cols = st.columns(9)
+# Botão Home
+if st.button("🏠 Home", key="home_button"):
+    # Limpar estados de navegação ou filtros, se houver, e recarregar
+    st.session_state.clear()  # limpa todos os estados
+    st.rerun()
+
+status_cols = st.columns(7)
 status_cols[0].caption("🟢 VT (chave)" if VT_API_KEY else "🟡 VT (fallback OSINT)")
 status_cols[1].caption("🟢 AbuseIPDB (chave)" if ABUSE_API_KEY else "🟡 AbuseIPDB (fallback OSINT)")
 status_cols[2].caption("🟢 urlscan (chave)" if URLSCAN_API_KEY else "🟢 urlscan (sem chave)")
@@ -271,8 +284,6 @@ status_cols[3].caption("🟢 GreyNoise (Business)" if GREYNOISE_API_KEY else "�
 status_cols[4].caption("🟢 XposedOrNot (Free)")
 status_cols[5].caption("🟢 Shodan InternetDB (sem chave)")
 status_cols[6].caption("🟢 ip-api.com (sem chave)")
-status_cols[7].caption("🟢 AttackerKB" if ATTACKERKB_API_KEY else "🟡 AttackerKB")
-status_cols[8].caption("🟢 BotScout" if BOTSCOUT_API_KEY else "🟡 BotScout (quota)")
 
 if not VT_API_KEY or not ABUSE_API_KEY:
     st.caption(
@@ -329,10 +340,6 @@ def is_valid_ipv4(ip_address):
 
 
 def render_country_field(container, label, value, extra=""):
-    """Exibe um campo curto (País, Cidade, IP, AS...) com fonte reduzida.
-    st.metric renderiza valores em fonte grande (pensada para números), o que
-    fica desproporcional para textos como nomes de país — por isso usamos um
-    cartão HTML compacto (.mini-field) no lugar de st.metric nesses casos."""
     extra_html = f'<div class="mini-field-extra">{extra}</div>' if extra else ""
     container.markdown(
         f"""<div class="mini-field">
@@ -344,23 +351,7 @@ def render_country_field(container, label, value, extra=""):
     )
 
 
-# -----------------------------------------------------------------------------
-# 6.1 FONTES OSINT 100% SEM CHAVE DE API (FALLBACK AUTOMÁTICO)
-# -----------------------------------------------------------------------------
-# VirusTotal e AbuseIPDB exigem, por definição do próprio provedor, uma API Key
-# (gratuita) para qualquer consulta — não existe endpoint público oficial sem
-# chave para essas duas fontes. Para que a ferramenta continue útil mesmo sem
-# nenhuma chave cadastrada, usamos automaticamente duas fontes OSINT que são
-# genuinamente gratuitas e não exigem cadastro nem chave:
-#   • Shodan InternetDB  -> portas abertas, CVEs, hostnames e tags do IP
-#   • ip-api.com         -> geolocalização, ASN/ISP e sinalização de proxy/hosting
-# GreyNoise (Community API) e urlscan.io (cota anônima) também funcionam sem
-# chave e já são tratados nas seções abaixo.
-
 def check_shodan_internetdb(ip_address):
-    """Consulta a Shodan InternetDB (https://internetdb.shodan.io) — gratuita,
-    sem necessidade de conta ou API key. Retorna portas abertas, CPEs,
-    hostnames, tags e CVEs associados ao IP."""
     if not is_valid_ipv4(ip_address):
         return {"error": "IPv4 inválido."}
     try:
@@ -377,8 +368,6 @@ def check_shodan_internetdb(ip_address):
 
 
 def check_ip_api_geo(ip_address):
-    """Consulta o ip-api.com (endpoint gratuito, sem chave, ~45 req/min) para
-    geolocalização, ASN/ISP e sinalização de proxy/hosting/mobile do IP."""
     if not is_valid_ipv4(ip_address):
         return {"error": "IPv4 inválido."}
     try:
@@ -401,9 +390,6 @@ def check_ip_api_geo(ip_address):
 
 
 def get_free_ip_context(ip_address):
-    """Combina Shodan InternetDB + ip-api.com em um único contexto OSINT
-    'sem chave', usado como complemento (ou substituto) do VirusTotal/AbuseIPDB
-    quando essas chaves não estão configuradas."""
     shodan_data = check_shodan_internetdb(ip_address)
     geo_data = check_ip_api_geo(ip_address)
 
@@ -436,7 +422,6 @@ def get_free_ip_context(ip_address):
     }
 
 
-# --- VirusTotal ---
 def get_vt_data(endpoint, item_id):
     if not VT_API_KEY:
         return {"error": "Chave API não configurada"}
@@ -487,7 +472,6 @@ def parse_vt_details(vt_response):
         else:
             verdict = f"✅ Limpo ({harmless}/{total})"
 
-        # Motores AV/engines que sinalizaram o indicador (útil para IPs e hashes)
         malicious_engines = [
             engine for engine, res in (attrs.get("last_analysis_results", {}) or {}).items()
             if isinstance(res, dict) and res.get("category") in ("malicious", "suspicious")
@@ -529,8 +513,6 @@ def parse_vt_details(vt_response):
         base.update(_VT_IP_DEFAULTS)
         return base
 
-# --- AbuseIPDB ---
-# Categorias oficiais de report do AbuseIPDB (id -> nome), usadas para resumir os motivos dos reports.
 ABUSEIPDB_CATEGORIES = {
     1: "DNS Compromise", 2: "DNS Poisoning", 3: "Fraud Orders", 4: "DDoS Attack",
     5: "FTP Brute-Force", 6: "Ping of Death", 7: "Phishing", 8: "Fraud VoIP",
@@ -553,15 +535,12 @@ def check_abuseipdb(ip_address):
         response = requests.get(url, headers=headers, params=params, timeout=8)
         if response.status_code == 200:
             data = response.json()["data"]
-
-            # Resume as categorias mais reportadas a partir dos reports individuais (modo verbose)
             category_counts = {}
             for rep in data.get("reports", []) or []:
                 for cat_id in rep.get("categories", []) or []:
                     name = ABUSEIPDB_CATEGORIES.get(cat_id, f"Categoria {cat_id}")
                     category_counts[name] = category_counts.get(name, 0) + 1
             top_categories = sorted(category_counts.items(), key=lambda kv: kv[1], reverse=True)[:5]
-
             return {
                 "score": f"{data.get('abuseConfidenceScore', 0)}%",
                 "score_raw": data.get("abuseConfidenceScore", 0),
@@ -585,23 +564,18 @@ def check_abuseipdb(ip_address):
     except Exception as e:
         return {"error": str(e)}
 
-# --- GreyNoise (Community e API autenticada v3) ---
+
 def check_greynoise(ip_address):
     if not is_valid_ipv4(ip_address):
         return {"error": "IPv4 inválido."}
-
     if GREYNOISE_API_KEY:
-        # API v3 autenticada: /v3/ip/{ip}
         url = f"https://api.greynoise.io/v3/ip/{ip_address}"
         headers = {"Accept": "application/json", "key": GREYNOISE_API_KEY}
     else:
-        # Community API: /v3/community/{ip}
         url = f"https://api.greynoise.io/v3/community/{ip_address}"
         headers = {"Accept": "application/json"}
-
     try:
         res = requests.get(url, headers=headers, timeout=10)
-
         if res.status_code == 200:
             return res.json()
         if res.status_code == 400:
@@ -614,14 +588,12 @@ def check_greynoise(ip_address):
             return {"message": "IP não catalogado no GreyNoise."}
         if res.status_code == 429:
             return {"error": "Limite de requisições atingido no GreyNoise."}
-
         return {"error": f"HTTP {res.status_code}: {res.text[:300]}"}
     except requests.RequestException as exc:
         return {"error": f"Falha de comunicação com GreyNoise: {exc}"}
 
 
 def _gn_tag_names(tags):
-    """Normaliza 'internet_scanner_intelligence.tags': lista de objetos {name, slug, ...} na API completa."""
     names = []
     for t in tags or []:
         if isinstance(t, dict):
@@ -632,25 +604,16 @@ def _gn_tag_names(tags):
 
 
 def extract_greynoise_report(gn_res):
-    """Normaliza a resposta do GreyNoise em uma estrutura única para renderização.
-
-    A API v3 autenticada (Business/Enterprise) devolve os dados aninhados em
-    'internet_scanner_intelligence' e 'business_service_intelligence'; a Community API
-    (sem chave) devolve um payload achatado (ip, noise, riot, classification...).
-    Tratamos os dois formatos para não quebrar a exibição conforme o modo de acesso.
-    """
     if "internet_scanner_intelligence" in gn_res or "business_service_intelligence" in gn_res:
         isi = gn_res.get("internet_scanner_intelligence", {}) or {}
         bsi = gn_res.get("business_service_intelligence", {}) or {}
         meta = isi.get("metadata", {}) or {}
         raw = isi.get("raw_data", {}) or {}
-
         found_scanner = bool(isi.get("found"))
         found_business = bool(bsi.get("found"))
         classification = (isi.get("classification") or "").strip()
         if not classification:
             classification = "benign" if found_business else ("unknown" if not found_scanner else "unknown")
-
         return {
             "mode": "full",
             "ip": gn_res.get("ip", "N/D"),
@@ -693,8 +656,6 @@ def extract_greynoise_report(gn_res):
             "business_trust_level": bsi.get("trust_level") or "N/D",
             "link": f"https://viz.greynoise.io/ip/{gn_res.get('ip', '')}",
         }
-
-    # Community API (payload achatado)
     return {
         "mode": "community",
         "ip": gn_res.get("ip", "N/D"),
@@ -708,11 +669,7 @@ def extract_greynoise_report(gn_res):
 
 
 def render_greynoise_report(gn_res, queried_ip):
-    """Renderiza um relatório rico do GreyNoise: classificação, comportamento de rede,
-    tags com contexto, CVEs, alvos de escaneamento e (quando disponível) o serviço
-    de negócio legítimo por trás do IP — em vez de apenas alguns campos soltos."""
     report = extract_greynoise_report(gn_res)
-
     classification = (report.get("classification") or "unknown").lower()
     if classification == "malicious":
         label, level = "🔴 MALICIOSO", "error"
@@ -722,10 +679,8 @@ def render_greynoise_report(gn_res, queried_ip):
         label, level = "🟢 BENIGNO", "success"
     else:
         label, level = "⚪ SEM CLASSIFICAÇÃO / NÃO OBSERVADO", "info"
-
     st.subheader("📊 Classificação e Resumo")
     getattr(st, level)(f"**{label}**  ·  IP `{report['ip']}`")
-
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Noise (Scanner)", "Sim" if report.get("found_scanner") else "Não")
     col2.metric("Business Service (RIOT)", "Sim" if report.get("found_business") else "Não")
@@ -735,7 +690,6 @@ def render_greynoise_report(gn_res, queried_ip):
     else:
         col3.metric("Ator Conhecido", report.get("actor", "N/D"))
         col4.metric("Last Seen", report.get("last_seen", "N/D"))
-
     if report["mode"] == "community":
         st.info(
             "ℹ️ Exibindo dados da **Community API** (gratuita). Campos como organização, ASN, "
@@ -748,8 +702,6 @@ def render_greynoise_report(gn_res, queried_ip):
         with st.expander("🔍 Ver JSON bruto"):
             st.json(gn_res)
         return
-
-    # --- Modo completo (Business/Enterprise) ---
     st.markdown("### 📋 Perfil do Indicador")
     p1, p2 = st.columns(2)
     with p1:
@@ -764,10 +716,7 @@ def render_greynoise_report(gn_res, queried_ip):
         st.markdown(f"**🏙️ Cidade:** `{report['city']}`")
         st.markdown(f"**📅 First Seen:** `{report['first_seen']}`  ·  **Last Seen:** `{report['last_seen']}`")
         st.markdown(f"**📡 Sensor Count:** `{report['sensor_count']}`  ·  **Sensor Hits:** `{report['sensor_hits']}`")
-
     st.divider()
-
-    # --- Comportamento de rede ---
     st.markdown("### 🕵️ Comportamento de Rede")
     b1, b2, b3, b4, b5 = st.columns(5)
     b1.metric("Spoofable", "Sim" if report.get("spoofable") else "Não")
@@ -777,10 +726,7 @@ def render_greynoise_report(gn_res, queried_ip):
     b5.metric("Dispositivo Móvel", "Sim" if report.get("mobile") else "Não")
     if report.get("vpn") and report.get("vpn_service"):
         st.caption(f"🔒 Serviço de VPN identificado: **{report['vpn_service']}**")
-
     st.divider()
-
-    # --- Tags & CVEs ---
     st.markdown("### 🏷️ Tags de Comportamento")
     tags_detail = report.get("tags_detail") or []
     if tags_detail:
@@ -805,27 +751,20 @@ def render_greynoise_report(gn_res, queried_ip):
         st.markdown(tags_html, unsafe_allow_html=True)
     else:
         st.caption("Nenhuma tag de comportamento associada a este IP.")
-
     if report.get("cves"):
         st.markdown(f"**⚠️ CVEs Ativamente Exploradas por este IP:** `{', '.join(report['cves'])}`")
-
     st.divider()
-
-    # --- Alvos do escaneamento (para onde este IP costuma apontar) ---
     st.markdown("### 🎯 Alvos Observados do Escaneamento")
     t1, t2, t3 = st.columns(3)
     t1.metric("Destino Único?", "Sim" if report.get("single_destination") else "Não")
     t2.metric("Países-Alvo", ", ".join(report.get("destination_countries") or []) or "N/D")
     t3.metric("ASNs-Alvo", ", ".join(report.get("destination_asns") or []) or "N/D")
-
     if report.get("scanned_ports"):
         st.caption("🔌 Portas/protocolos observados na varredura: " + ", ".join(str(p) for p in report["scanned_ports"][:20]))
     if report.get("useragents"):
         with st.expander("🧾 User-Agents observados nas requisições deste IP"):
             for ua in report["useragents"][:15]:
                 st.code(str(ua), language="text")
-
-    # --- Business Service Intelligence (RIOT) ---
     if report.get("found_business"):
         st.divider()
         st.markdown("### 🏢 Serviço Empresarial Conhecido (Business Service Intelligence)")
@@ -837,42 +776,23 @@ def render_greynoise_report(gn_res, queried_ip):
             st.caption(report["business_description"])
         if report.get("business_explanation"):
             st.caption(f"ℹ️ {report['business_explanation']}")
-
     st.divider()
     st.markdown(f"🔗 [Visualizar relatório completo no GreyNoise Viz]({report['link']})")
-
     with st.expander("🔍 Ver JSON bruto completo (debug)"):
         st.json(gn_res)
 
 
-# --- urlscan.io ---
 def submit_urlscan(target_url):
-    """Envia uma URL para varredura assíncrona no urlscan.io.
-    A submissão só retorna o UUID da tarefa: o resultado completo precisa
-    ser consultado depois, via get_urlscan_result / poll_urlscan_result.
-
-    O urlscan.io documenta oficialmente que usuários sem API Key também podem
-    submeter e buscar scans, apenas com cotas bem menores ('unauthenticated
-    users only received minor quotas'). Por isso, aqui NÃO exigimos mais uma
-    chave: se ela existir usamos, senão enviamos de forma anônima com
-    visibilidade pública (obrigatória para submissões sem chave)."""
     target_url = target_url.strip()
     parsed = urllib.parse.urlparse(target_url)
     if parsed.scheme not in {"http", "https"} or not parsed.netloc:
         return {"error": "URL inválida. Use uma URL completa, por exemplo: https://exemplo.com"}
-
     headers = {"Content-Type": "application/json"}
     if URLSCAN_API_KEY:
         headers["API-Key"] = URLSCAN_API_KEY
     data = {"url": target_url, "visibility": "public"}
-
     try:
-        response = requests.post(
-            "https://urlscan.io/api/v1/scan/",
-            headers=headers,
-            json=data,
-            timeout=15,
-        )
+        response = requests.post("https://urlscan.io/api/v1/scan/", headers=headers, json=data, timeout=15)
         if response.status_code == 200:
             try:
                 return response.json()
@@ -893,19 +813,11 @@ def submit_urlscan(target_url):
 
 
 def search_urlscan(query, size=10):
-    """Busca scans já existentes no urlscan.io (Search API). Também funciona
-    sem API Key (cota anônima menor), o que permite obter contexto de um IP
-    ou domínio mesmo sem nenhuma chave cadastrada."""
     headers = {"Accept": "application/json"}
     if URLSCAN_API_KEY:
         headers["API-Key"] = URLSCAN_API_KEY
     try:
-        response = requests.get(
-            "https://urlscan.io/api/v1/search/",
-            headers=headers,
-            params={"q": query, "size": size},
-            timeout=15,
-        )
+        response = requests.get("https://urlscan.io/api/v1/search/", headers=headers, params={"q": query, "size": size}, timeout=15)
         if response.status_code == 200:
             try:
                 return response.json()
@@ -919,19 +831,13 @@ def search_urlscan(query, size=10):
 
 
 def check_urlscan_by_ip(ip_address):
-    """Usa a Search API do urlscan.io (sem exigir chave) para encontrar scans
-    históricos cuja página foi servida a partir deste IP — útil no Cross-Intel
-    para correlacionar o IP investigado com sites/URLs já vistos por lá."""
     if not is_valid_ipv4(ip_address):
         return {"error": "IPv4 inválido."}
-
     search_res = search_urlscan(f'page.ip:"{ip_address}"', size=10)
     if "error" in search_res:
         return search_res
-
     hits = search_res.get("results", []) or []
     total = _dig(search_res, "total", default=len(hits))
-
     scans = []
     malicious_count = 0
     for hit in hits:
@@ -950,7 +856,6 @@ def check_urlscan_by_ip(ip_address):
             "result_url": hit.get("result") or (f"https://urlscan.io/result/{task.get('uuid', '')}/" if task.get("uuid") else ""),
             "screenshot": hit.get("screenshot"),
         })
-
     return {
         "total": total,
         "returned": len(scans),
@@ -961,13 +866,9 @@ def check_urlscan_by_ip(ip_address):
 
 
 def get_urlscan_result(scan_uuid):
-    """Consulta o resultado de um scan pelo UUID.
-    Enquanto o scan ainda está em processamento, o urlscan.io responde HTTP 404;
-    isso é sinalizado aqui como {'__pending__': True} para o chamador decidir se aguarda."""
     headers = {"Accept": "application/json"}
     if URLSCAN_API_KEY:
         headers["API-Key"] = URLSCAN_API_KEY
-
     url = f"https://urlscan.io/api/v1/result/{scan_uuid}/"
     try:
         response = requests.get(url, headers=headers, timeout=15)
@@ -987,41 +888,29 @@ def get_urlscan_result(scan_uuid):
         return {"error": f"Falha de comunicação com urlscan.io: {exc}"}
 
 
-def poll_urlscan_result(scan_uuid, status_placeholder=None, progress_bar=None,
-                         initial_wait=15, poll_interval=5, max_wait=90):
-    """Aguarda a finalização do scan seguindo a orientação oficial do urlscan.io:
-    esperar alguns segundos após o envio e então consultar em intervalos curtos
-    até finalizar ou atingir o tempo máximo de espera (evita martelar a API)."""
-
+def poll_urlscan_result(scan_uuid, status_placeholder=None, progress_bar=None, initial_wait=15, poll_interval=5, max_wait=90):
     def _update(elapsed, message):
         if status_placeholder is not None:
             status_placeholder.info(message)
         if progress_bar is not None:
             progress_bar.progress(min(elapsed / max_wait, 1.0))
-
     _update(0, f"⏳ Scan enviado. Aguardando {initial_wait}s para o processamento inicial...")
     time.sleep(initial_wait)
     elapsed = initial_wait
-
     while True:
         result = get_urlscan_result(scan_uuid)
         if not (isinstance(result, dict) and result.get("__pending__")):
             if progress_bar is not None:
                 progress_bar.progress(1.0)
             return result
-
         if elapsed >= max_wait:
             return {"error": "timeout"}
-
         _update(elapsed, f"⏳ Ainda processando no urlscan.io... ({elapsed}s / {max_wait}s)")
         time.sleep(poll_interval)
         elapsed += poll_interval
 
 
 def _dig(source, *keys, default=None):
-    """Percorre chaves aninhadas com segurança, tolerando dicionários ausentes/incompletos.
-    Campos do urlscan.io (especialmente em data.requests) vêm do próprio Chrome
-    e podem mudar de formato sem aviso — por isso tudo aqui é .get() defensivo."""
     current = source
     for key in keys:
         if isinstance(current, dict):
@@ -1047,8 +936,6 @@ def _format_scan_datetime(iso_ts):
 
 
 def _brand_names(brands):
-    """'verdicts.overall.brands' é uma lista de strings simples;
-    'verdicts.urlscan.brands' é uma lista de objetos {name, key, ...}. Tratamos os dois formatos."""
     names = []
     for b in brands or []:
         if isinstance(b, str):
@@ -1059,17 +946,14 @@ def _brand_names(brands):
 
 
 def extract_urlscan_verdict(result):
-    """Classification: consolida o veredito de ameaça a partir de verdicts.overall / verdicts.urlscan."""
     overall = _dig(result, "verdicts", "overall", default={}) or {}
     urlscan_v = _dig(result, "verdicts", "urlscan", default={}) or {}
-
     malicious = bool(overall.get("malicious"))
     score = overall.get("score", 0) or 0
     has_verdicts = overall.get("hasVerdicts", 0) or 0
     categories = overall.get("categories") or urlscan_v.get("categories") or []
     tags = overall.get("tags") or urlscan_v.get("tags") or []
     brands = _brand_names(overall.get("brands")) or _brand_names(urlscan_v.get("brands"))
-
     if malicious:
         label, level = "🔴 MALICIOSO", "error"
     elif score and score > 0:
@@ -1078,17 +962,14 @@ def extract_urlscan_verdict(result):
         label, level = "🟢 NENHUMA AMEAÇA DETECTADA", "success"
     else:
         label, level = "⚪ SEM CLASSIFICAÇÃO DISPONÍVEL", "info"
-
     return {"label": label, "level": level, "score": score, "categories": categories, "tags": tags, "brands": brands}
 
 
 def extract_urlscan_summary(result):
-    """Summary: visão geral da página escaneada."""
     task = result.get("task", {}) or {}
     page = result.get("page", {}) or {}
     stats = result.get("stats", {}) or {}
     requests_list = _dig(result, "data", "requests", default=[]) or []
-
     return {
         "title": page.get("title") or "(sem título)",
         "submitted_url": task.get("url", "N/D"),
@@ -1105,7 +986,6 @@ def extract_urlscan_summary(result):
 
 
 def extract_urlscan_location(result):
-    """Located / IP / AS: geolocalização e rede da requisição primária da página."""
     page = result.get("page", {}) or {}
     country = page.get("country", "") or ""
     return {
@@ -1121,11 +1001,7 @@ def extract_urlscan_location(result):
 
 
 def extract_urlscan_history(result):
-    """Page URL History: cadeia de redirecionamentos da URL submetida até a URL final.
-    Usa o campo oficial 'data.redirects' quando disponível; caso contrário, reconstrói
-    a partir das requisições de navegação/3xx em 'data.requests' (sempre presentes)."""
     history = []
-
     redirects = _dig(result, "data", "redirects", default=[])
     if isinstance(redirects, list) and redirects:
         for idx, hop in enumerate(redirects, start=1):
@@ -1138,7 +1014,6 @@ def extract_urlscan_history(result):
                 url, via = str(hop), "N/D"
             history.append({"#": idx, "URL": url, "Tipo": via})
         return history
-
     nav_hops = []
     for item in _dig(result, "data", "requests", default=[]) or []:
         if not isinstance(item, dict):
@@ -1147,7 +1022,6 @@ def extract_urlscan_history(result):
         req_inner = req.get("request", {}) or {}
         resp_inner = _dig(item, "response", "response", default={}) or {}
         status = resp_inner.get("status")
-
         is_navigation = req.get("type") == "Document"
         is_redirect_status = isinstance(status, int) and 300 <= status < 400
         if is_navigation or is_redirect_status:
@@ -1156,7 +1030,6 @@ def extract_urlscan_history(result):
                 "url": req_inner.get("url") or resp_inner.get("url") or "N/D",
                 "status": status,
             })
-
     nav_hops.sort(key=lambda h: h["timestamp"])
     seen = set()
     for hop in nav_hops:
@@ -1165,19 +1038,16 @@ def extract_urlscan_history(result):
         seen.add(hop["url"])
         tipo = f"HTTP {hop['status']}" if isinstance(hop["status"], int) else "Navegação"
         history.append({"#": len(history) + 1, "URL": hop["url"], "Tipo": tipo})
-
     if not history:
         task_url = result.get("task", {}).get("url", "N/D")
         page_url = result.get("page", {}).get("url", "N/D")
         history.append({"#": 1, "URL": task_url, "Tipo": "URL Submetida"})
         if page_url and page_url != task_url:
             history.append({"#": 2, "URL": page_url, "Tipo": "URL Final"})
-
     return history
 
 
 def extract_urlscan_transactions(result):
-    """HTTP Transactions: cada requisição/resposta feita durante o carregamento da página."""
     rows = []
     for idx, item in enumerate(_dig(result, "data", "requests", default=[]) or [], start=1):
         if not isinstance(item, dict):
@@ -1186,10 +1056,8 @@ def extract_urlscan_transactions(result):
         req_inner = req.get("request", {}) or {}
         resp = item.get("response", {}) or {}
         resp_inner = resp.get("response", {}) or {}
-
         status = resp_inner.get("status")
         size_bytes = resp.get("encodedDataLength", resp_inner.get("encodedDataLength"))
-
         rows.append({
             "#": idx,
             "Método": req_inner.get("method", "—"),
@@ -1207,18 +1075,13 @@ def extract_urlscan_transactions(result):
 
 
 def render_urlscan_report(result, target_scan_url):
-    """Renderiza o relatório completo do scan: Summary, Located, IP, Classification,
-    AS, Page URL History e HTTP Transactions — em vez do JSON bruto."""
     summary = extract_urlscan_summary(result)
     verdict = extract_urlscan_verdict(result)
     location = extract_urlscan_location(result)
     history = extract_urlscan_history(result)
     transactions = extract_urlscan_transactions(result)
-
-    # --- Summary ---
     st.subheader("🎯 Resumo (Summary)")
     getattr(st, verdict["level"])(f"**{verdict['label']}**  ·  Score de Maliciosidade: `{verdict['score']}`")
-
     extra_bits = []
     if verdict["categories"]:
         extra_bits.append("Categorias: " + ", ".join(str(c) for c in verdict["categories"]))
@@ -1228,22 +1091,17 @@ def render_urlscan_report(result, target_scan_url):
         extra_bits.append("Tags: " + ", ".join(str(t) for t in verdict["tags"]))
     if extra_bits:
         st.caption(" • ".join(extra_bits))
-
     m1, m2, m3, m4 = st.columns(4)
     m1.metric("Requisições HTTP", summary["total_requests"])
     m2.metric("Recursos Maliciosos", summary["malicious_resources"])
     m3.metric("Países Únicos", summary["unique_countries"])
     m4.metric("Houve Redirecionamento?", "Sim" if summary["redirected"] else "Não")
-
     st.markdown(f"**📄 Título da Página:** {summary['title']}")
     st.markdown(f"**🔗 URL Submetida:** `{summary['submitted_url']}`")
     st.markdown(f"**🏁 URL Final:** `{summary['final_url']}`")
     st.markdown(f"**🕒 Data/Hora do Scan:** {summary['scan_time']}")
     st.markdown(f"**📑 Relatório Completo no urlscan.io:** [{summary['report_url']}]({summary['report_url']})")
-
     st.divider()
-
-    # --- Located / IP / AS ---
     st.markdown("### 📍 Localização (Located) & Rede")
     l1, l2, l3, l4 = st.columns(4)
     render_country_field(l1, "País", f"{location['flag']} {location['country']}")
@@ -1251,40 +1109,23 @@ def render_urlscan_report(result, target_scan_url):
     render_country_field(l3, "IP", f"`{location['ip']}`")
     render_country_field(l4, "AS (ASN)", f"`{location['asn']}` · {location['asnname']}")
     st.caption(f"🖥️ Servidor (HTTP Server header): {location['server']}  ·  📛 PTR: {location['ptr']}")
-
     st.divider()
-
-    # --- Page URL History ---
     st.markdown("### 🧭 Histórico de URL da Página (Page URL History)")
     if history:
         st.dataframe(pd.DataFrame(history), use_container_width=True, hide_index=True)
     else:
         st.caption("Nenhum redirecionamento detectado — a URL carregou diretamente.")
-
     st.divider()
-
-    # --- HTTP Transactions ---
     st.markdown(f"### 📡 Transações HTTP (HTTP Transactions) — {len(transactions)} requisições capturadas")
     if transactions:
         df_tx = pd.DataFrame(transactions)
-        filter_txt = st.text_input(
-            "Filtrar transações por domínio/URL:",
-            key="urlscan_tx_filter",
-            placeholder="ex: googletagmanager.com",
-        )
+        filter_txt = st.text_input("Filtrar transações por domínio/URL:", key="urlscan_tx_filter", placeholder="ex: googletagmanager.com")
         if filter_txt:
             df_tx = df_tx[df_tx["URL"].str.contains(filter_txt, case=False, na=False, regex=False)]
         st.dataframe(df_tx, use_container_width=True, hide_index=True, height=380)
-        st.download_button(
-            "⬇️ Exportar Transações (CSV)",
-            df_tx.to_csv(index=False).encode("utf-8"),
-            file_name=f"urlscan_transactions_{urllib.parse.urlparse(target_scan_url).netloc or 'scan'}.csv",
-            mime="text/csv",
-        )
+        st.download_button("⬇️ Exportar Transações (CSV)", df_tx.to_csv(index=False).encode("utf-8"), file_name=f"urlscan_transactions_{urllib.parse.urlparse(target_scan_url).netloc or 'scan'}.csv", mime="text/csv")
     else:
         st.caption("Nenhuma transação HTTP foi capturada para esta página.")
-
-    # --- Screenshot (bônus, já prometido na descrição da aba) ---
     if summary.get("screenshot_url"):
         with st.expander("🖼️ Screenshot da Página Capturada"):
             try:
@@ -1296,12 +1137,10 @@ def render_urlscan_report(result, target_scan_url):
                     st.caption(f"Não foi possível carregar o screenshot (HTTP {shot.status_code}).")
             except requests.RequestException:
                 st.caption("Não foi possível carregar o screenshot no momento.")
-
     with st.expander("🔍 Ver JSON bruto completo (debug)"):
         st.json(result)
 
 
-# --- Novas fontes de Threat Intelligence / OSINT ---
 def check_botscout_ip(ip_address):
     if not is_valid_ipv4(ip_address):
         return {"error": "IPv4 inválido."}
@@ -1343,33 +1182,6 @@ def check_botscout_email(email):
         return {"error": f"Falha de comunicação com BotScout: {exc}"}
 
 
-def search_attackerkb(query):
-    if not ATTACKERKB_API_KEY:
-        return {"error": "AttackerKB requer API Key cadastrada."}
-    query = (query or "").strip()
-    if not query:
-        return {"error": "Informe um CVE ou termo."}
-    try:
-        # A API oficial usa /v1/topics e aceita q/name/document/metadata; o esquema
-        # atual continua documentando limite de 100 req/5 min e 100/dia.
-        auth = {"Authorization": f"Basic {ATTACKERKB_API_KEY}", "Accept": "application/json"}
-        params = {"q": query, "size": 20}
-        res = requests.get("https://api.attackerkb.com/v1/topics", headers=auth, params=params, timeout=15)
-        if res.status_code == 200:
-            return res.json()
-        if res.status_code == 401:
-            # Compatibilidade com algumas implantações/clientes que aceitam token como X-API-Key.
-            res2 = requests.get("https://api.attackerkb.com/v1/topics", headers={"X-API-Key": ATTACKERKB_API_KEY, "Accept": "application/json"}, params=params, timeout=15)
-            if res2.status_code == 200:
-                return res2.json()
-            return {"error": "Chave AttackerKB inválida ou formato de autenticação não aceito."}
-        if res.status_code == 429:
-            return {"error": "Limite da API do AttackerKB atingido."}
-        return {"error": f"HTTP {res.status_code}: {res.text[:300]}"}
-    except requests.RequestException as exc:
-        return {"error": f"Falha de comunicação com AttackerKB: {exc}"}
-
-
 def check_cuckoo_health():
     if not CUCKOO_API_URL:
         return {"configured": False, "message": "Cuckoo não configurado."}
@@ -1383,22 +1195,7 @@ def check_cuckoo_health():
         return {"configured": True, "reachable": False, "error": str(exc)}
 
 
-def check_theharvester_health():
-    if not THEHARVESTER_API_URL:
-        return {"configured": False, "message": "theHarvester REST API não configurada."}
-    headers = {"Accept": "application/json"}
-    if THEHARVESTER_API_KEY:
-        headers["X-API-Key"] = THEHARVESTER_API_KEY
-    try:
-        res = requests.get(f"{THEHARVESTER_API_URL}/api/v1/sources", headers=headers, timeout=8)
-        return {"configured": True, "status_code": res.status_code, "reachable": res.ok, "body": res.text[:1000]}
-    except requests.RequestException as exc:
-        return {"configured": True, "reachable": False, "error": str(exc)}
-
-
-
 def detect_osint_query_type(value):
-    """Detecta automaticamente o tipo do indicador informado no módulo OSINT."""
     value = (value or "").strip()
     if is_valid_ipv4(value):
         return "IP"
@@ -1421,7 +1218,6 @@ def detect_osint_query_type(value):
 
 
 def vt_url_id(value):
-    """Gera o identificador aceito pelo endpoint /urls do VirusTotal v3."""
     return base64.urlsafe_b64encode(value.encode("utf-8")).decode("ascii").rstrip("=")
 
 
@@ -1445,7 +1241,6 @@ def query_vt_universal(value, kind):
 
 
 def query_urlscan_universal(value, kind):
-    """Busca scans históricos do urlscan conforme o tipo de indicador."""
     if kind == "IP":
         return check_urlscan_by_ip(value)
     if kind == "DOMAIN":
@@ -1456,7 +1251,6 @@ def query_urlscan_universal(value, kind):
 
 
 def query_cuckoo_hash(value, kind):
-    """Consulta amostras já existentes na instância Cuckoo configurada; não submete arquivo novo."""
     if not CUCKOO_API_URL:
         return {"configured": False, "message": "Cuckoo não configurado."}
     if kind not in {"MD5", "SHA1", "SHA256"}:
@@ -1476,55 +1270,9 @@ def query_cuckoo_hash(value, kind):
         return {"error": f"Falha de comunicação com Cuckoo: {exc}"}
 
 
-def query_theharvester_domain(value):
-    """Executa uma coleta autorizada de domínio através da REST API local do theHarvester/HarvestView."""
-    if not THEHARVESTER_API_URL:
-        return {"configured": False, "message": "theHarvester REST API não configurada."}
-    headers = {"Accept": "application/json", "Content-Type": "application/json"}
-    if THEHARVESTER_API_KEY:
-        headers["X-API-Key"] = THEHARVESTER_API_KEY
-    base = THEHARVESTER_API_URL.rstrip("/")
-    payload = {"target": value, "sources": ["emails", "crtsh"], "limit": 100, "source_workers": 2, "deadline_seconds": 120}
-    try:
-        res = requests.post(f"{base}/api/v1/runs", headers=headers, json=payload, timeout=15)
-        if res.status_code not in {200, 201, 202}:
-            return {"error": f"theHarvester HTTP {res.status_code}: {res.text[:500]}"}
-        data = res.json()
-        run_id = data.get("run_id")
-        if not run_id:
-            return {"error": "theHarvester não retornou run_id."}
-        deadline = time.time() + 45
-        while time.time() < deadline:
-            rr = requests.get(f"{base}/api/v1/runs/{run_id}", headers={"Accept": "application/json", "X-API-Key": THEHARVESTER_API_KEY} if THEHARVESTER_API_KEY else {"Accept": "application/json"}, timeout=12)
-            if rr.status_code != 200:
-                return {"error": f"theHarvester consulta HTTP {rr.status_code}: {rr.text[:300]}"}
-            run = rr.json()
-            if run.get("status") in {"completed", "failed", "cancelled"}:
-                return run
-            time.sleep(2)
-        return {"error": "timeout", "run_id": run_id, "message": "Coleta do theHarvester ainda está em execução."}
-    except requests.RequestException as exc:
-        return {"error": f"Falha de comunicação com theHarvester: {exc}"}
-
-
-def summarize_theharvester(run):
-    """Extrai achados normalizados da execução REST do theHarvester."""
-    results = run.get("results", {}) if isinstance(run, dict) else {}
-    if isinstance(results, dict):
-        return {
-            "emails": results.get("emails", []) or [],
-            "hosts": results.get("hosts", []) or results.get("hostnames", []) or [],
-            "ips": results.get("ips", []) or [],
-            "urls": results.get("urls", []) or [],
-        }
-    return {"emails": [], "hosts": [], "ips": [], "urls": []}
-
-
 def render_osint_unified_report(query_value, query_kind, results):
-    """Exibe um relatório consolidado com resultados reais das integrações compatíveis."""
     st.markdown("### 📊 Relatório Unificado de Threat Intelligence / OSINT")
     st.caption(f"Indicador: `{query_value}` · Tipo detectado: **{query_kind}**")
-
     source_rows = []
     for source, result in results.items():
         if not isinstance(result, dict):
@@ -1544,7 +1292,6 @@ def render_osint_unified_report(query_value, query_kind, results):
             detail = "Dados recebidos"
         source_rows.append({"Fonte": source, "Status": status, "Resumo": detail})
     st.dataframe(pd.DataFrame(source_rows), use_container_width=True, hide_index=True)
-
     vt = results.get("VirusTotal", {})
     if isinstance(vt, dict) and "data" in vt:
         vt_attrs = vt.get("data", {}).get("attributes", {}) or {}
@@ -1561,7 +1308,6 @@ def render_osint_unified_report(query_value, query_kind, results):
                 vt_context.append({"Atributo": k, "Valor": vt_attrs.get(k)})
         if vt_context:
             st.dataframe(pd.DataFrame(vt_context), use_container_width=True, hide_index=True)
-
     abuse = results.get("AbuseIPDB", {})
     if isinstance(abuse, dict) and "error" not in abuse and "message" not in abuse:
         st.markdown("#### 🛡️ AbuseIPDB")
@@ -1573,7 +1319,6 @@ def render_osint_unified_report(query_value, query_kind, results):
             st.write(pd.DataFrame(abuse["top_categories"], columns=["Categoria", "Ocorrências"]))
     elif isinstance(abuse, dict) and abuse.get("error"):
         st.warning(f"AbuseIPDB: {abuse['error']}")
-
     gn = results.get("GreyNoise", {})
     if isinstance(gn, dict) and "error" not in gn and "message" not in gn:
         report = extract_greynoise_report(gn)
@@ -1584,7 +1329,6 @@ def render_osint_unified_report(query_value, query_kind, results):
         r.metric("RIOT", "Sim" if report.get("found_business") else "Não")
         s.metric("Last Seen", report.get("last_seen", "N/D"))
         st.caption(f"Ator: {report.get('actor', 'N/D')} · Organização: {report.get('organization', 'N/D')} · ASN: {report.get('asn', 'N/D')}")
-
     urlscan = results.get("urlscan", {})
     if isinstance(urlscan, dict) and "error" not in urlscan:
         scans = urlscan.get("scans") if "scans" in urlscan else urlscan.get("results", [])
@@ -1606,7 +1350,6 @@ def render_osint_unified_report(query_value, query_kind, results):
                 st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
         elif urlscan.get("results"):
             st.json(urlscan.get("results"))
-
     sh = results.get("Shodan InternetDB", {})
     if isinstance(sh, dict) and "error" not in sh and "message" not in sh:
         st.markdown("#### 🔎 Shodan InternetDB")
@@ -1617,18 +1360,15 @@ def render_osint_unified_report(query_value, query_kind, results):
         cc[3].metric("Tags", len(sh.get("tags", []) or []))
         if sh.get("ports") or sh.get("vulns"):
             st.write({"ports": sh.get("ports", []), "vulns": sh.get("vulns", []), "tags": sh.get("tags", [])})
-
     geo = results.get("ip-api.com", {})
     if isinstance(geo, dict) and "error" not in geo and geo.get("status") == "success":
         st.markdown("#### 🌍 ip-api.com")
         geo_rows = [{"País": geo.get("country"), "Região": geo.get("regionName"), "Cidade": geo.get("city"), "ISP": geo.get("isp"), "Organização": geo.get("org"), "ASN": geo.get("as"), "Proxy": geo.get("proxy"), "Hosting": geo.get("hosting")}]
         st.dataframe(pd.DataFrame(geo_rows), use_container_width=True, hide_index=True)
-
     bs = results.get("BotScout", {})
     if isinstance(bs, dict) and "error" not in bs:
         st.markdown("#### 🤖 BotScout")
         st.info(f"Match: {'SIM' if bs.get('matched') else 'NÃO' if bs.get('matched') is not None else 'N/D'} · Correspondências: {bs.get('count', 'N/D')}")
-
     xo = results.get("XposedOrNot", {})
     if isinstance(xo, dict) and "error" not in xo and query_kind == "EMAIL":
         st.markdown("#### 🔓 XposedOrNot")
@@ -1636,39 +1376,15 @@ def render_osint_unified_report(query_value, query_kind, results):
         if isinstance(breaches, dict):
             breaches = breaches.get("breaches_details") or breaches.get("breaches") or []
         st.metric("Vazamentos encontrados", len(breaches) if isinstance(breaches, list) else 0)
-
-    ak = results.get("AttackerKB", {})
-    if isinstance(ak, dict) and "error" not in ak and query_kind in {"CVE", "TERM"}:
-        st.markdown("#### 🎯 AttackerKB")
-        topics = ak.get("data", ak.get("topics", ak.get("results", [])))
-        if isinstance(topics, dict):
-            topics = topics.get("items", [])
-        rows=[]
-        for t in (topics if isinstance(topics, list) else [])[:20]:
-            if isinstance(t, dict):
-                rows.append({"ID": t.get("id", "N/D"), "Tema": t.get("name") or t.get("title") or t.get("vulnId") or "N/D", "Descrição": (t.get("description") or "")[:250]})
-        if rows: st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
-
     ck = results.get("Cuckoo", {})
     if isinstance(ck, dict) and (query_kind in {"MD5","SHA1","SHA256"}):
         st.markdown("#### 🦠 Cuckoo Sandbox")
         if "error" in ck: st.warning(ck["error"])
         elif "message" in ck: st.info(ck["message"])
         else: st.json(ck)
-
-    th = results.get("theHarvester", {})
-    if isinstance(th, dict) and query_kind == "DOMAIN":
-        st.markdown("#### 🌐 theHarvester REST")
-        if th.get("error"):
-            st.warning(th["error"])
-        else:
-            shv = summarize_theharvester(th)
-            st.write({"Emails": len(shv["emails"]), "Hosts": len(shv["hosts"]), "IPs": len(shv["ips"]), "URLs": len(shv["urls"])})
-            if shv["emails"]: st.code("\n".join(map(str, shv["emails"][:50])), language="text")
-            if shv["hosts"]: st.code("\n".join(map(str, shv["hosts"][:50])), language="text")
-
     with st.expander("🔍 JSON consolidado (debug)"):
         st.json(results)
+
 
 def render_tool_osint_card(name, category, mode, description, url=None, requirements="N/D"):
     st.markdown(f"### {name}")
@@ -1680,20 +1396,15 @@ def render_tool_osint_card(name, category, mode, description, url=None, requirem
     if url:
         st.link_button("Abrir projeto / documentação", url)
     else:
-        st.caption("🔒 Sem API integrada: consulta somente via execução local. Link removido para evitar falsa expectativa de consulta dentro da aplicação.")
+        st.caption("🔒 Sem API integrada: consulta somente via execução local.")
 
-# --- XposedOrNot Analytics ---
+
 def check_xposedornot_analytics(email):
     email = email.strip()
     if not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", email):
         return {"error": "Endereço de e-mail inválido."}
-
     try:
-        res = requests.get(
-            "https://api.xposedornot.com/v1/breach-analytics",
-            params={"email": email},
-            timeout=10,
-        )
+        res = requests.get("https://api.xposedornot.com/v1/breach-analytics", params={"email": email}, timeout=10)
         if res.status_code == 200:
             return res.json()
         if res.status_code == 404:
@@ -1704,34 +1415,36 @@ def check_xposedornot_analytics(email):
     except requests.RequestException as exc:
         return {"error": f"Falha de comunicação com XposedOrNot: {exc}"}
 
+
 # -----------------------------------------------------------------------------
 # 7. NAVEGAÇÃO POR ABAS OPERACIONAIS
 # -----------------------------------------------------------------------------
+# Abas: Extrator, AbuseIPDB, Central de Hipóteses, urlscan.io, GreyNoise, Vazamento-Email, APT-Hunter & OSINT, Cross-Intel
 (
-    tab_iocs,
+    tab_extrator,
+    tab_abuseipdb,
     tab_hypotheses,
     tab_urlscan,
     tab_greynoise,
-    tab_email,
-    tab_xposed,
+    tab_vazamento,
     tab_osint,
     tab_cross_intel,
 ) = st.tabs([
-    "🔍 Extrator & AbuseIP",
+    "🔍 Extrator de IOCs",
+    "🛡️ AbuseIPDB",
     "🎯 Central de Hipóteses",
     "🌐 urlscan.io",
     "📡 GreyNoise",
-    "📧 Cabeçalho E-mail",
-    "🔓 XposedOrNot",
+    "🔓 Vazamento-Email",
     "🧭 APT-Hunter & OSINT",
     "🔗 Cross-Intel",
 ])
 
 # =============================================================================
-# ABA 1: EXTRATOR, VIRUSTOTAL & ABUSEIPDB
+# ABA 1: EXTRATOR DE IOCs
 # =============================================================================
-with tab_iocs:
-    st.header("🔍 Extrator de IOCs + AbuseIP")
+with tab_extrator:
+    st.header("🔍 Extrator de IOCs")
     raw_text = st.text_area("Cole os IOCs para análise e banimentos (IP, Domain, MD5, SHA256):", height=120)
 
     def extract_iocs(text):
@@ -1739,37 +1452,25 @@ with tab_iocs:
         url_pattern = r'https?://[^\s<>"]+|www\.[^\s<>"]+'
         md5_pattern = r'\b[a-fA-F0-9]{32}\b'
         sha256_pattern = r'\b[a-fA-F0-9]{64}\b'
-
-        ips = sorted({
-            ip for ip in re.findall(ip_pattern, text)
-            if is_valid_ipv4(ip)
-        })
+        ips = sorted({ip for ip in re.findall(ip_pattern, text) if is_valid_ipv4(ip)})
         urls = sorted(set(re.findall(url_pattern, text)))
         md5s = sorted(set(re.findall(md5_pattern, text)))
         sha256s = sorted(set(re.findall(sha256_pattern, text)))
-
         return ips, urls, md5s, sha256s
 
     if st.button("Executar Triagem Multiferramenta", type="primary"):
         ips, urls, md5s, sha256s = extract_iocs(raw_text)
-
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("IPs Encontrados", len(ips))
         c2.metric("URLs Mapeadas", len(urls))
         c3.metric("Hashes MD5", len(md5s))
         c4.metric("Hashes SHA256", len(sha256s))
-
         st.divider()
         all_hashes = md5s + sha256s
         if all_hashes:
             st.subheader("🧩 Hashes (VirusTotal & Hybrid Analysis)")
             if not VT_API_KEY:
-                st.info(
-                    "🟡 Sem chave do VirusTotal cadastrada. Reputação de hash não tem alternativa oficial "
-                    "100% sem chave (o MalwareBazaar também passou a exigir um Auth-Key gratuito desde 2024) "
-                    "— use os links VT/HA abaixo para consulta manual, ou cadastre uma chave gratuita do VT "
-                    "na barra lateral para preencher esta tabela automaticamente."
-                )
+                st.info("🟡 Sem chave do VirusTotal cadastrada. Use os links VT/HA abaixo para consulta manual.")
             hash_data = []
             for h in all_hashes:
                 vt_info = parse_vt_details(get_vt_data("files", h))
@@ -1785,57 +1486,72 @@ with tab_iocs:
                     "Link HA": f"https://www.hybrid-analysis.com/search?query={h}"
                 })
             st.dataframe(pd.DataFrame(hash_data), column_config={"Link VT": st.column_config.LinkColumn("VT ↗"), "Link HA": st.column_config.LinkColumn("HA ↗")}, use_container_width=True, hide_index=True)
-
         if ips:
-            st.subheader("🌐 Endereços IP (VirusTotal + AbuseIPDB + Fallback OSINT sem chave)")
-            if not VT_API_KEY or not ABUSE_API_KEY:
-                st.caption(
-                    "🟢 VT/AbuseIPDB exigem chave própria; enquanto ausentes, País/ISP/Portas/CVEs abaixo são "
-                    "preenchidos automaticamente via **Shodan InternetDB** + **ip-api.com** (gratuitos, sem chave)."
-                )
+            st.subheader("🌐 Endereços IP (VirusTotal + Fallback OSINT sem chave)")
+            if not VT_API_KEY:
+                st.caption("🟢 VT exige chave; enquanto ausente, País/ISP/Portas/CVEs são preenchidos via Shodan InternetDB + ip-api.com.")
             ip_data = []
             for ip in ips:
                 vt_info = parse_vt_details(get_vt_data("ip_addresses", ip)) if VT_API_KEY else None
-                abuse_info = check_abuseipdb(ip) if ABUSE_API_KEY else None
-                free_ctx = get_free_ip_context(ip) if (not VT_API_KEY or not ABUSE_API_KEY) else None
-
+                free_ctx = get_free_ip_context(ip)
                 veredito_vt = vt_info["verdict"] if vt_info else "🟡 Sem chave VT"
-
-                if abuse_info and "error" not in abuse_info:
-                    score_abuse = abuse_info.get("score", "N/A")
-                    isp_info = abuse_info.get("isp", "N/A")
-                    pais_info = abuse_info.get("country_name") or abuse_info.get("country") or "N/D"
-                else:
-                    score_abuse = "N/A (sem chave)"
-                    isp_info = free_ctx["isp_org"] if free_ctx else "N/A"
-                    pais_info = free_ctx["country"] if free_ctx else "N/D"
-
+                pais_info = free_ctx["country"] if free_ctx else "N/D"
+                isp_info = free_ctx["isp_org"] if free_ctx else "N/D"
                 portas_abertas = ", ".join(str(p) for p in (free_ctx["ports"][:10] if free_ctx else [])) or "—"
                 vulns_shodan = ", ".join((free_ctx["vulns"][:5] if free_ctx else [])) or "—"
-
                 ip_data.append({
                     "IP": ip,
                     "Veredito VT": veredito_vt,
-                    "Abuse Score": score_abuse,
                     "País": pais_info,
                     "ISP / Org": isp_info,
                     "Portas Abertas (Shodan)": portas_abertas,
                     "CVEs (Shodan)": vulns_shodan,
                     "Link VT": f"https://www.virustotal.com/gui/ip-address/{ip}",
-                    "Link AbuseIPDB": f"https://www.abuseipdb.com/check/{ip}"
                 })
-            st.dataframe(pd.DataFrame(ip_data), column_config={"Link VT": st.column_config.LinkColumn("VT ↗"), "Link AbuseIPDB": st.column_config.LinkColumn("AbuseIPDB ↗")}, use_container_width=True, hide_index=True)
+            st.dataframe(pd.DataFrame(ip_data), column_config={"Link VT": st.column_config.LinkColumn("VT ↗")}, use_container_width=True, hide_index=True)
 
 # =============================================================================
-# ABA 2: CENTRAL DE HIPÓTESES DE THREAT HUNTING
+# ABA 2: ABUSEIPDB (CONSULTA INDIVIDUAL)
+# =============================================================================
+with tab_abuseipdb:
+    st.header("🛡️ AbuseIPDB - Consulta Individual de IP")
+    st.caption("Verifique a reputação de um endereço IP específico na base do AbuseIPDB.")
+    if not ABUSE_API_KEY:
+        st.warning("🔑 É necessária uma API Key do AbuseIPDB para consultas. Cadastre na barra lateral.")
+    abuse_ip = st.text_input("Endereço IP para verificar:", key="abuse_single_ip")
+    if st.button("Consultar AbuseIPDB", type="primary"):
+        if not abuse_ip:
+            st.warning("Informe um IP.")
+        elif not is_valid_ipv4(abuse_ip.strip()):
+            st.error("IP inválido.")
+        else:
+            with st.spinner("Consultando..."):
+                res = check_abuseipdb(abuse_ip.strip())
+                if "error" in res:
+                    st.error(res["error"])
+                else:
+                    col1, col2, col3 = st.columns(3)
+                    col1.metric("Score de Abuso", res.get("score", "N/D"))
+                    col2.metric("Total de Reports", res.get("reports", 0))
+                    col3.metric("Usuários Distintos", res.get("distinct_reporters", 0))
+                    st.markdown(f"**País:** {res.get('country_name')} ({res.get('country')})")
+                    st.markdown(f"**ISP:** {res.get('isp')}")
+                    st.markdown(f"**Domínio:** {res.get('domain')}")
+                    st.markdown(f"**Uso:** {res.get('usage_type')}")
+                    st.markdown(f"**Whitelisted:** {'Sim' if res.get('is_whitelisted') else 'Não'}")
+                    st.markdown(f"**Último Reporte:** {res.get('last_reported_at')}")
+                    if res.get('top_categories'):
+                        st.markdown("**Categorias mais reportadas:**")
+                        st.write(pd.DataFrame(res["top_categories"], columns=["Categoria", "Ocorrências"]))
+
+# =============================================================================
+# ABA 3: CENTRAL DE HIPÓTESES
 # =============================================================================
 with tab_hypotheses:
     st.header("🎯 Central de Hipóteses de Threat Hunting")
     st.caption("Cadastre e gerencie hipóteses de caça baseadas no framework MITRE ATT&CK.")
-    
     if "hypotheses_db" not in st.session_state:
         st.session_state["hypotheses_db"] = []
-
     with st.form("form_hypothesis", clear_on_submit=True):
         col_h1, col_h2 = st.columns(2)
         with col_h1:
@@ -1849,11 +1565,8 @@ with tab_hypotheses:
         with col_h2:
             h_datasources = st.text_input("Fontes de Dados (Data Sources):", placeholder="Ex: Sysmon Event ID 1, Windows Security 4688, EDR")
             h_status = st.selectbox("Status da Investigação:", ["Em Rascunho", "Em Validação", "Confirmado (Incident)", "Falso Positivo", "Concluído"])
-
         h_desc = st.text_area("Descrição Breve / Rationale:", placeholder="Explique o comportamento esperado do atacante e os indicadores esperados...")
-        
         btn_add = st.form_submit_button("➕ Registrar Hipótese", type="primary")
-
         if btn_add:
             if h_title and h_desc:
                 st.session_state["hypotheses_db"].append({
@@ -1866,11 +1579,9 @@ with tab_hypotheses:
                 st.success("Hipótese adicionada com sucesso!")
             else:
                 st.error("Por favor, preencha pelo menos o Título e a Descrição.")
-
     st.divider()
     hyp_list = st.session_state["hypotheses_db"]
     st.subheader(f"📋 Hipóteses Registradas ({len(hyp_list)})")
-    
     if hyp_list:
         st.dataframe(pd.DataFrame(hyp_list), use_container_width=True)
         if st.button("🗑️ Limpar Todas as Hipóteses"):
@@ -1885,23 +1596,11 @@ with tab_hypotheses:
 with tab_urlscan:
     st.header("🌐 urlscan.io - Análise de URLs")
     st.caption("Submeta URLs suspeitas para verificação dinâmica, requisições HTTP e screenshots.")
-    st.caption("ℹ️ O scan é assíncrono: leva em geral de ~15 a 60s para ser concluído, dependendo da complexidade da página.")
-
     if URLSCAN_API_KEY:
         st.success("🔑 **Modo Autenticado:** usando sua API Key — cota completa de envios e buscas.")
     else:
-        st.info(
-            "🆓 **Modo Anônimo Ativo (sem chave):** o urlscan.io permite enviar e buscar scans mesmo sem "
-            "API Key, com uma cota bem menor e visibilidade sempre **pública**. Cadastre uma chave gratuita "
-            "na barra lateral se precisar de mais volume ou de scans privados."
-        )
-
-    target_scan_url = st.text_input(
-        "Insira a URL suspeita:",
-        placeholder="https://exemplo-phishing.com",
-        key="urlscan_target_input",
-    )
-
+        st.info("🆓 **Modo Anônimo Ativo (sem chave):** o urlscan.io permite enviar e buscar scans mesmo sem API Key, com cota menor e visibilidade pública.")
+    target_scan_url = st.text_input("Insira a URL suspeita:", placeholder="https://exemplo-phishing.com", key="urlscan_target_input")
     pending_uuid = st.session_state.get("urlscan_pending_uuid")
     retry_scan = False
     if pending_uuid:
@@ -1910,7 +1609,6 @@ with tab_urlscan:
         retry_scan = col_retry_btn.button("🔄 Verificar Scan Pendente")
     else:
         start_scan = st.button("🚀 Enviar para urlscan.io", type="primary")
-
     if start_scan:
         if not target_scan_url or not target_scan_url.strip():
             st.warning("Informe uma URL antes de iniciar o scan.")
@@ -1923,24 +1621,15 @@ with tab_urlscan:
                 scan_uuid = submission.get("uuid")
                 st.session_state["urlscan_pending_uuid"] = scan_uuid
                 st.session_state["urlscan_pending_target"] = target_scan_url
-
                 status_placeholder = st.empty()
                 progress_bar = st.progress(0.0)
                 with st.spinner("Aguardando o urlscan.io finalizar a análise..."):
-                    result = poll_urlscan_result(
-                        scan_uuid,
-                        status_placeholder=status_placeholder,
-                        progress_bar=progress_bar,
-                    )
+                    result = poll_urlscan_result(scan_uuid, status_placeholder=status_placeholder, progress_bar=progress_bar)
                 status_placeholder.empty()
                 progress_bar.empty()
-
                 if isinstance(result, dict) and result.get("error") == "timeout":
                     report_link = f"https://urlscan.io/result/{scan_uuid}/"
-                    st.warning(
-                        "O scan ainda está em processamento no urlscan.io após o tempo máximo de espera. "
-                        f"Clique em **'🔄 Verificar Scan Pendente'** em alguns instantes, ou acompanhe direto por lá: {report_link}"
-                    )
+                    st.warning("O scan ainda está em processamento. Clique em '🔄 Verificar Scan Pendente' ou acompanhe: " + report_link)
                 elif isinstance(result, dict) and "error" in result:
                     st.error(f"Falha ao obter o resultado: {result['error']}")
                 else:
@@ -1948,13 +1637,11 @@ with tab_urlscan:
                     st.session_state["urlscan_last_result"] = result
                     st.session_state["urlscan_last_target"] = target_scan_url
                     st.session_state.pop("urlscan_pending_uuid", None)
-
     elif retry_scan and pending_uuid:
         with st.spinner("Consultando o status do scan..."):
             result = get_urlscan_result(pending_uuid)
-
         if isinstance(result, dict) and result.get("__pending__"):
-            st.info("⏳ O scan ainda está em processamento no urlscan.io. Tente novamente em alguns segundos.")
+            st.info("⏳ O scan ainda está em processamento. Tente novamente em alguns segundos.")
         elif isinstance(result, dict) and "error" in result:
             st.error(f"Falha ao obter o resultado: {result['error']}")
         else:
@@ -1962,101 +1649,65 @@ with tab_urlscan:
             st.session_state["urlscan_last_result"] = result
             st.session_state["urlscan_last_target"] = st.session_state.get("urlscan_pending_target", target_scan_url)
             st.session_state.pop("urlscan_pending_uuid", None)
-
     if st.session_state.get("urlscan_last_result"):
         st.divider()
-        render_urlscan_report(
-            st.session_state["urlscan_last_result"],
-            st.session_state.get("urlscan_last_target", target_scan_url),
-        )
+        render_urlscan_report(st.session_state["urlscan_last_result"], st.session_state.get("urlscan_last_target", target_scan_url))
 
 # =============================================================================
-# ABA 5: GREYNOISE (MODO BUSINESS / ENTERPRISE)
+# ABA 5: GREYNOISE
 # =============================================================================
 with tab_greynoise:
     st.header("📡 GreyNoise - Filtro de Ruído da Internet")
     st.caption("Descubra se o IP examinado é um scanner inofensivo conhecido, botnet ou IP malicioso.")
-    
     if not GREYNOISE_API_KEY:
         st.info("ℹ️ **Modo Comunitário Gratuito Ativo:** Exibindo dados básicos. Adicione uma API Key na barra lateral para habilitar todos os campos enriquecidos.")
     else:
         st.success("🔑 **Modo Autenticado Business/Enterprise Ativo:** Trazendo contexto completo de inteligência.")
-
     gn_ip = st.text_input("Insira o endereço IP para consulta no GreyNoise:", placeholder="8.8.8.8", key="gn_ip_input")
     if st.button("Consultar GreyNoise", type="primary"):
         if gn_ip:
             gn_ip = gn_ip.strip()
             if not is_valid_ipv4(gn_ip):
                 st.error("Informe um endereço IPv4 válido.")
-                st.stop()
-
-            with st.spinner("Consultando GreyNoise..."):
-                gn_res = check_greynoise(gn_ip)
-                if "error" in gn_res:
-                    st.error(gn_res["error"])
-                elif "message" in gn_res:
-                    st.warning(gn_res["message"])
-                else:
-                    render_greynoise_report(gn_res, gn_ip)
-
-# =============================================================================
-# ABA 7: ANALISADOR DE CABEÇALHO DE E-MAIL
-# =============================================================================
-with tab_email:
-    st.header("📧 Analisador de Cabeçalho de E-mail")
-    st.caption("Insira os cabeçalhos brutos de um e-mail para verificar a autenticidade dos registros SPF e DKIM.")
-    
-    raw_header = st.text_area("Cole o cabeçalho bruto (Raw Header):", height=200)
-    if st.button("Analisar Registros DNS/SPF"):
-        if raw_header:
-            spf = re.search(r'spf=(\w+)', raw_header, re.I)
-            dkim = re.search(r'dkim=(\w+)', raw_header, re.I)
-            c1, c2 = st.columns(2)
-            c1.metric("Status SPF", spf.group(1).upper() if spf else "N/A")
-            c2.metric("Status DKIM", dkim.group(1).upper() if dkim else "N/A")
+            else:
+                with st.spinner("Consultando GreyNoise..."):
+                    gn_res = check_greynoise(gn_ip)
+                    if "error" in gn_res:
+                        st.error(gn_res["error"])
+                    elif "message" in gn_res:
+                        st.warning(gn_res["message"])
+                    else:
+                        render_greynoise_report(gn_res, gn_ip)
 
 # =============================================================================
-# ABA 8: CONSULTA DE VAZAMENTOS (XPOSEDORNOT)
+# ABA 6: VAZAMENTO-EMAIL (XposedOrNot)
 # =============================================================================
-with tab_xposed:
-    st.header("🔓 Checar Vazamentos de E-mail (XposedOrNot)")
+with tab_vazamento:
+    st.header("🔓 Vazamento-Email (XposedOrNot)")
     st.caption("Consulte credenciais expostas e vazamentos públicos de dados sem a necessidade de chave de API.")
-
     target_email = st.text_input("Endereço de e-mail para investigação:", placeholder="usuario@empresa.com", key="xon_email_input")
-    
     if st.button("🔍 Verificar Vazamentos", type="primary"):
         if target_email:
             with st.spinner("Consultando base de dados do XposedOrNot..."):
                 res = check_xposedornot_analytics(target_email)
-                
                 if "error" in res:
                     st.error(f"Erro na consulta: {res['error']}")
                 elif res.get("Error") == "Not found" or res.get("status") == "clean":
                     st.success("✅ **Nenhum vazamento encontrado para esta conta!**")
                 else:
                     raw_breaches = res.get("ExposedBreaches") or res.get("exposedBreaches") or []
-
                     if isinstance(raw_breaches, dict):
-                        breaches_list = (
-                            raw_breaches.get("breaches_details")
-                            or raw_breaches.get("breaches")
-                            or raw_breaches.get("details")
-                            or []
-                        )
+                        breaches_list = raw_breaches.get("breaches_details") or raw_breaches.get("breaches") or raw_breaches.get("details") or []
                     elif isinstance(raw_breaches, list):
                         breaches_list = raw_breaches
                     else:
                         breaches_list = []
-
                     total_breaches = len(breaches_list)
-                    
                     m1, m2 = st.columns(2)
                     m1.metric("Total de Vazamentos", total_breaches)
                     m2.metric("Status da Conta", "🚨 EXPOSTA" if total_breaches > 0 else "✅ SEGURA")
-
                     if total_breaches > 0:
                         st.subheader("📅 Detalhamento dos Vazamentos Encontrados")
-                        
                         table_rows = []
                         for b in breaches_list:
                             if isinstance(b, dict):
@@ -2068,7 +1719,6 @@ with tab_xposed:
                             else:
                                 name = str(b)
                                 date_raw, industry, records, data_types = "N/A", "N/A", "N/A", "N/A"
-
                             table_rows.append({
                                 "Data / Ano": date_raw,
                                 "Serviço / Fonte": name,
@@ -2076,9 +1726,7 @@ with tab_xposed:
                                 "Registros Expostos": f"{records:,}" if isinstance(records, int) else records,
                                 "Dados Comprometidos": data_types
                             })
-
                         st.dataframe(pd.DataFrame(table_rows), use_container_width=True, hide_index=True)
-
                         st.subheader("📝 Detalhes e Descrições dos Incidentes")
                         for b in breaches_list:
                             if isinstance(b, dict):
@@ -2088,28 +1736,21 @@ with tab_xposed:
                                 st.markdown(f"- **{name}** ({date_raw}): {details}")
 
 # =============================================================================
-# ABA: APT-HUNTER & OSINT
+# ABA 7: APT-HUNTER & OSINT
 # =============================================================================
 with tab_osint:
     st.header("🧭 APT-Hunter & OSINT")
     st.caption("Consulta unificada: informe um IP, domínio, URL, hash, e-mail ou CVE e a aplicação executará todas as integrações compatíveis.")
-    st.info("As ferramentas locais abaixo continuam disponíveis como referência operacional, mas não são apresentadas como APIs. A consulta automática usa somente integrações que realmente retornam dados para a aplicação: VirusTotal, AbuseIPDB, GreyNoise, urlscan.io, Shodan InternetDB, ip-api.com, BotScout, XposedOrNot, AttackerKB e, quando configurados localmente, Cuckoo/theHarvester.")
-
-    query_value = st.text_input(
-        "🔎 Indicador para investigação:",
-        placeholder="Ex.: 8.8.8.8 | exemplo.com | https://exemplo.com | SHA256 | usuario@empresa.com | CVE-2024-21410",
-        key="osint_unified_query",
-    )
+    st.info("A consulta automática usa somente integrações que realmente retornam dados: VirusTotal, AbuseIPDB, GreyNoise, urlscan.io, Shodan InternetDB, ip-api.com, BotScout, XposedOrNot, e Cuckoo (se configurado).")
+    query_value = st.text_input("🔎 Indicador para investigação:", placeholder="Ex.: 8.8.8.8 | exemplo.com | https://exemplo.com | SHA256 | usuario@empresa.com | CVE-2024-21410", key="osint_unified_query")
     auto_kind = detect_osint_query_type(query_value)
     st.caption(f"Tipo detectado automaticamente: **{auto_kind}**")
-
     q1, q2 = st.columns([1, 1])
     with q1:
         query_mode = st.selectbox("Modo de consulta", ["Automático", "IP", "Domínio", "URL", "Hash", "E-mail", "CVE/Termo"], key="osint_query_mode")
     with q2:
         st.markdown("**Fontes automáticas**")
         st.caption("O sistema só dispara uma fonte quando ela aceita o tipo do indicador informado.")
-
     if st.button("🚀 Consultar Todas as Fontes Compatíveis", type="primary", key="run_osint_unified"):
         raw = (query_value or "").strip()
         if not raw:
@@ -2123,7 +1764,6 @@ with tab_osint:
                 with st.spinner("Consultando as fontes compatíveis em paralelo..."):
                     futures = {}
                     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-                        # APIs públicas / chaves já cadastradas
                         if kind in {"IP", "DOMAIN", "URL", "MD5", "SHA1", "SHA256"}:
                             futures["VirusTotal"] = executor.submit(query_vt_universal, raw, kind)
                         if kind == "IP":
@@ -2136,15 +1776,10 @@ with tab_osint:
                         elif kind in {"DOMAIN", "URL"}:
                             futures["urlscan"] = executor.submit(query_urlscan_universal, raw, kind)
                         if kind == "EMAIL":
-                            futures["BotScout"] = executor.submit(check_botscout_email, raw) if 'check_botscout_email' in globals() else executor.submit(lambda: {"error": "BotScout email helper não disponível."})
+                            futures["BotScout"] = executor.submit(check_botscout_email, raw)
                             futures["XposedOrNot"] = executor.submit(check_xposedornot_analytics, raw)
-                        if kind in {"CVE", "TERM"} and ATTACKERKB_API_KEY:
-                            futures["AttackerKB"] = executor.submit(search_attackerkb, raw)
                         if kind in {"MD5", "SHA1", "SHA256"} and CUCKOO_API_URL:
                             futures["Cuckoo"] = executor.submit(query_cuckoo_hash, raw, kind)
-                        if kind == "DOMAIN" and THEHARVESTER_API_URL:
-                            futures["theHarvester"] = executor.submit(query_theharvester_domain, raw)
-
                         unified = {}
                         for source, future in futures.items():
                             try:
@@ -2152,12 +1787,10 @@ with tab_osint:
                             except Exception as exc:
                                 unified[source] = {"error": str(exc)}
                 st.session_state["osint_unified_last"] = {"value": raw, "kind": kind, "results": unified}
-
     last = st.session_state.get("osint_unified_last")
     if last:
         st.divider()
         render_osint_unified_report(last["value"], last["kind"], last["results"])
-
     st.divider()
     st.subheader("🧰 Ferramentas locais / integrações")
     left, right = st.columns(2)
@@ -2167,54 +1800,35 @@ with tab_osint:
         render_tool_osint_card("🧰 Automater", "OSINT / IOC Enrichment", "Local", "Ferramenta de enriquecimento que funciona por chamadas às fontes configuradas, mas não oferece uma API própria integrada nesta aplicação.", None, "Execução local")
         render_tool_osint_card("🎣 Phishing Catcher", "Phishing / CT", "Local / CertStream", "Monitora Certificate Transparency e pontua domínios potencialmente ligados a phishing.", None, "Python + CertStream")
     with right:
-        render_tool_osint_card("🌐 theHarvester", "OSINT", "REST local", "Integração automática habilitada quando uma instância REST local está configurada nas Credenciais API.", "https://github.com/laramies/theHarvester", "REST + X-API-Key")
         render_tool_osint_card("🦠 Cuckoo Sandbox", "Malware Analysis", "API local", "A integração consulta hashes que já existem na instância configurada; não envia amostras automaticamente.", "https://cuckoosandbox.org/", "API HTTP local")
-        render_tool_osint_card("📦 CrowdFMS", "Threat Research", "Local + VT Private API", "Automação local que depende da infraestrutura/private API do VirusTotal; não há API pública independente integrada aqui.", None, "VT Private API + YARA")
-        render_tool_osint_card("🎯 AttackerKB", "Vulnerability Intelligence", "REST API", "Pesquisa de tópicos/CVEs pela API oficial quando uma API Key estiver cadastrada.", "https://api.attackerkb.com/v1/api-docs/docs", "API Key")
         render_tool_osint_card("🤖 BotScout", "Bot / IP / Email Reputation", "REST API", "Consulta IP ou e-mail na base BotScout, com ou sem chave dentro das cotas permitidas.", "https://botscout.com/api.htm", "API Key opcional")
-
     st.divider()
     st.subheader("🔌 Status das integrações locais")
     c1, c2 = st.columns(2)
     with c1:
-        ck = check_cuckoo_health(); st.metric("Cuckoo", "🟢 Online" if ck.get("reachable") else ("🟡 Configurado" if ck.get("configured") else "⚪ Não configurado"))
-        if ck.get("configured") and not ck.get("reachable"): st.caption(ck.get("error", "Instância não respondeu."))
-    with c2:
-        th = check_theharvester_health(); st.metric("theHarvester REST", "🟢 Online" if th.get("reachable") else ("🟡 Configurado" if th.get("configured") else "⚪ Não configurado"))
-        if th.get("configured") and not th.get("reachable"): st.caption(th.get("error", "API não respondeu."))
+        ck = check_cuckoo_health()
+        st.metric("Cuckoo", "🟢 Online" if ck.get("reachable") else ("🟡 Configurado" if ck.get("configured") else "⚪ Não configurado"))
+        if ck.get("configured") and not ck.get("reachable"):
+            st.caption(ck.get("error", "Instância não respondeu."))
 
 # =============================================================================
-# ABA 9: CRUZAMENTO DE INTELIGÊNCIA (CROSS-INTEL)
+# ABA 8: CRUZAMENTO DE INTELIGÊNCIA (CROSS-INTEL)
 # =============================================================================
 with tab_cross_intel:
     st.header("🔗 Cruzamento de Inteligência (IP)")
     st.caption("Consulte simultaneamente VirusTotal, AbuseIPDB, GreyNoise e urlscan.io para obter um contexto unificado da ameaça.")
-    st.caption(
-        "🟢 GreyNoise, urlscan.io, Shodan InternetDB e ip-api.com funcionam mesmo **sem nenhuma chave** cadastrada. "
-        "VT e AbuseIPDB exigem chave própria (gratuita) — quando ausentes, são substituídos automaticamente pelo fallback OSINT sem chave."
-    )
-
-    cross_ip = st.text_input(
-        "Insira o indicador para correlação:",
-        placeholder="IP, domínio, URL, hash, e-mail ou CVE",
-        key="cross_ip_input",
-    )
+    st.caption("🟢 GreyNoise, urlscan.io, Shodan InternetDB e ip-api.com funcionam mesmo sem chave. VT e AbuseIPDB exigem chave própria.")
+    cross_ip = st.text_input("Insira o indicador para correlação:", placeholder="IP, domínio, URL, hash, e-mail ou CVE", key="cross_ip_input")
     cross_kind = detect_osint_query_type(cross_ip)
     st.caption(f"Tipo detectado: **{cross_kind}** · Para relatório completo multiprotocolo, use também a aba APT-Hunter & OSINT.")
-
     if st.button("🚀 Iniciar Correlação", type="primary"):
         cross_ip = (cross_ip or "").strip()
-
         if not cross_ip:
             st.warning("Informe um endereço IP antes de iniciar a correlação.")
         elif not is_valid_ipv4(cross_ip):
             st.error("Informe um endereço IPv4 válido.")
         else:
             with st.spinner("Consultando múltiplas fontes de inteligência..."):
-                # Chamadas em paralelo para reduzir o tempo total de espera.
-                # VT/AbuseIPDB/GreyNoise/urlscan.io são consultados sempre (as três primeiras
-                # simplesmente retornam {"error": "Sem API Key"} quando a chave não existe);
-                # o fallback 100% sem chave (Shodan InternetDB + ip-api.com) é buscado em paralelo também.
                 with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
                     futures = {
                         "vt": executor.submit(lambda: parse_vt_details(get_vt_data("ip_addresses", cross_ip))),
@@ -2229,14 +1843,11 @@ with tab_cross_intel:
                             results[key] = future.result(timeout=20)
                         except Exception as exc:
                             results[key] = {"error": str(exc)}
-
                 vt_res = results["vt"] if isinstance(results["vt"], dict) else {}
                 abuse_res = results["abuse"] if isinstance(results["abuse"], dict) else {}
                 gn_res = results["gn"] if isinstance(results["gn"], dict) else {}
                 urlscan_res = results["urlscan"] if isinstance(results["urlscan"], dict) else {}
                 free_ctx = results["free_ctx"] if isinstance(results["free_ctx"], dict) else {}
-
-            # --- Normalização dos resultados ---
             vt_verdict = vt_res.get("verdict", "N/A")
             vt_error = vt_res.get("error")
             vt_malicious = vt_res.get("malicious", 0)
@@ -2247,7 +1858,6 @@ with tab_cross_intel:
             vt_asn = vt_res.get("asn", "N/D")
             vt_tags = vt_res.get("tags", "Sem tags")
             vt_last_seen = vt_res.get("last_analysis_human", "N/D")
-
             abuse_error = abuse_res.get("error")
             if abuse_error:
                 abuse_score_num = None
@@ -2257,7 +1867,6 @@ with tab_cross_intel:
                 abuse_score_num = abuse_res.get("score_raw", 0)
                 abuse_score_display = abuse_res.get("score", "N/A")
                 abuse_isp = abuse_res.get("isp", "N/A")
-
             gn_report = None
             if "error" in gn_res:
                 gn_class_display = f"Erro: {gn_res['error']}"
@@ -2269,36 +1878,22 @@ with tab_cross_intel:
                 gn_report = extract_greynoise_report(gn_res)
                 gn_class_display = str(gn_report.get("classification", "unknown")).upper()
                 gn_actor = gn_report.get("actor", "Desconhecido")
-
-            # --- Normalização do urlscan.io (busca por page.ip, funciona sem chave) ---
             urlscan_error = urlscan_res.get("error")
             urlscan_scans = urlscan_res.get("scans", []) if not urlscan_error else []
             urlscan_total = urlscan_res.get("total", 0) if not urlscan_error else 0
             urlscan_malicious_count = urlscan_res.get("malicious_count", 0) if not urlscan_error else 0
-            urlscan_country_display = urlscan_scans[0]["country"] if urlscan_scans else "N/D"
-            urlscan_domains = sorted({s["domain"] for s in urlscan_scans if s.get("domain") and s["domain"] != "N/D"})
-            urlscan_domains_text = ", ".join(urlscan_domains[:5]) if urlscan_domains else "—"
-            urlscan_search_link = urlscan_res.get("search_link", f"https://urlscan.io/search/#page.ip%3A%22{cross_ip}%22")
-
-            # --- Fallback OSINT sem chave (Shodan InternetDB + ip-api.com) ---
             free_ctx_country = free_ctx.get("country", "N/D") if isinstance(free_ctx, dict) else "N/D"
             botscout_res = check_botscout_ip(cross_ip)
-            attackerkb_query = st.session_state.get("cross_attackerkb_query", "").strip()
-            attackerkb_res = search_attackerkb(attackerkb_query) if attackerkb_query else {"message": "Não consultado."}
-
-            # --- Score de risco consolidado (heurística com múltiplos sinais) ---
             risk_points = 0
             risk_reasons = []
             mitigating_factors = []
             additional_signals = []
-
             if vt_malicious > 0:
                 risk_points += 2
                 risk_reasons.append(f"VirusTotal: {vt_malicious}/{vt_total_engines} motores classificaram como malicioso")
             elif vt_suspicious > 0:
                 risk_points += 1
                 risk_reasons.append(f"VirusTotal: {vt_suspicious}/{vt_total_engines} motores classificaram como suspeito")
-
             if abuse_score_num is not None:
                 if abuse_score_num >= 75:
                     risk_points += 2
@@ -2311,7 +1906,6 @@ with tab_cross_intel:
             if abuse_res.get("top_categories"):
                 cats = ", ".join(name for name, _ in abuse_res["top_categories"][:3])
                 risk_reasons.append(f"AbuseIPDB — categorias mais reportadas: {cats}")
-
             if gn_report and gn_report.get("mode") == "full":
                 gn_classification = (gn_report.get("classification") or "").lower()
                 if gn_classification == "malicious":
@@ -2320,21 +1914,15 @@ with tab_cross_intel:
                 elif gn_classification == "suspicious":
                     risk_points += 1
                     risk_reasons.append("GreyNoise classificou o comportamento de rede como SUSPICIOUS")
-
                 if any(t.get("recommend_block") for t in (gn_report.get("tags_detail") or []) if isinstance(t, dict)):
                     risk_points += 1
                     risk_reasons.append("GreyNoise sinalizou tags com bloqueio recomendado (recommend_block)")
-
                 if gn_report.get("cves"):
                     risk_points += 1
                     risk_reasons.append(f"GreyNoise: IP associado à exploração das CVEs {', '.join(gn_report['cves'])}")
-
                 if gn_report.get("found_business"):
                     risk_points = max(0, risk_points - 1)
-                    mitigating_factors.append(
-                        f"GreyNoise RIOT: serviço empresarial legítimo conhecido ({gn_report.get('business_name', 'N/D')})"
-                    )
-
+                    mitigating_factors.append(f"GreyNoise RIOT: serviço empresarial legítimo conhecido ({gn_report.get('business_name', 'N/D')})")
                 if gn_report.get("tor"):
                     additional_signals.append("🧅 Nó de saída Tor")
                 if gn_report.get("vpn"):
@@ -2348,21 +1936,17 @@ with tab_cross_intel:
                 risk_reasons.append("GreyNoise classificou como MALICIOUS")
             elif gn_class_display == "SUSPICIOUS":
                 risk_points += 1
-
             if abuse_res.get("is_tor"):
                 additional_signals.append("🧅 AbuseIPDB também reporta este IP como nó Tor")
-
             if not urlscan_error:
                 if urlscan_malicious_count > 0:
                     risk_points += 2
                     risk_reasons.append(f"urlscan.io: {urlscan_malicious_count} scan(s) hospedados neste IP marcados como MALICIOSOS")
                 elif urlscan_total > 0:
                     risk_reasons.append(f"urlscan.io: {urlscan_total} scan(s) históricos encontrados para páginas hospedadas neste IP (nenhum malicioso)")
-
             if isinstance(free_ctx, dict) and free_ctx.get("vulns"):
                 risk_points += 1
                 risk_reasons.append(f"Shodan InternetDB: IP expõe serviço(s) associados às CVEs {', '.join(free_ctx['vulns'][:5])}")
-
             if risk_points >= 4:
                 risk_label, risk_color = "🔴 ALTO RISCO", "error"
             elif risk_points >= 2:
@@ -2371,10 +1955,8 @@ with tab_cross_intel:
                 risk_label, risk_color = "🟡 RISCO BAIXO / SINAIS ISOLADOS", "warning"
             else:
                 risk_label, risk_color = "🟢 BAIXO RISCO / SEM SINAIS", "success"
-
             st.subheader("🎯 Resultado Consolidado")
             getattr(st, risk_color)(f"**{risk_label}** — IP `{cross_ip}`  ·  Pontuação de risco: `{risk_points}`")
-
             if risk_reasons:
                 st.markdown("**⚠️ Motivos que elevam o risco:**")
                 for reason in risk_reasons:
@@ -2385,59 +1967,32 @@ with tab_cross_intel:
                     st.markdown(f"- {factor}")
             if additional_signals:
                 st.caption("Sinais adicionais de contexto: " + " · ".join(additional_signals))
-
-            # --- Contexto de rede consolidado (comparação rápida entre fontes) ---
             st.markdown("### 🌍 Contexto de Rede & Geolocalização")
             gctx1, gctx2, gctx3 = st.columns(3)
             gctx1.metric("País (VirusTotal)", vt_country if not vt_error else "N/D")
             gctx2.metric("País (AbuseIPDB)", abuse_res.get("country_name") or abuse_res.get("country") or "N/D")
             gctx3.metric("País (GreyNoise)", gn_report.get("country") if gn_report and gn_report.get("mode") == "full" else "N/D")
-            st.caption(
-                f"🏢 AS Owner (VT): {vt_as_owner} (`{vt_asn}`)  ·  "
-                f"🏢 Organização (GreyNoise): {gn_report.get('organization') if gn_report and gn_report.get('mode') == 'full' else 'N/D'}  ·  "
-                f"🏢 ISP (AbuseIPDB): {abuse_isp}"
-            )
-
+            st.caption(f"🏢 AS Owner (VT): {vt_as_owner} (`{vt_asn}`)  ·  🏢 Organização (GreyNoise): {gn_report.get('organization') if gn_report and gn_report.get('mode') == 'full' else 'N/D'}  ·  🏢 ISP (AbuseIPDB): {abuse_isp}")
             col_c1, col_c2, col_c3 = st.columns(3)
             with col_c1:
                 if vt_error:
                     st.error(f"**VirusTotal**\n\nFalha na consulta: {vt_error}")
                 else:
-                    st.info(
-                        f"**VirusTotal**\n\n"
-                        f"Veredito: {vt_verdict}\n\n"
-                        f"Reputação: `{vt_res.get('score', 'N/A')}`\n\n"
-                        f"AS: {vt_as_owner} (`{vt_asn}`)\n\n"
-                        f"País: {vt_country}  ·  Última análise: {vt_last_seen}"
-                    )
+                    st.info(f"**VirusTotal**\n\nVeredito: {vt_verdict}\n\nReputação: `{vt_res.get('score', 'N/A')}`\n\nAS: {vt_as_owner} (`{vt_asn}`)\n\nPaís: {vt_country}  ·  Última análise: {vt_last_seen}")
             with col_c2:
                 if abuse_error:
                     st.error(f"**AbuseIPDB**\n\nFalha na consulta: {abuse_error}")
                 else:
-                    st.warning(
-                        f"**AbuseIPDB**\n\n"
-                        f"Score de Abuso: {abuse_score_display}  ({abuse_res.get('reports', 0)} reports de "
-                        f"{abuse_res.get('distinct_reporters', 0)} usuários)\n\n"
-                        f"ISP: {abuse_isp}  ·  Uso: {abuse_res.get('usage_type', 'N/D')}\n\n"
-                        f"Whitelisted: {'Sim' if abuse_res.get('is_whitelisted') else 'Não'}  ·  "
-                        f"Último report: {abuse_res.get('last_reported_at', 'N/D')}"
-                    )
+                    st.warning(f"**AbuseIPDB**\n\nScore de Abuso: {abuse_score_display}  ({abuse_res.get('reports', 0)} reports de {abuse_res.get('distinct_reporters', 0)} usuários)\n\nISP: {abuse_isp}  ·  Uso: {abuse_res.get('usage_type', 'N/D')}\n\nWhitelisted: {'Sim' if abuse_res.get('is_whitelisted') else 'Não'}  ·  Último report: {abuse_res.get('last_reported_at', 'N/D')}")
             with col_c3:
                 if "error" in gn_res:
                     st.error(f"**GreyNoise**\n\nFalha na consulta: {gn_res['error']}")
                 elif "message" in gn_res:
                     st.info(f"**GreyNoise**\n\n{gn_res['message']}")
                 elif gn_report and gn_report.get("mode") == "full":
-                    st.error(
-                        f"**GreyNoise**\n\n"
-                        f"Classificação: {gn_class_display}\n\n"
-                        f"Ator: {gn_actor}  ·  Organização: {gn_report.get('organization', 'N/D')}\n\n"
-                        f"RIOT (Serviço Confiável): {'Sim' if gn_report.get('found_business') else 'Não'}\n\n"
-                        f"Última Atividade: {gn_report.get('last_seen', 'N/D')}"
-                    )
+                    st.error(f"**GreyNoise**\n\nClassificação: {gn_class_display}\n\nAtor: {gn_actor}  ·  Organização: {gn_report.get('organization', 'N/D')}\n\nRIOT (Serviço Confiável): {'Sim' if gn_report.get('found_business') else 'Não'}\n\nÚltima Atividade: {gn_report.get('last_seen', 'N/D')}")
                 else:
                     st.error(f"**GreyNoise**\n\nClassificação: {gn_class_display}\n\nAtor: {gn_actor}")
-
             st.markdown("### 📋 Tabela de Atributos Cruzados")
             gn_tags_text = "Sem tags"
             gn_last_seen_text = "N/D"
@@ -2456,7 +2011,6 @@ with tab_cross_intel:
             elif gn_report:
                 gn_last_seen_text = gn_report.get("last_seen", "N/D")
                 gn_score_text = "Noise: Sim" if gn_report.get("found_scanner") else "Noise: Não"
-
             abuse_tags_bits = []
             if not abuse_error:
                 if abuse_res.get("domain") and abuse_res.get("domain") != "N/D":
@@ -2465,42 +2019,16 @@ with tab_cross_intel:
                     abuse_tags_bits.append("categorias: " + ", ".join(n for n, _ in abuse_res["top_categories"][:3]))
                 if abuse_res.get("is_tor"):
                     abuse_tags_bits.append("Tor")
-
             cross_data = {
                 "Fonte": ["VirusTotal", "AbuseIPDB", "GreyNoise"],
-                "Veredito / Classificação": [
-                    vt_verdict if not vt_error else f"Erro: {vt_error}",
-                    abuse_score_display if not abuse_error else f"Erro: {abuse_error}",
-                    gn_class_display,
-                ],
-                "Score / Confiança": [
-                    f"{vt_malicious}/{vt_total_engines} motores" if not vt_error else "N/A",
-                    f"{abuse_res.get('reports', 'N/A')} reports" if not abuse_error else "N/A",
-                    gn_score_text,
-                ],
-                "País": [
-                    vt_country if not vt_error else "N/D",
-                    (abuse_res.get("country_name") or abuse_res.get("country") or "N/D") if not abuse_error else "N/D",
-                    gn_country_text,
-                ],
-                "Organização / ISP / AS": [
-                    f"{vt_as_owner} ({vt_asn})" if not vt_error else "N/D",
-                    abuse_isp if not abuse_error else "N/D",
-                    gn_org_text,
-                ],
-                "Tags / Contexto Adicional": [
-                    vt_tags,
-                    ", ".join(abuse_tags_bits) if abuse_tags_bits else "—",
-                    gn_tags_text,
-                ],
-                "Última Atividade": [
-                    vt_last_seen if not vt_error else "N/D",
-                    abuse_res.get("last_reported_at", "N/D") if not abuse_error else "N/D",
-                    gn_last_seen_text,
-                ],
+                "Veredito / Classificação": [vt_verdict if not vt_error else f"Erro: {vt_error}", abuse_score_display if not abuse_error else f"Erro: {abuse_error}", gn_class_display],
+                "Score / Confiança": [f"{vt_malicious}/{vt_total_engines} motores" if not vt_error else "N/A", f"{abuse_res.get('reports', 'N/A')} reports" if not abuse_error else "N/A", gn_score_text],
+                "País": [vt_country if not vt_error else "N/D", (abuse_res.get("country_name") or abuse_res.get("country") or "N/D") if not abuse_error else "N/D", gn_country_text],
+                "Organização / ISP / AS": [f"{vt_as_owner} ({vt_asn})" if not vt_error else "N/D", abuse_isp if not abuse_error else "N/D", gn_org_text],
+                "Tags / Contexto Adicional": [vt_tags, ", ".join(abuse_tags_bits) if abuse_tags_bits else "—", gn_tags_text],
+                "Última Atividade": [vt_last_seen if not vt_error else "N/D", abuse_res.get("last_reported_at", "N/D") if not abuse_error else "N/D", gn_last_seen_text],
             }
             st.dataframe(pd.DataFrame(cross_data), use_container_width=True, hide_index=True)
-
             st.markdown("### 🤖 Novas Fontes Correlacionadas")
             nc1, nc2 = st.columns(2)
             with nc1:
@@ -2511,29 +2039,14 @@ with tab_cross_intel:
                     label = "🚨 Encontrado" if matched else ("✅ Não encontrado" if matched is not None else "⚪ Sem avaliação")
                     st.info(f"**BotScout**\n\nResultado: {label}\n\nCorrespondências: `{botscout_res.get('count', 'N/D')}`")
             with nc2:
-                if "error" in attackerkb_res:
-                    st.warning(f"**AttackerKB**\n\n{attackerkb_res['error']}")
-                elif attackerkb_query:
-                    topics = attackerkb_res.get("data", attackerkb_res.get("topics", attackerkb_res.get("results", [])))
-                    if isinstance(topics, dict): topics = topics.get("items", [])
-                    topics = topics if isinstance(topics, list) else []
-                    st.success(f"**AttackerKB** · `{len(topics)}` resultado(s) para `{attackerkb_query}`")
-                    rows=[]
-                    for t in topics[:10]:
-                        if isinstance(t, dict): rows.append({"ID": t.get("id", "N/D"), "Tema": t.get("name") or t.get("title") or t.get("vulnId") or "N/D", "Descrição": (t.get("description") or "")[:180]})
-                    if rows: st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
-                else:
-                    st.caption("AttackerKB: informe um CVE/termo para consultar.")
-
+                st.caption("AttackerKB removido conforme solicitado.")
             if vt_res.get("malicious_engines"):
                 st.caption("🧪 Motores AV que sinalizaram este IP no VirusTotal: " + ", ".join(vt_res["malicious_engines"]))
-
             st.markdown("### 🔗 Links Diretos")
             link_col1, link_col2, link_col3 = st.columns(3)
             link_col1.link_button("Abrir no VirusTotal", f"https://www.virustotal.com/gui/ip-address/{cross_ip}")
             link_col2.link_button("Abrir no AbuseIPDB", f"https://www.abuseipdb.com/check/{cross_ip}")
             link_col3.link_button("Abrir no GreyNoise", f"https://viz.greynoise.io/ip/{cross_ip}")
-
             with st.expander("🔍 Ver respostas brutas (JSON) para depuração"):
                 st.json({"virustotal": vt_res, "abuseipdb": abuse_res, "greynoise": gn_res})
 
@@ -2542,6 +2055,6 @@ with tab_cross_intel:
 # -----------------------------------------------------------------------------
 st.markdown("""
     <div class="footer-text">
-        CTRDEFENSE.BLOG &copy; 2026 | Cyber Threat Research - Caçador de Ameaças V3.0
+        CTRDEFENSE.BLOG &copy; 2026 | Cyber Threat Research - Caçador de Ameaças V3.5
     </div>
 """, unsafe_allow_html=True)
