@@ -88,7 +88,6 @@ st.markdown("""
             background: radial-gradient(circle at 50% -20%, #0f172a, #050811, #020408);
         }
 
-        /* ============ HEADER ============ */
         .main-header {
             font-family: 'JetBrains Mono', monospace;
             font-size: 2.4rem;
@@ -108,7 +107,6 @@ st.markdown("""
             letter-spacing: 0.02em;
         }
 
-        /* ============ BOTÕES GERAIS (Streamlit) ============ */
         .stButton > button {
             font-family: 'JetBrains Mono', monospace;
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
@@ -155,7 +153,6 @@ st.markdown("""
             box-shadow: 0 0 10px var(--cyber-glow);
         }
 
-        /* Botão primário (type="primary") */
         .stButton > button[kind="primary"] {
             background: linear-gradient(135deg, rgba(0, 242, 254, 0.2) 0%, rgba(79, 172, 254, 0.2) 100%);
             border-color: #00f2fe !important;
@@ -171,7 +168,6 @@ st.markdown("""
             border-color: #00f2fe !important;
         }
 
-        /* ============ TOOL CARDS (Quick-Access Hub) ============ */
         .tool-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -250,7 +246,6 @@ st.markdown("""
             color: #cbd5e1;
         }
 
-        /* ============ TABS ============ */
         .stTabs [data-baseweb="tab-list"] {
             gap: 6px;
             background-color: rgba(15, 23, 42, 0.85);
@@ -285,7 +280,6 @@ st.markdown("""
             border: 1px solid rgba(0, 242, 254, 0.5) !important;
         }
 
-        /* ============ MÉTRICAS ============ */
         [data-testid="stMetric"] {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid rgba(51, 65, 85, 0.5);
@@ -313,7 +307,6 @@ st.markdown("""
             color: #64748b !important;
         }
 
-        /* ============ INPUTS ============ */
         .stTextInput input, .stTextArea textarea {
             background: rgba(15, 23, 42, 0.7) !important;
             border: 1px solid rgba(51, 65, 85, 0.6) !important;
@@ -329,7 +322,6 @@ st.markdown("""
             outline: none !important;
         }
 
-        /* ============ SIDEBAR ============ */
         [data-testid="stSidebar"] {
             background: rgba(5, 8, 17, 0.95);
             border-right: 1px solid rgba(51, 65, 85, 0.5);
@@ -346,7 +338,6 @@ st.markdown("""
             transform: translateY(-2px) scale(1.03);
         }
 
-        /* ============ FOOTER ============ */
         .footer-text {
             text-align: center;
             padding: 20px;
@@ -358,7 +349,6 @@ st.markdown("""
             letter-spacing: 0.03em;
         }
 
-        /* ============ HOME BUTTON ============ */
         .home-button {
             display: inline-block;
             padding: 10px 24px;
@@ -384,7 +374,6 @@ st.markdown("""
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         }
 
-        /* ============ LINK BUTTONS ============ */
         .stLinkButton > a {
             font-family: 'JetBrains Mono', monospace;
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
@@ -406,7 +395,6 @@ st.markdown("""
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
         }
 
-        /* ============ RISK METER ============ */
         .risk-meter-container {
             display: flex;
             align-items: center;
@@ -442,7 +430,6 @@ st.markdown("""
             text-align: center;
         }
 
-        /* ============ SCROLLBAR ============ */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -648,7 +635,6 @@ BOTSCOUT_API_KEY = st.session_state.get("active_botscout_key", st.session_state.
 st.markdown(f'<div class="main-header">🛡️ {lang["app_title"]}</div>', unsafe_allow_html=True)
 st.markdown(f'<div class="sub-header">{lang["app_subtitle"]}</div>', unsafe_allow_html=True)
 
-# Botão Home
 if st.button(lang["home"], key="home_button"):
     st.session_state.clear()
     st.rerun()
@@ -976,7 +962,6 @@ def check_abuseipdb(ip_address):
 
 # --- Certificados (crt.sh + fallback CertSpotter) ---
 def check_crtsh(domain, timeout=30):
-    """Consulta o crt.sh para obter certificados de um domínio."""
     domain = domain.strip().lower()
     if not domain:
         return {"error": "Domínio vazio."}
@@ -999,7 +984,6 @@ def check_crtsh(domain, timeout=30):
 
 
 def check_certspotter(domain, timeout=30):
-    """Consulta a API do CertSpotter (fallback) para certificados de um domínio."""
     domain = domain.strip().lower()
     if not domain:
         return {"error": "Domínio vazio."}
@@ -1011,7 +995,6 @@ def check_certspotter(domain, timeout=30):
         )
         if res.status_code == 200:
             data = res.json()
-            # Converte para formato similar ao crt.sh
             certs = []
             for item in data:
                 certs.append({
@@ -1030,19 +1013,16 @@ def check_certspotter(domain, timeout=30):
 
 
 def get_certificates(domain):
-    """Tenta obter certificados de crt.sh e, se falhar, usa CertSpotter."""
     result = check_crtsh(domain)
-    if isinstance(result, list):  # sucesso
+    if isinstance(result, list):
         return result
-    # Se erro, tenta fallback
     st.warning("crt.sh indisponível, tentando CertSpotter...")
     result = check_certspotter(domain)
     return result
 
 
-# --- MalwareBazaar (para hash) ---
+# --- MalwareBazaar ---
 def check_malwarebazaar(hash_value):
-    """Consulta o MalwareBazaar para informações sobre um hash."""
     hash_value = hash_value.strip()
     if not re.fullmatch(r"[0-9a-fA-F]{32}|[0-9a-fA-F]{40}|[0-9a-fA-F]{64}", hash_value):
         return {"error": "Hash inválido."}
@@ -1140,6 +1120,401 @@ def query_vt_universal(value, kind):
     else:
         return {"error": f"VirusTotal não possui consulta direta para o tipo {kind}."}
     return get_vt_data(endpoint, item_id)
+
+
+# --- urlscan.io ---
+def submit_urlscan(target_url):
+    target_url = target_url.strip()
+    parsed = urllib.parse.urlparse(target_url)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        return {"error": "URL inválida. Use uma URL completa, por exemplo: https://exemplo.com"}
+    headers = {"Content-Type": "application/json"}
+    if URLSCAN_API_KEY:
+        headers["API-Key"] = URLSCAN_API_KEY
+    data = {"url": target_url, "visibility": "public"}
+    try:
+        response = requests.post("https://urlscan.io/api/v1/scan/", headers=headers, json=data, timeout=15)
+        if response.status_code == 200:
+            try:
+                return response.json()
+            except ValueError:
+                return {"error": "Resposta inválida (JSON malformado) recebida do urlscan.io."}
+        if response.status_code == 400:
+            return {"error": f"Requisição rejeitada pelo urlscan.io: {response.text[:300]}"}
+        if response.status_code == 401:
+            return {"error": "Chave API do urlscan.io inválida."}
+        if response.status_code == 429:
+            msg = "Limite de requisições do urlscan.io atingido. Aguarde antes de tentar novamente."
+            if not URLSCAN_API_KEY:
+                msg += " Cotas anônimas (sem chave) são bem menores — cadastre uma API Key gratuita para aumentar o limite."
+            return {"error": msg}
+        return {"error": f"HTTP {response.status_code}: {response.text[:500]}"}
+    except requests.RequestException as exc:
+        return {"error": f"Falha de comunicação com urlscan.io: {exc}"}
+
+
+def search_urlscan(query, size=10):
+    headers = {"Accept": "application/json"}
+    if URLSCAN_API_KEY:
+        headers["API-Key"] = URLSCAN_API_KEY
+    try:
+        response = requests.get("https://urlscan.io/api/v1/search/", headers=headers, params={"q": query, "size": size}, timeout=15)
+        if response.status_code == 200:
+            try:
+                return response.json()
+            except ValueError:
+                return {"error": "Resposta inválida (JSON malformado) recebida da busca do urlscan.io."}
+        if response.status_code == 429:
+            return {"error": "Limite de requisições de busca do urlscan.io atingido."}
+        return {"error": f"HTTP {response.status_code}: {response.text[:300]}"}
+    except requests.RequestException as exc:
+        return {"error": f"Falha de comunicação com a busca do urlscan.io: {exc}"}
+
+
+def check_urlscan_by_ip(ip_address):
+    if not is_valid_ipv4(ip_address):
+        return {"error": "IPv4 inválido."}
+    search_res = search_urlscan(f'page.ip:"{ip_address}"', size=10)
+    if "error" in search_res:
+        return search_res
+    hits = search_res.get("results", []) or []
+    total = _dig(search_res, "total", default=len(hits))
+    scans = []
+    malicious_count = 0
+    for hit in hits:
+        page = hit.get("page", {}) or {}
+        task = hit.get("task", {}) or {}
+        verdicts_overall = _dig(hit, "verdicts", "overall", default={}) or {}
+        is_malicious = bool(verdicts_overall.get("malicious"))
+        if is_malicious:
+            malicious_count += 1
+        scans.append({
+            "domain": page.get("domain", "N/D"),
+            "url": page.get("url") or task.get("url", "N/D"),
+            "country": page.get("country", "N/D"),
+            "time": task.get("time", "N/D"),
+            "malicious": is_malicious,
+            "result_url": hit.get("result") or (f"https://urlscan.io/result/{task.get('uuid', '')}/" if task.get("uuid") else ""),
+            "screenshot": hit.get("screenshot"),
+        })
+    return {
+        "total": total,
+        "returned": len(scans),
+        "malicious_count": malicious_count,
+        "scans": scans,
+        "search_link": f"https://urlscan.io/search/#page.ip%3A%22{ip_address}%22",
+    }
+
+
+def get_urlscan_result(scan_uuid):
+    headers = {"Accept": "application/json"}
+    if URLSCAN_API_KEY:
+        headers["API-Key"] = URLSCAN_API_KEY
+    url = f"https://urlscan.io/api/v1/result/{scan_uuid}/"
+    try:
+        response = requests.get(url, headers=headers, timeout=15)
+        if response.status_code == 200:
+            try:
+                return response.json()
+            except ValueError:
+                return {"error": "Resposta inválida (JSON malformado) recebida do urlscan.io."}
+        if response.status_code == 404:
+            return {"__pending__": True}
+        if response.status_code == 401:
+            return {"error": "Chave API do urlscan.io inválida para consulta de resultado."}
+        if response.status_code == 429:
+            return {"error": "Limite de requisições do urlscan.io atingido durante a consulta do resultado."}
+        return {"error": f"HTTP {response.status_code}: {response.text[:300]}"}
+    except requests.RequestException as exc:
+        return {"error": f"Falha de comunicação com urlscan.io: {exc}"}
+
+
+def poll_urlscan_result(scan_uuid, status_placeholder=None, progress_bar=None, initial_wait=15, poll_interval=5, max_wait=90):
+    def _update(elapsed, message):
+        if status_placeholder is not None:
+            status_placeholder.info(message)
+        if progress_bar is not None:
+            progress_bar.progress(min(elapsed / max_wait, 1.0))
+    _update(0, f"⏳ Scan enviado. Aguardando {initial_wait}s para o processamento inicial...")
+    time.sleep(initial_wait)
+    elapsed = initial_wait
+    while True:
+        result = get_urlscan_result(scan_uuid)
+        if not (isinstance(result, dict) and result.get("__pending__")):
+            if progress_bar is not None:
+                progress_bar.progress(1.0)
+            return result
+        if elapsed >= max_wait:
+            return {"error": "timeout"}
+        _update(elapsed, f"⏳ Ainda processando no urlscan.io... ({elapsed}s / {max_wait}s)")
+        time.sleep(poll_interval)
+        elapsed += poll_interval
+
+
+def _dig(source, *keys, default=None):
+    current = source
+    for key in keys:
+        if isinstance(current, dict):
+            current = current.get(key)
+        else:
+            return default
+    return default if current is None else current
+
+
+def _country_flag(country_code):
+    if not country_code or len(country_code) != 2 or not country_code.isalpha():
+        return ""
+    return "".join(chr(127397 + ord(c)) for c in country_code.upper())
+
+
+def _format_scan_datetime(iso_ts):
+    if not iso_ts:
+        return "N/D"
+    try:
+        return datetime.fromisoformat(str(iso_ts).replace("Z", "+00:00")).strftime("%d/%m/%Y %H:%M:%S UTC")
+    except ValueError:
+        return str(iso_ts)
+
+
+def _brand_names(brands):
+    names = []
+    for b in brands or []:
+        if isinstance(b, str):
+            names.append(b)
+        elif isinstance(b, dict):
+            names.append(b.get("name") or b.get("key") or "Desconhecido")
+    return names
+
+
+def extract_urlscan_verdict(result):
+    overall = _dig(result, "verdicts", "overall", default={}) or {}
+    urlscan_v = _dig(result, "verdicts", "urlscan", default={}) or {}
+    malicious = bool(overall.get("malicious"))
+    score = overall.get("score", 0) or 0
+    has_verdicts = overall.get("hasVerdicts", 0) or 0
+    categories = overall.get("categories") or urlscan_v.get("categories") or []
+    tags = overall.get("tags") or urlscan_v.get("tags") or []
+    brands = _brand_names(overall.get("brands")) or _brand_names(urlscan_v.get("brands"))
+    if malicious:
+        label, level = "🔴 MALICIOSO", "error"
+    elif score and score > 0:
+        label, level = "🟡 SUSPEITO", "warning"
+    elif has_verdicts:
+        label, level = "🟢 NENHUMA AMEAÇA DETECTADA", "success"
+    else:
+        label, level = "⚪ SEM CLASSIFICAÇÃO DISPONÍVEL", "info"
+    return {"label": label, "level": level, "score": score, "categories": categories, "tags": tags, "brands": brands}
+
+
+def extract_urlscan_summary(result):
+    task = result.get("task", {}) or {}
+    page = result.get("page", {}) or {}
+    stats = result.get("stats", {}) or {}
+    requests_list = _dig(result, "data", "requests", default=[]) or []
+    return {
+        "title": page.get("title") or "(sem título)",
+        "submitted_url": task.get("url", "N/D"),
+        "final_url": page.get("url", "N/D"),
+        "redirected": str(page.get("redirected", "")).lower() == "true",
+        "scan_time": _format_scan_datetime(task.get("time")),
+        "total_requests": len(requests_list),
+        "unique_countries": stats.get("uniqCountries", "N/D"),
+        "total_links": stats.get("totalLinks", "N/D"),
+        "malicious_resources": stats.get("malicious", 0),
+        "report_url": task.get("reportURL") or f"https://urlscan.io/result/{task.get('uuid', '')}/",
+        "screenshot_url": task.get("screenshotURL"),
+    }
+
+
+def extract_urlscan_location(result):
+    page = result.get("page", {}) or {}
+    geo = page.get("geoip", {}) or {}
+    country = page.get("country") or geo.get("country") or ""
+    city = page.get("city") or geo.get("city") or "—"
+    return {
+        "country": country or "N/D",
+        "flag": _country_flag(country),
+        "city": city,
+        "ip": page.get("ip", "N/D"),
+        "asn": page.get("asn", "N/D"),
+        "asnname": page.get("asnname", "N/D"),
+        "server": page.get("server") or "N/D",
+        "ptr": page.get("ptr") or "—",
+        "continent": page.get("continent") or geo.get("continent") or "",
+        "region": page.get("region") or geo.get("region") or "",
+        "latitude": page.get("latitude") or geo.get("latitude"),
+        "longitude": page.get("longitude") or geo.get("longitude"),
+        "domain": page.get("domain") or "",
+    }
+
+
+def extract_urlscan_history(result):
+    history = []
+    redirects = _dig(result, "data", "redirects", default=[])
+    if isinstance(redirects, list) and redirects:
+        for idx, hop in enumerate(redirects, start=1):
+            if isinstance(hop, dict):
+                url = hop.get("url") or hop.get("to") or hop.get("location") or "N/D"
+                via = hop.get("type") or hop.get("via") or hop.get("redirectType")
+                if not via:
+                    via = "JavaScript" if hop.get("js") else "HTTP"
+            else:
+                url, via = str(hop), "N/D"
+            history.append({"#": idx, "URL": url, "Tipo": via})
+        return history
+    nav_hops = []
+    for item in _dig(result, "data", "requests", default=[]) or []:
+        if not isinstance(item, dict):
+            continue
+        req = item.get("request", {}) or {}
+        req_inner = req.get("request", {}) or {}
+        resp_inner = _dig(item, "response", "response", default={}) or {}
+        status = resp_inner.get("status")
+        is_navigation = req.get("type") == "Document"
+        is_redirect_status = isinstance(status, int) and 300 <= status < 400
+        if is_navigation or is_redirect_status:
+            nav_hops.append({
+                "timestamp": req.get("timestamp", 0),
+                "url": req_inner.get("url") or resp_inner.get("url") or "N/D",
+                "status": status,
+            })
+    nav_hops.sort(key=lambda h: h["timestamp"])
+    seen = set()
+    for hop in nav_hops:
+        if hop["url"] in seen:
+            continue
+        seen.add(hop["url"])
+        tipo = f"HTTP {hop['status']}" if isinstance(hop["status"], int) else "Navegação"
+        history.append({"#": len(history) + 1, "URL": hop["url"], "Tipo": tipo})
+    if not history:
+        task_url = result.get("task", {}).get("url", "N/D")
+        page_url = result.get("page", {}).get("url", "N/D")
+        history.append({"#": 1, "URL": task_url, "Tipo": "URL Submetida"})
+        if page_url and page_url != task_url:
+            history.append({"#": 2, "URL": page_url, "Tipo": "URL Final"})
+    return history
+
+
+def extract_urlscan_transactions(result):
+    rows = []
+    for idx, item in enumerate(_dig(result, "data", "requests", default=[]) or [], start=1):
+        if not isinstance(item, dict):
+            continue
+        req = item.get("request", {}) or {}
+        req_inner = req.get("request", {}) or {}
+        resp = item.get("response", {}) or {}
+        resp_inner = resp.get("response", {}) or {}
+        status = resp_inner.get("status")
+        size_bytes = resp.get("encodedDataLength", resp_inner.get("encodedDataLength"))
+        rows.append({
+            "#": idx,
+            "Método": req_inner.get("method", "—"),
+            "URL": req_inner.get("url") or resp_inner.get("url") or "N/D",
+            "Status": status if status is not None else "Sem resposta",
+            "Tipo": req.get("type", "—"),
+            "MIME": resp_inner.get("mimeType", "—"),
+            "Tamanho (bytes)": size_bytes if isinstance(size_bytes, int) else "N/D",
+            "IP Remoto": resp_inner.get("remoteIPAddress", "—"),
+            "País": _dig(resp, "geoip", "country", default="—"),
+            "ASN": _dig(resp, "asn", "asn", default="—"),
+            "Hash SHA256": resp.get("hash", "—"),
+        })
+    return rows
+
+
+def render_urlscan_report(result, target_scan_url):
+    summary = extract_urlscan_summary(result)
+    verdict = extract_urlscan_verdict(result)
+    location = extract_urlscan_location(result)
+    history = extract_urlscan_history(result)
+    transactions = extract_urlscan_transactions(result)
+
+    st.subheader("🎯 Resumo (Summary)")
+    getattr(st, verdict["level"])(f"**{verdict['label']}**  ·  Score de Maliciosidade: `{verdict['score']}`")
+    extra_bits = []
+    if verdict["categories"]:
+        extra_bits.append("Categorias: " + ", ".join(str(c) for c in verdict["categories"]))
+    if verdict["brands"]:
+        extra_bits.append("Marcas Detectadas: " + ", ".join(verdict["brands"]))
+    if verdict["tags"]:
+        extra_bits.append("Tags: " + ", ".join(str(t) for t in verdict["tags"]))
+    if extra_bits:
+        st.caption(" • ".join(extra_bits))
+
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("Requisições HTTP", summary["total_requests"])
+    m2.metric("Recursos Maliciosos", summary["malicious_resources"])
+    m3.metric("Países Únicos", summary["unique_countries"])
+    m4.metric("Houve Redirecionamento?", "Sim" if summary["redirected"] else "Não")
+
+    st.markdown(f"**📄 Título da Página:** {summary['title']}")
+    st.markdown(f"**🔗 URL Submetida:** `{summary['submitted_url']}`")
+    st.markdown(f"**🏁 URL Final:** `{summary['final_url']}`")
+    st.markdown(f"**🕒 Data/Hora do Scan:** {summary['scan_time']}")
+
+    link_col1, link_col2 = st.columns([1, 1])
+    link_col1.link_button("📑 Abrir Relatório Completo", summary["report_url"])
+    if summary.get("screenshot_url"):
+        link_col2.link_button("🖼️ Ver Screenshot", summary["screenshot_url"])
+
+    st.divider()
+    st.markdown("### 📍 Localização (Located) & Rede")
+
+    col_loc1, col_loc2, col_loc3, col_loc4, col_loc5 = st.columns(5)
+    col_loc1.metric("País", f"{location['flag']} {location['country']}")
+    col_loc2.metric("Cidade", location['city'])
+    col_loc3.metric("IP", location['ip'])
+    col_loc4.metric("ASN", location['asn'])
+    col_loc5.metric("Organização AS", location['asnname'])
+
+    st.markdown(f"**Servidor (HTTP Server header):** {location['server']}  ·  **PTR:** {location['ptr']}")
+    if location.get('continent'):
+        st.markdown(f"**Continente:** {location['continent']}")
+    if location.get('region'):
+        st.markdown(f"**Região:** {location['region']}")
+    if location.get('latitude') and location.get('longitude'):
+        st.markdown(f"**Coordenadas:** {location['latitude']}, {location['longitude']}")
+    if location.get('domain'):
+        st.markdown(f"**Domínio:** {location['domain']}")
+
+    st.divider()
+    st.markdown("### 🧭 Histórico de URL da Página (Page URL History)")
+    if history:
+        st.dataframe(pd.DataFrame(history), use_container_width=True, hide_index=True)
+    else:
+        st.caption("Nenhum redirecionamento detectado — a URL carregou diretamente.")
+
+    st.divider()
+    st.markdown(f"### 📡 Transações HTTP (HTTP Transactions) — {len(transactions)} requisições capturadas")
+    if transactions:
+        df_tx = pd.DataFrame(transactions)
+        col_filter, col_export = st.columns([3, 1])
+        with col_filter:
+            filter_txt = st.text_input("Filtrar transações por domínio/URL:", key="urlscan_tx_filter", placeholder="ex: googletagmanager.com")
+        if filter_txt:
+            df_tx = df_tx[df_tx["URL"].str.contains(filter_txt, case=False, na=False, regex=False)]
+        st.dataframe(df_tx, use_container_width=True, hide_index=True, height=380)
+        with col_export:
+            st.download_button("⬇️ Exportar CSV", df_tx.to_csv(index=False).encode("utf-8"),
+                               file_name=f"urlscan_transactions_{urllib.parse.urlparse(target_scan_url).netloc or 'scan'}.csv",
+                               mime="text/csv", use_container_width=True)
+    else:
+        st.caption("Nenhuma transação HTTP foi capturada para esta página.")
+
+    if summary.get("screenshot_url"):
+        with st.expander("🖼️ Screenshot da Página Capturada"):
+            try:
+                shot_headers = {"API-Key": URLSCAN_API_KEY} if URLSCAN_API_KEY else {}
+                shot = requests.get(summary["screenshot_url"], headers=shot_headers, timeout=15)
+                if shot.status_code == 200:
+                    st.image(shot.content, use_container_width=True)
+                else:
+                    st.caption(f"Não foi possível carregar o screenshot (HTTP {shot.status_code}).")
+            except requests.RequestException:
+                st.caption("Não foi possível carregar o screenshot no momento.")
+
+    with st.expander("🔍 Ver JSON bruto completo (debug)"):
+        st.json(result)
 
 
 def query_urlscan_universal(value, kind):
@@ -1580,7 +1955,6 @@ with tab_ctr_intel:
             else:
                 with st.spinner("Consultando fontes públicas de enriquecimento..."):
                     results = {}
-                    # Consultas básicas
                     if kind == "IP":
                         results["AbuseIPDB"] = check_abuseipdb(input_value) if ABUSE_API_KEY else {"error": "Sem API Key"}
                         results["Shodan InternetDB"] = check_shodan_internetdb(input_value)
@@ -1590,12 +1964,11 @@ with tab_ctr_intel:
                             results["VirusTotal"] = parse_vt_details(get_vt_data("ip_addresses", input_value))
                     else:
                         domain = input_value if kind == "DOMAIN" else urllib.parse.urlparse(input_value).netloc
-                        results["crt.sh"] = get_certificates(domain)  # <<< FUNÇÃO CORRIGIDA
+                        results["crt.sh"] = get_certificates(domain)
                         results["urlscan"] = search_urlscan(f'page.domain:"{domain}"', size=10) if kind == "DOMAIN" else search_urlscan(f'page.url:"{input_value}"', size=10)
                         if VT_API_KEY:
                             results["VirusTotal"] = parse_vt_details(get_vt_data("domains", domain)) if kind == "DOMAIN" else parse_vt_details(get_vt_data("urls", vt_url_id(input_value)))
 
-                # Exibir relatório consolidado
                 st.subheader("📊 Resumo Consolidado")
                 source_summary = []
                 for src, res in results.items():
@@ -1609,7 +1982,7 @@ with tab_ctr_intel:
                         source_summary.append({"Fonte": src, "Status": status})
                 st.dataframe(pd.DataFrame(source_summary), use_container_width=True, hide_index=True)
 
-                # Seção: Domains
+                # Domains
                 st.markdown("### 🌐 Domains Relacionados")
                 domains = set()
                 if "urlscan" in results and isinstance(results["urlscan"], dict):
@@ -1628,7 +2001,7 @@ with tab_ctr_intel:
                 else:
                     st.caption("Nenhum domínio adicional encontrado.")
 
-                # Seção: Certificates
+                # Certificates
                 st.markdown("### 📜 Certificados (crt.sh / CertSpotter)")
                 crt_data = results.get("crt.sh", {})
                 if isinstance(crt_data, list) and crt_data:
@@ -1647,7 +2020,7 @@ with tab_ctr_intel:
                 else:
                     st.caption("Nenhum certificado encontrado ou consulta não realizada.")
 
-                # Seção: Malware Families
+                # Malware Families
                 st.markdown("### ☣️ Malware Families")
                 malware_families = set()
                 if "VirusTotal" in results and isinstance(results["VirusTotal"], dict):
@@ -1661,7 +2034,7 @@ with tab_ctr_intel:
                 else:
                     st.caption("Nenhuma família de malware identificada nas fontes públicas.")
 
-                # Seção: MITRE Techniques
+                # MITRE Techniques
                 st.markdown("### 🎯 MITRE ATT&CK Techniques")
                 mitre_techniques = []
                 if "VirusTotal" in results and isinstance(results["VirusTotal"], dict):
@@ -1674,7 +2047,7 @@ with tab_ctr_intel:
                 else:
                     st.info("Para obter técnicas MITRE, é necessário integração com MISP/IntelOwl ou análise de amostra de malware. Nenhuma técnica encontrada nas fontes públicas.")
 
-                # Seção: Related IPs
+                # Related IPs
                 st.markdown("### 🔗 Related IPs")
                 related_ips = set()
                 if "Shodan InternetDB" in results and isinstance(results["Shodan InternetDB"], dict):
