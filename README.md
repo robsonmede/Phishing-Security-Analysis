@@ -22,8 +22,6 @@ pip install streamlit pandas requests
 
 pip install -r requirements.txt
 
-## VIRUSTOTAL_API_KEY = "SUA_CHAVE_VIRUSTOTAL_AQUI" ABUSEIPDB_API_KEY = "SUA_CHAVE_ABUSEIPDB_AQUI"
-## URLSCAN_API_KEY = "SUA_CHAVE_URLSCAN_AQUI" GREYNOISE_API_KEY = "SUA_CHAVE_GREYNOISE_AQUI" # Opcional
 
 streamlit run app.py
 
