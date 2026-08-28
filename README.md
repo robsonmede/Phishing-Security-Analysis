@@ -27,4 +27,3 @@ streamlit run app.py
 
 ## O Streamlit abrirá automaticamente a aplicação no seu navegador padrão no endereço: 👉 http://localhost:8501
 
-## Não suba o arquivo .streamlit/secrets.toml para repositórios públicos no GitHub! Adicione .streamlit/secrets.toml ao seu arquivo .gitignore. As chaves de API tratadas na barra lateral utilizam campos do tipo password para evitar que fiquem visíveis na tela durante gravações ou apresentações.
