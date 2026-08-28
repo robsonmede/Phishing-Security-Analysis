@@ -1,4 +1,4 @@
-# Caçador de Ameaças V2.3
+# Caçador de Ameaças V3.5
 
 🛡️ Cyber Threat Research - Caçador de Ameaças V3.5
 Aplicação web desenvolvida em Streamlit para automação de Threat Hunting, Detection Engineering e Triagem de IOCs (Indicadores de Comprometimento).
