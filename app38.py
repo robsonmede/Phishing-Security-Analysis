@@ -2538,12 +2538,14 @@ with tab_cross:
         getattr(st, risk_color)(f"**{risk_label}** — IP `{cross_ip}`  ·  Pontuação de risco: `{risk_points}`")
 
         # Barra de risco visual
-        st.markdown(f"""
-            <div class="risk-meter-container">
-                <div class="risk-meter-bar">
-                    <div class="risk-meter-fill" style="width: {risk_percent}%; background: linear-gradient(90deg, #4ade80, #fbbf24, #f87171);"></div>
-                </div>
-                <div class="risk-meter-label" style="color: {'#f87171' if risk_points >= 4 else '#fbbf24' if risk_points >= 2 else '#4ade80'};">{
+      st.markdown(f"""
+    <div class="risk-meter-container">
+        <div class="risk-meter-bar">
+            <div class="risk-meter-fill" style="width: {risk_percent}%; background: linear-gradient(90deg, #4ade80, #fbbf24, #f87171);"></div>
+        </div>
+        <div class="risk-meter-label" style="color: {'#f87171' if risk_points >= 4 else '#fbbf24' if risk_points >= 2 else '#4ade80'};">{risk_label}</div>
+    </div>
+""", unsafe_allow_html=True)
 # -----------------------------------------------------------------------------
 # 8. RODAPÉ
 # -----------------------------------------------------------------------------
