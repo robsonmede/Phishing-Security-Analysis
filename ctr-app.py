@@ -21,6 +21,55 @@ st.set_page_config(
 )
 
 # -----------------------------------------------------------------------------
+# AUTENTICAÇÃO
+# -----------------------------------------------------------------------------
+USER_CREDENTIALS = {"root": "ctrdefense"}
+
+def check_password():
+    """Retorna True se o usuário estiver autenticado."""
+    if "authenticated" not in st.session_state:
+        st.session_state.authenticated = False
+        st.session_state.username = ""
+
+    if not st.session_state.authenticated:
+        # Tela de login personalizada
+        st.markdown("""
+            <div style="text-align: center; padding: 2rem 1rem;">
+                <h1 style="color: #00f2fe; font-family: 'JetBrains Mono', monospace; font-size: 2.2rem; margin-bottom: 0.5rem;">🛡️ Cyber Threat Research - Threat Intel</h1>
+                <p style="color: #94a3b8; font-size: 1.1rem;">
+                    Acesse o sistema em 
+                    <a href="https://ctrdefense.blog" target="_blank" style="color: #4facfe; text-decoration: none; font-weight: 600;">ctrdefense.blog</a>
+                </p>
+                <hr style="border: 1px solid #1e293b; margin: 1.5rem 0;">
+            </div>
+        """, unsafe_allow_html=True)
+
+        with st.form("login_form"):
+            username = st.text_input("Usuário")
+            password = st.text_input("Senha", type="password")
+            submit = st.form_submit_button("Entrar")
+
+            if submit:
+                if username in USER_CREDENTIALS and password == USER_CREDENTIALS[username]:
+                    st.session_state.authenticated = True
+                    st.session_state.username = username
+                    st.rerun()
+                else:
+                    st.error("Usuário ou senha inválidos.")
+        st.stop()
+    else:
+        col_user, col_logout = st.columns([4, 1])
+        with col_user:
+            st.caption(f"🔓 Logado como: `{st.session_state.username}`")
+        with col_logout:
+            if st.button("Sair", key="logout"):
+                st.session_state.authenticated = False
+                st.session_state.username = ""
+                st.rerun()
+
+check_password()
+
+# -----------------------------------------------------------------------------
 # 2. DESIGN SYSTEM: CSS CYBERPUNK / GLASSMORPHISM (V3.8 MELHORADO)
 # -----------------------------------------------------------------------------
 st.markdown("""
@@ -50,7 +99,6 @@ st.markdown("""
             background: radial-gradient(circle at 50% -20%, #0f172a, #050811, #020408);
         }
 
-        /* ============ HEADER ============ */
         .main-header {
             font-family: 'JetBrains Mono', monospace;
             font-size: 2.4rem;
@@ -70,7 +118,6 @@ st.markdown("""
             letter-spacing: 0.02em;
         }
 
-        /* ============ BOTÕES GERAIS (Streamlit) ============ */
         .stButton > button {
             font-family: 'JetBrains Mono', monospace;
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
@@ -117,7 +164,6 @@ st.markdown("""
             box-shadow: 0 0 10px var(--cyber-glow);
         }
 
-        /* Botão primário (type="primary") */
         .stButton > button[kind="primary"] {
             background: linear-gradient(135deg, rgba(0, 242, 254, 0.2) 0%, rgba(79, 172, 254, 0.2) 100%);
             border-color: #00f2fe !important;
@@ -133,7 +179,6 @@ st.markdown("""
             border-color: #00f2fe !important;
         }
 
-        /* ============ TOOL CARDS (Quick-Access Hub) ============ */
         .tool-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -170,7 +215,7 @@ st.markdown("""
         }
 
         .tool-card:hover {
-            border-color: var(--cyber-border-hover, rgba(0,242,254,0.6));
+            border-color: rgba(0,242,254,0.6);
             transform: translateY(-4px) scale(1.03);
             box-shadow: 0 12px 30px -8px var(--cyber-glow-strong), 0 0 20px rgba(0, 242, 254, 0.2);
             background: rgba(15, 23, 42, 0.9);
@@ -212,7 +257,6 @@ st.markdown("""
             color: #cbd5e1;
         }
 
-        /* ============ TABS ============ */
         .stTabs [data-baseweb="tab-list"] {
             gap: 6px;
             background-color: rgba(15, 23, 42, 0.85);
@@ -247,7 +291,6 @@ st.markdown("""
             border: 1px solid rgba(0, 242, 254, 0.5) !important;
         }
 
-        /* ============ MÉTRICAS ============ */
         [data-testid="stMetric"] {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid rgba(51, 65, 85, 0.5);
@@ -275,7 +318,6 @@ st.markdown("""
             color: #64748b !important;
         }
 
-        /* ============ INPUTS ============ */
         .stTextInput input, .stTextArea textarea {
             background: rgba(15, 23, 42, 0.7) !important;
             border: 1px solid rgba(51, 65, 85, 0.6) !important;
@@ -291,7 +333,6 @@ st.markdown("""
             outline: none !important;
         }
 
-        /* ============ SIDEBAR ============ */
         [data-testid="stSidebar"] {
             background: rgba(5, 8, 17, 0.95);
             border-right: 1px solid rgba(51, 65, 85, 0.5);
@@ -308,7 +349,6 @@ st.markdown("""
             transform: translateY(-2px) scale(1.03);
         }
 
-        /* ============ FOOTER ============ */
         .footer-text {
             text-align: center;
             padding: 20px;
@@ -320,7 +360,6 @@ st.markdown("""
             letter-spacing: 0.03em;
         }
 
-        /* ============ HOME BUTTON ============ */
         .home-button {
             display: inline-block;
             padding: 10px 24px;
@@ -346,7 +385,6 @@ st.markdown("""
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         }
 
-        /* ============ LINK BUTTONS ============ */
         .stLinkButton > a {
             font-family: 'JetBrains Mono', monospace;
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
@@ -368,7 +406,6 @@ st.markdown("""
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
         }
 
-        /* ============ RISK METER ============ */
         .risk-meter-container {
             display: flex;
             align-items: center;
@@ -404,7 +441,6 @@ st.markdown("""
             text-align: center;
         }
 
-        /* ============ SCROLLBAR ============ */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -437,7 +473,6 @@ translations = {
         "vt_key": "VirusTotal API Key:",
         "abuse_key": "AbuseIPDB API Key:",
         "urlscan_key": "urlscan.io API Key:",
-        "greynoise_key": "GreyNoise API Key (Business/Enterprise):",
         "botscout_key": "BotScout API Key (opcional):",
         "save": "💾 Salvar",
         "clear": "🗑️ Limpar",
@@ -447,7 +482,7 @@ translations = {
         "tab_abuseipdb": "🛡️ AbuseIPDB",
         "tab_hypotheses": "🎯 Central de Hipóteses",
         "tab_urlscan": "🌐 urlscan.io",
-        "tab_greynoise": "📡 GreyNoise",
+        "tab_ctr_intel": "🧠 CTR-Intelligence",
         "tab_vazamento": "🔓 Vazamento-Email",
         "tab_osint": "🧭 APT-Hunter & OSINT",
         "tab_cross": "🔗 Cross-Intel",
@@ -460,7 +495,6 @@ translations = {
         "vt_key": "VirusTotal API Key:",
         "abuse_key": "AbuseIPDB API Key:",
         "urlscan_key": "urlscan.io API Key:",
-        "greynoise_key": "GreyNoise API Key (Business/Enterprise):",
         "botscout_key": "BotScout API Key (optional):",
         "save": "💾 Save",
         "clear": "🗑️ Clear",
@@ -470,7 +504,7 @@ translations = {
         "tab_abuseipdb": "🛡️ AbuseIPDB",
         "tab_hypotheses": "🎯 Hypothesis Center",
         "tab_urlscan": "🌐 urlscan.io",
-        "tab_greynoise": "📡 GreyNoise",
+        "tab_ctr_intel": "🧠 CTR-Intelligence",
         "tab_vazamento": "🔓 Email Leak",
         "tab_osint": "🧭 APT-Hunter & OSINT",
         "tab_cross": "🔗 Cross-Intel",
@@ -483,7 +517,6 @@ translations = {
         "vt_key": "Clave API VirusTotal:",
         "abuse_key": "Clave API AbuseIPDB:",
         "urlscan_key": "Clave API urlscan.io:",
-        "greynoise_key": "Clave API GreyNoise (Business/Enterprise):",
         "botscout_key": "Clave API BotScout (opcional):",
         "save": "💾 Guardar",
         "clear": "🗑️ Limpiar",
@@ -493,7 +526,7 @@ translations = {
         "tab_abuseipdb": "🛡️ AbuseIPDB",
         "tab_hypotheses": "🎯 Centro de Hipótesis",
         "tab_urlscan": "🌐 urlscan.io",
-        "tab_greynoise": "📡 GreyNoise",
+        "tab_ctr_intel": "🧠 CTR-Intelligence",
         "tab_vazamento": "🔓 Fuga de Email",
         "tab_osint": "🧭 APT-Hunter & OSINT",
         "tab_cross": "🔗 Cross-Intel",
@@ -506,7 +539,6 @@ translations = {
         "vt_key": "Clé API VirusTotal :",
         "abuse_key": "Clé API AbuseIPDB :",
         "urlscan_key": "Clé API urlscan.io :",
-        "greynoise_key": "Clé API GreyNoise (Business/Enterprise) :",
         "botscout_key": "Clé API BotScout (optionnel) :",
         "save": "💾 Enregistrer",
         "clear": "🗑️ Effacer",
@@ -516,7 +548,7 @@ translations = {
         "tab_abuseipdb": "🛡️ AbuseIPDB",
         "tab_hypotheses": "🎯 Centre d'hypothèses",
         "tab_urlscan": "🌐 urlscan.io",
-        "tab_greynoise": "📡 GreyNoise",
+        "tab_ctr_intel": "🧠 CTR-Intelligence",
         "tab_vazamento": "🔓 Fuite d'email",
         "tab_osint": "🧭 APT-Hunter & OSINT",
         "tab_cross": "🔗 Cross-Intel",
@@ -529,7 +561,6 @@ translations = {
         "vt_key": "VirusTotal API-Schlüssel:",
         "abuse_key": "AbuseIPDB API-Schlüssel:",
         "urlscan_key": "urlscan.io API-Schlüssel:",
-        "greynoise_key": "GreyNoise API-Schlüssel (Business/Enterprise):",
         "botscout_key": "BotScout API-Schlüssel (optional):",
         "save": "💾 Speichern",
         "clear": "🗑️ Löschen",
@@ -539,7 +570,7 @@ translations = {
         "tab_abuseipdb": "🛡️ AbuseIPDB",
         "tab_hypotheses": "🎯 Hypothesen-Zentrum",
         "tab_urlscan": "🌐 urlscan.io",
-        "tab_greynoise": "📡 GreyNoise",
+        "tab_ctr_intel": "🧠 CTR-Intelligence",
         "tab_vazamento": "🔓 E-Mail-Leck",
         "tab_osint": "🧭 APT-Hunter & OSINT",
         "tab_cross": "🔗 Cross-Intel",
@@ -573,13 +604,11 @@ with st.sidebar:
     def_vt = get_secret("VIRUSTOTAL_API_KEY")
     def_abuse = get_secret("ABUSEIPDB_API_KEY")
     def_urlscan = get_secret("URLSCAN_API_KEY")
-    def_greynoise = get_secret("GREYNOISE_API_KEY")
     def_botscout = get_secret("BOTSCOUT_API_KEY")
 
     user_vt_key = st.text_input(lang["vt_key"], value=st.session_state.get("vt_key_input", def_vt), type="password", key="vt_key_input")
     user_abuse_key = st.text_input(lang["abuse_key"], value=st.session_state.get("abuse_key_input", def_abuse), type="password", key="abuse_key_input")
     user_urlscan_key = st.text_input(lang["urlscan_key"], value=st.session_state.get("urlscan_key_input", def_urlscan), type="password", key="urlscan_key_input")
-    user_greynoise_key = st.text_input(lang["greynoise_key"], value=st.session_state.get("greynoise_key_input", def_greynoise), type="password", key="greynoise_key_input")
     user_botscout_key = st.text_input(lang["botscout_key"], value=st.session_state.get("botscout_key_input", def_botscout), type="password", key="botscout_key_input")
 
     col_btn1, col_btn2 = st.columns(2)
@@ -588,7 +617,6 @@ with st.sidebar:
             st.session_state["active_vt_key"] = user_vt_key
             st.session_state["active_abuse_key"] = user_abuse_key
             st.session_state["active_urlscan_key"] = user_urlscan_key
-            st.session_state["active_greynoise_key"] = user_greynoise_key
             st.session_state["active_botscout_key"] = user_botscout_key
             st.success("✅")
             st.rerun()
@@ -596,8 +624,8 @@ with st.sidebar:
     with col_btn2:
         if st.button(lang["clear"], use_container_width=True):
             keys_to_clear = ["vt_key_input", "abuse_key_input", "urlscan_key_input",
-                            "greynoise_key_input", "botscout_key_input",
-                            "active_vt_key", "active_abuse_key", "active_urlscan_key", "active_greynoise_key",
+                            "botscout_key_input",
+                            "active_vt_key", "active_abuse_key", "active_urlscan_key",
                             "active_botscout_key"]
             for k in keys_to_clear:
                 if k in st.session_state:
@@ -610,7 +638,6 @@ with st.sidebar:
 VT_API_KEY = st.session_state.get("active_vt_key", st.session_state.get("vt_key_input", def_vt))
 ABUSE_API_KEY = st.session_state.get("active_abuse_key", st.session_state.get("abuse_key_input", def_abuse))
 URLSCAN_API_KEY = st.session_state.get("active_urlscan_key", st.session_state.get("urlscan_key_input", def_urlscan))
-GREYNOISE_API_KEY = st.session_state.get("active_greynoise_key", st.session_state.get("greynoise_key_input", def_greynoise))
 BOTSCOUT_API_KEY = st.session_state.get("active_botscout_key", st.session_state.get("botscout_key_input", def_botscout))
 
 # -----------------------------------------------------------------------------
@@ -619,25 +646,23 @@ BOTSCOUT_API_KEY = st.session_state.get("active_botscout_key", st.session_state.
 st.markdown(f'<div class="main-header">🛡️ {lang["app_title"]}</div>', unsafe_allow_html=True)
 st.markdown(f'<div class="sub-header">{lang["app_subtitle"]}</div>', unsafe_allow_html=True)
 
-# Botão Home
 if st.button(lang["home"], key="home_button"):
     st.session_state.clear()
     st.rerun()
 
-status_cols = st.columns(7)
+status_cols = st.columns(6)
 status_cols[0].caption("🟢 VT" if VT_API_KEY else "🟡 VT")
 status_cols[1].caption("🟢 AbuseIPDB" if ABUSE_API_KEY else "🟡 AbuseIPDB")
 status_cols[2].caption("🟢 urlscan" if URLSCAN_API_KEY else "🟢 urlscan")
-status_cols[3].caption("🟢 GreyNoise" if GREYNOISE_API_KEY else "🟢 GreyNoise")
-status_cols[4].caption("🟢 XposedOrNot")
-status_cols[5].caption("🟢 Shodan InternetDB")
-status_cols[6].caption("🟢 ip-api.com")
+status_cols[3].caption("🟢 XposedOrNot")
+status_cols[4].caption("🟢 Shodan InternetDB")
+status_cols[5].caption("🟢 ip-api.com")
 
 if not VT_API_KEY or not ABUSE_API_KEY:
     st.caption("🟡 VirusTotal e AbuseIPDB exigem chave. Fallback OSINT ativo para IPs.")
 
 # -----------------------------------------------------------------------------
-# 5. QUICK-ACCESS THREAT INTEL HUB (V3.8 - EXPANDIDO)
+# 5. QUICK-ACCESS THREAT INTEL HUB
 # -----------------------------------------------------------------------------
 with st.expander(lang["quick_hub"], expanded=False):
     st.markdown("""
@@ -946,250 +971,166 @@ def check_abuseipdb(ip_address):
     except Exception as e:
         return {"error": str(e)}
 
-# --- GreyNoise ---
-def check_greynoise(ip_address):
-    if not is_valid_ipv4(ip_address):
-        return {"error": "IPv4 inválido."}
-
-    if GREYNOISE_API_KEY:
-        url = f"https://api.greynoise.io/v3/ip/{ip_address}"
-        headers = {"Accept": "application/json", "key": GREYNOISE_API_KEY}
-    else:
-        url = f"https://api.greynoise.io/v3/community/{ip_address}"
-        headers = {"Accept": "application/json"}
-
+# --- Certificados (crt.sh + fallback CertSpotter) ---
+def check_crtsh(domain, timeout=30):
+    domain = domain.strip().lower()
+    if not domain:
+        return {"error": "Domínio vazio."}
     try:
-        res = requests.get(url, headers=headers, timeout=10)
+        res = requests.get(
+            f"https://crt.sh/?q=%25.{domain}&output=json",
+            timeout=timeout,
+            headers={"User-Agent": "Mozilla/5.0"}
+        )
+        if res.status_code == 200:
+            try:
+                return res.json()
+            except ValueError:
+                return {"error": "Resposta inválida do crt.sh (JSON malformado)."}
+        if res.status_code == 404:
+            return {"message": "Nenhum certificado encontrado para este domínio."}
+        return {"error": f"HTTP {res.status_code}: {res.text[:200]}"}
+    except requests.RequestException as exc:
+        return {"error": f"Falha de comunicação com crt.sh: {exc}"}
 
+
+def check_certspotter(domain, timeout=30):
+    domain = domain.strip().lower()
+    if not domain:
+        return {"error": "Domínio vazio."}
+    try:
+        res = requests.get(
+            f"https://api.certspotter.com/v1/issuances?domain={domain}&include_subdomains=true&expand=dns_names",
+            timeout=timeout,
+            headers={"User-Agent": "Mozilla/5.0"}
+        )
+        if res.status_code == 200:
+            data = res.json()
+            certs = []
+            for item in data:
+                certs.append({
+                    "common_name": item.get("common_name", "N/D"),
+                    "name_value": item.get("dns_names", []),
+                    "issuer_name": item.get("issuer", {}).get("name", "N/D"),
+                    "not_before": item.get("not_before", "N/D"),
+                    "not_after": item.get("not_after", "N/D"),
+                })
+            return certs
+        if res.status_code == 404:
+            return {"message": "Nenhum certificado encontrado."}
+        return {"error": f"HTTP {res.status_code}: {res.text[:200]}"}
+    except requests.RequestException as exc:
+        return {"error": f"Falha de comunicação com CertSpotter: {exc}"}
+
+
+def get_certificates(domain):
+    result = check_crtsh(domain)
+    if isinstance(result, list):
+        return result
+    st.warning("crt.sh indisponível, tentando CertSpotter...")
+    result = check_certspotter(domain)
+    return result
+
+
+# --- MalwareBazaar ---
+def check_malwarebazaar(hash_value):
+    hash_value = hash_value.strip()
+    if not re.fullmatch(r"[0-9a-fA-F]{32}|[0-9a-fA-F]{40}|[0-9a-fA-F]{64}", hash_value):
+        return {"error": "Hash inválido."}
+    data = {"query": "get_info", "hash": hash_value}
+    try:
+        res = requests.post("https://mb-api.abuse.ch/api/v1/", data=data, timeout=15)
         if res.status_code == 200:
             return res.json()
-        if res.status_code == 400:
-            return {"error": "IP inválido ou não roteável para a consulta GreyNoise."}
-        if res.status_code == 401:
-            return {"error": "Chave API do GreyNoise inválida ou sem permissão."}
-        if res.status_code == 403:
-            return {"error": "A chave GreyNoise não possui acesso ao endpoint solicitado."}
-        if res.status_code == 404:
-            return {"message": "IP não catalogado no GreyNoise."}
-        if res.status_code == 429:
-            return {"error": "Limite de requisições atingido no GreyNoise."}
-        return {"error": f"HTTP {res.status_code}: {res.text[:300]}"}
+        return {"error": f"HTTP {res.status_code}: {res.text[:200]}"}
     except requests.RequestException as exc:
-        return {"error": f"Falha de comunicação com GreyNoise: {exc}"}
+        return {"error": f"Falha de comunicação com MalwareBazaar: {exc}"}
 
 
-def _gn_tag_names(tags):
-    names = []
-    for t in tags or []:
-        if isinstance(t, dict):
-            names.append(t.get("name") or t.get("slug") or "Tag")
-        else:
-            names.append(str(t))
-    return names
+def check_botscout_ip(ip_address):
+    if not is_valid_ipv4(ip_address):
+        return {"error": "IPv4 inválido."}
+    params = {"ip": ip_address, "format": "xml"}
+    if BOTSCOUT_API_KEY:
+        params["key"] = BOTSCOUT_API_KEY
+    try:
+        res = requests.get("https://botscout.com/test/", params=params, timeout=10)
+        if res.status_code != 200:
+            return {"error": f"HTTP {res.status_code}: {res.text[:200]}"}
+        body = res.text.strip()
+        if body.startswith("!"):
+            return {"error": body[1:].strip()}
+        m = re.search(r"<matched>([YN])</matched>", body, re.I)
+        c = re.search(r"<count>(\d+)</count>", body, re.I)
+        return {"matched": (m.group(1).upper() == "Y") if m else None, "count": int(c.group(1)) if c else None, "raw": body}
+    except requests.RequestException as exc:
+        return {"error": f"Falha de comunicação com BotScout: {exc}"}
 
 
-def extract_greynoise_report(gn_res):
-    if "internet_scanner_intelligence" in gn_res or "business_service_intelligence" in gn_res:
-        isi = gn_res.get("internet_scanner_intelligence", {}) or {}
-        bsi = gn_res.get("business_service_intelligence", {}) or {}
-        meta = isi.get("metadata", {}) or {}
-        raw = isi.get("raw_data", {}) or {}
-        found_scanner = bool(isi.get("found"))
-        found_business = bool(bsi.get("found"))
-        classification = (isi.get("classification") or "").strip()
-        if not classification:
-            classification = "benign" if found_business else ("unknown" if not found_scanner else "unknown")
-        return {
-            "mode": "full",
-            "ip": gn_res.get("ip", "N/D"),
-            "found_scanner": found_scanner,
-            "found_business": found_business,
-            "classification": classification,
-            "actor": isi.get("actor") or "Desconhecido",
-            "first_seen": isi.get("first_seen") or "N/D",
-            "last_seen": isi.get("last_seen") or "N/D",
-            "spoofable": isi.get("spoofable"),
-            "vpn": isi.get("vpn"),
-            "vpn_service": isi.get("vpn_service") or "",
-            "tor": isi.get("tor"),
-            "bot": isi.get("bot"),
-            "cves": isi.get("cves") or [],
-            "tags": _gn_tag_names(isi.get("tags")),
-            "tags_detail": isi.get("tags") or [],
-            "organization": meta.get("organization") or "Desconhecido",
-            "category": meta.get("category") or "N/D",
-            "country": meta.get("source_country") or "N/D",
-            "country_code": meta.get("source_country_code") or "",
-            "city": meta.get("source_city") or "N/D",
-            "region": meta.get("region") or "N/D",
-            "asn": meta.get("asn") or "N/D",
-            "domain": meta.get("domain") or "N/D",
-            "rdns": meta.get("rdns") or "—",
-            "os": meta.get("os") or "N/D",
-            "sensor_count": meta.get("sensor_count", "N/D"),
-            "sensor_hits": meta.get("sensor_hits", "N/D"),
-            "mobile": meta.get("mobile"),
-            "single_destination": meta.get("single_destination"),
-            "destination_countries": meta.get("destination_countries") or [],
-            "destination_asns": meta.get("destination_asns") or [],
-            "scanned_ports": raw.get("scan") or [],
-            "useragents": _dig(raw, "http", "useragent", default=[]) or [],
-            "business_category": bsi.get("category") or "N/D",
-            "business_name": bsi.get("name") or "N/D",
-            "business_description": bsi.get("description") or "",
-            "business_explanation": bsi.get("explanation") or "",
-            "business_trust_level": bsi.get("trust_level") or "N/D",
-            "link": f"https://viz.greynoise.io/ip/{gn_res.get('ip', '')}",
-        }
-    return {
-        "mode": "community",
-        "ip": gn_res.get("ip", "N/D"),
-        "found_scanner": bool(gn_res.get("noise")),
-        "found_business": bool(gn_res.get("riot")),
-        "classification": gn_res.get("classification") or "unknown",
-        "actor": gn_res.get("name") or "Desconhecido",
-        "last_seen": gn_res.get("last_seen") or "N/D",
-        "link": gn_res.get("link") or f"https://viz.greynoise.io/ip/{gn_res.get('ip', '')}",
-    }
+def check_botscout_email(email):
+    email = (email or "").strip()
+    if not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", email):
+        return {"error": "E-mail inválido."}
+    params = {"mail": email, "format": "xml"}
+    if BOTSCOUT_API_KEY:
+        params["key"] = BOTSCOUT_API_KEY
+    try:
+        res = requests.get("https://botscout.com/test/", params=params, timeout=10)
+        if res.status_code != 200:
+            return {"error": f"HTTP {res.status_code}: {res.text[:200]}"}
+        body = res.text.strip()
+        if body.startswith("!"):
+            return {"error": body[1:].strip()}
+        m = re.search(r"<matched>([YN])</matched>", body, re.I)
+        c = re.search(r"<count>(\d+)</count>", body, re.I)
+        return {"matched": (m.group(1).upper() == "Y") if m else None, "count": int(c.group(1)) if c else None, "raw": body}
+    except requests.RequestException as exc:
+        return {"error": f"Falha de comunicação com BotScout: {exc}"}
 
 
-def render_greynoise_report(gn_res, queried_ip):
-    report = extract_greynoise_report(gn_res)
-    classification = (report.get("classification") or "unknown").lower()
-    if classification == "malicious":
-        label, level = "🔴 MALICIOSO", "error"
-    elif classification == "suspicious":
-        label, level = "🟡 SUSPEITO", "warning"
-    elif classification == "benign":
-        label, level = "🟢 BENIGNO", "success"
+def detect_osint_query_type(value):
+    value = (value or "").strip()
+    if is_valid_ipv4(value):
+        return "IP"
+    if re.fullmatch(r"[0-9a-fA-F]{32}", value):
+        return "MD5"
+    if re.fullmatch(r"[0-9a-fA-F]{40}", value):
+        return "SHA1"
+    if re.fullmatch(r"[0-9a-fA-F]{64}", value):
+        return "SHA256"
+    if re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", value):
+        return "EMAIL"
+    if re.fullmatch(r"CVE-\d{4}-\d{4,7}", value, re.I):
+        return "CVE"
+    parsed = urllib.parse.urlparse(value if re.match(r"^[a-z][a-z0-9+.-]*://", value, re.I) else "http://" + value)
+    if parsed.scheme in {"http", "https"} and parsed.netloc:
+        if value.lower().startswith(("http://", "https://")):
+            return "URL"
+        return "DOMAIN"
+    return "TERM"
+
+
+def vt_url_id(value):
+    return base64.urlsafe_b64encode(value.encode("utf-8")).decode("ascii").rstrip("=")
+
+
+def query_vt_universal(value, kind):
+    if not VT_API_KEY:
+        return {"error": "VirusTotal sem API Key."}
+    endpoint = None
+    item_id = value
+    if kind == "IP":
+        endpoint = "ip_addresses"
+    elif kind in {"MD5", "SHA1", "SHA256"}:
+        endpoint = "files"
+    elif kind == "DOMAIN":
+        endpoint = "domains"
+    elif kind == "URL":
+        endpoint = "urls"
+        item_id = vt_url_id(value)
     else:
-        label, level = "⚪ SEM CLASSIFICAÇÃO / NÃO OBSERVADO", "info"
-
-    st.subheader("📊 Classificação e Resumo")
-    getattr(st, level)(f"**{label}**  ·  IP `{report['ip']}`")
-
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Noise (Scanner)", "Sim" if report.get("found_scanner") else "Não")
-    col2.metric("Business Service (RIOT)", "Sim" if report.get("found_business") else "Não")
-    if report["mode"] == "full":
-        col3.metric("Trust Level", report.get("business_trust_level", "N/D"))
-        col4.metric("Sensor Hits", report.get("sensor_hits", "N/D"))
-    else:
-        col3.metric("Ator Conhecido", report.get("actor", "N/D"))
-        col4.metric("Last Seen", report.get("last_seen", "N/D"))
-
-    if report["mode"] == "community":
-        st.info(
-            "ℹ️ Exibindo dados da **Community API** (gratuita). Campos como organização, ASN, "
-            "tags detalhadas, comportamento de rede (VPN/Tor/Bot), CVEs e alvos de escaneamento "
-            "exigem uma API Key Business/Enterprise na barra lateral."
-        )
-        st.markdown(f"**👤 Nome/Ator:** `{report.get('actor', 'N/D')}`")
-        st.markdown(f"**⏳ Last Seen:** `{report.get('last_seen', 'N/D')}`")
-        st.markdown(f"🔗 [Visualizar no GreyNoise Viz]({report['link']})")
-        with st.expander("🔍 Ver JSON bruto"):
-            st.json(gn_res)
-        return
-
-    st.markdown("### 📋 Perfil do Indicador")
-    p1, p2 = st.columns(2)
-    with p1:
-        st.markdown(f"**👤 Actor:** `{report['actor']}`")
-        st.markdown(f"**🏢 Organization:** `{report['organization']}`")
-        st.markdown(f"**🗂️ Category:** `{report['category']}`")
-        st.markdown(f"**🌐 ASN:** `{report['asn']}`  ·  **Domínio:** `{report['domain']}`")
-        st.markdown(f"**📛 rDNS:** `{report['rdns']}`  ·  **SO detectado:** `{report['os']}`")
-    with p2:
-        flag = _country_flag(report.get("country_code", ""))
-        render_country_field(st, "🌍 País de Origem", f"{flag} {report['country']}", report.get("region", ""))
-        st.markdown(f"**🏙️ Cidade:** `{report['city']}`")
-        st.markdown(f"**📅 First Seen:** `{report['first_seen']}`  ·  **Last Seen:** `{report['last_seen']}`")
-        st.markdown(f"**📡 Sensor Count:** `{report['sensor_count']}`  ·  **Sensor Hits:** `{report['sensor_hits']}`")
-
-    st.divider()
-    st.markdown("### 🕵️ Comportamento de Rede")
-    b1, b2, b3, b4, b5 = st.columns(5)
-    b1.metric("Spoofable", "Sim" if report.get("spoofable") else "Não")
-    b2.metric("VPN", "Sim" if report.get("vpn") else "Não")
-    b3.metric("Tor", "Sim" if report.get("tor") else "Não")
-    b4.metric("Bot", "Sim" if report.get("bot") else "Não")
-    b5.metric("Dispositivo Móvel", "Sim" if report.get("mobile") else "Não")
-    if report.get("vpn") and report.get("vpn_service"):
-        st.caption(f"🔒 Serviço de VPN identificado: **{report['vpn_service']}**")
-
-    st.divider()
-    st.markdown("### 🏷️ Tags de Comportamento")
-    tags_detail = report.get("tags_detail") or []
-    if tags_detail:
-        tag_rows = []
-        for t in tags_detail:
-            if isinstance(t, dict):
-                tag_rows.append({
-                    "Tag": t.get("name", "N/D"),
-                    "Categoria": t.get("category", "N/D"),
-                    "Intenção": t.get("intention", "N/D"),
-                    "Bloqueio Recomendado?": "🚨 Sim" if t.get("recommend_block") else "Não",
-                    "Descrição": t.get("description", ""),
-                })
-        if tag_rows:
-            st.dataframe(pd.DataFrame(tag_rows), use_container_width=True, hide_index=True)
-    elif report.get("tags"):
-        tags_html = "".join(
-            f"<span style='background-color:#1e293b; border: 1px solid #38bdf8; padding: 4px 10px; "
-            f"border-radius: 4px; margin-right: 6px; font-family: monospace; font-size: 0.85em; "
-            f"transition: all 0.3s ease;' onmouseover=\"this.style.borderColor='#00f2fe'; this.style.boxShadow='0 0 8px rgba(0,242,254,0.4)';\" "
-            f"onmouseout=\"this.style.borderColor='#38bdf8'; this.style.boxShadow='none';\">{t}</span>"
-            for t in report["tags"]
-        )
-        st.markdown(tags_html, unsafe_allow_html=True)
-    else:
-        st.caption("Nenhuma tag de comportamento associada a este IP.")
-
-    if report.get("cves"):
-        cves_html = "".join(
-            f"<span style='background-color:#1e293b; border: 1px solid #f87171; padding: 4px 10px; "
-            f"border-radius: 4px; margin-right: 6px; font-family: monospace; font-size: 0.85em; color: #f87171;'>{cve}</span>"
-            for cve in report["cves"]
-        )
-        st.markdown(f"**⚠️ CVEs Ativamente Exploradas por este IP:**")
-        st.markdown(cves_html, unsafe_allow_html=True)
-
-    st.divider()
-    st.markdown("### 🎯 Alvos Observados do Escaneamento")
-    t1, t2, t3 = st.columns(3)
-    t1.metric("Destino Único?", "Sim" if report.get("single_destination") else "Não")
-    t2.metric("Países-Alvo", ", ".join(report.get("destination_countries") or []) or "N/D")
-    t3.metric("ASNs-Alvo", ", ".join(report.get("destination_asns") or []) or "N/D")
-
-    if report.get("scanned_ports"):
-        ports_html = "".join(
-            f"<span style='background-color:#1e293b; border: 1px solid #38bdf8; padding: 3px 8px; "
-            f"border-radius: 4px; margin-right: 4px; font-family: monospace; font-size: 0.8em;'>{p}</span>"
-            for p in report["scanned_ports"][:20]
-        )
-        st.markdown(f"🔌 Portas/protocolos observados: {ports_html}", unsafe_allow_html=True)
-
-    if report.get("useragents"):
-        with st.expander("🧾 User-Agents observados nas requisições deste IP"):
-            for ua in report["useragents"][:15]:
-                st.code(str(ua), language="text")
-
-    if report.get("found_business"):
-        st.divider()
-        st.markdown("### 🏢 Serviço Empresarial Conhecido (Business Service Intelligence)")
-        st.success(
-            f"**{report.get('business_name', 'N/D')}** · Categoria: {report.get('business_category', 'N/D')} "
-            f"· Trust Level: {report.get('business_trust_level', 'N/D')}"
-        )
-        if report.get("business_description"):
-            st.caption(report["business_description"])
-        if report.get("business_explanation"):
-            st.caption(f"ℹ️ {report['business_explanation']}")
-
-    st.divider()
-    st.markdown(f"🔗 [Visualizar relatório completo no GreyNoise Viz]({report['link']})")
-    with st.expander("🔍 Ver JSON bruto completo (debug)"):
-        st.json(gn_res)
+        return {"error": f"VirusTotal não possui consulta direta para o tipo {kind}."}
+    return get_vt_data(endpoint, item_id)
 
 
 # --- urlscan.io ---
@@ -1397,7 +1338,6 @@ def extract_urlscan_summary(result):
 
 
 def extract_urlscan_location(result):
-    """Localização e rede enriquecidas a partir dos dados da página."""
     page = result.get("page", {}) or {}
     geo = page.get("geoip", {}) or {}
     country = page.get("country") or geo.get("country") or ""
@@ -1588,92 +1528,6 @@ def render_urlscan_report(result, target_scan_url):
         st.json(result)
 
 
-def check_botscout_ip(ip_address):
-    if not is_valid_ipv4(ip_address):
-        return {"error": "IPv4 inválido."}
-    params = {"ip": ip_address, "format": "xml"}
-    if BOTSCOUT_API_KEY:
-        params["key"] = BOTSCOUT_API_KEY
-    try:
-        res = requests.get("https://botscout.com/test/", params=params, timeout=10)
-        if res.status_code != 200:
-            return {"error": f"HTTP {res.status_code}: {res.text[:200]}"}
-        body = res.text.strip()
-        if body.startswith("!"):
-            return {"error": body[1:].strip()}
-        m = re.search(r"<matched>([YN])</matched>", body, re.I)
-        c = re.search(r"<count>(\d+)</count>", body, re.I)
-        return {"matched": (m.group(1).upper() == "Y") if m else None, "count": int(c.group(1)) if c else None, "raw": body}
-    except requests.RequestException as exc:
-        return {"error": f"Falha de comunicação com BotScout: {exc}"}
-
-
-def check_botscout_email(email):
-    email = (email or "").strip()
-    if not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", email):
-        return {"error": "E-mail inválido."}
-    params = {"mail": email, "format": "xml"}
-    if BOTSCOUT_API_KEY:
-        params["key"] = BOTSCOUT_API_KEY
-    try:
-        res = requests.get("https://botscout.com/test/", params=params, timeout=10)
-        if res.status_code != 200:
-            return {"error": f"HTTP {res.status_code}: {res.text[:200]}"}
-        body = res.text.strip()
-        if body.startswith("!"):
-            return {"error": body[1:].strip()}
-        m = re.search(r"<matched>([YN])</matched>", body, re.I)
-        c = re.search(r"<count>(\d+)</count>", body, re.I)
-        return {"matched": (m.group(1).upper() == "Y") if m else None, "count": int(c.group(1)) if c else None, "raw": body}
-    except requests.RequestException as exc:
-        return {"error": f"Falha de comunicação com BotScout: {exc}"}
-
-
-def detect_osint_query_type(value):
-    value = (value or "").strip()
-    if is_valid_ipv4(value):
-        return "IP"
-    if re.fullmatch(r"[0-9a-fA-F]{32}", value):
-        return "MD5"
-    if re.fullmatch(r"[0-9a-fA-F]{40}", value):
-        return "SHA1"
-    if re.fullmatch(r"[0-9a-fA-F]{64}", value):
-        return "SHA256"
-    if re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", value):
-        return "EMAIL"
-    if re.fullmatch(r"CVE-\d{4}-\d{4,7}", value, re.I):
-        return "CVE"
-    parsed = urllib.parse.urlparse(value if re.match(r"^[a-z][a-z0-9+.-]*://", value, re.I) else "http://" + value)
-    if parsed.scheme in {"http", "https"} and parsed.netloc:
-        if value.lower().startswith(("http://", "https://")):
-            return "URL"
-        return "DOMAIN"
-    return "TERM"
-
-
-def vt_url_id(value):
-    return base64.urlsafe_b64encode(value.encode("utf-8")).decode("ascii").rstrip("=")
-
-
-def query_vt_universal(value, kind):
-    if not VT_API_KEY:
-        return {"error": "VirusTotal sem API Key."}
-    endpoint = None
-    item_id = value
-    if kind == "IP":
-        endpoint = "ip_addresses"
-    elif kind in {"MD5", "SHA1", "SHA256"}:
-        endpoint = "files"
-    elif kind == "DOMAIN":
-        endpoint = "domains"
-    elif kind == "URL":
-        endpoint = "urls"
-        item_id = vt_url_id(value)
-    else:
-        return {"error": f"VirusTotal não possui consulta direta para o tipo {kind}."}
-    return get_vt_data(endpoint, item_id)
-
-
 def query_urlscan_universal(value, kind):
     if kind == "IP":
         return check_urlscan_by_ip(value)
@@ -1687,30 +1541,6 @@ def query_urlscan_universal(value, kind):
 def render_osint_unified_report(query_value, query_kind, results):
     st.markdown("### 📊 Relatório Unificado de Threat Intelligence / OSINT")
     st.caption(f"Indicador: `{query_value}` · Tipo detectado: **{query_kind}**")
-
-    # Status das fontes
-    source_status_cols = st.columns(4)
-    source_status_idx = 0
-    for source, result in results.items():
-        if not isinstance(result, dict):
-            status_emoji = "🔴"
-            status_text = "Erro"
-        elif result.get("error"):
-            status_emoji = "🟠"
-            status_text = "Indisponível"
-        elif result.get("message"):
-            status_emoji = "🟡"
-            status_text = "Sem dados"
-        elif result.get("configured") is False:
-            status_emoji = "⚫"
-            status_text = "Não configurado"
-        else:
-            status_emoji = "🟢"
-            status_text = "OK"
-        if source_status_idx < 4:
-            source_status_cols[source_status_idx].caption(f"{status_emoji} {source}: {status_text}")
-            source_status_idx += 1
-
     source_rows = []
     for source, result in results.items():
         if not isinstance(result, dict):
@@ -1729,15 +1559,13 @@ def render_osint_unified_report(query_value, query_kind, results):
             status = "Consulta concluída"
             detail = "Dados recebidos"
         source_rows.append({"Fonte": source, "Status": status, "Resumo": detail})
-    with st.expander("📋 Status detalhado das fontes consultadas"):
-        st.dataframe(pd.DataFrame(source_rows), use_container_width=True, hide_index=True)
-
+    st.dataframe(pd.DataFrame(source_rows), use_container_width=True, hide_index=True)
     vt = results.get("VirusTotal", {})
     if isinstance(vt, dict) and "data" in vt:
         vt_attrs = vt.get("data", {}).get("attributes", {}) or {}
         stats = vt_attrs.get("last_analysis_stats", {}) or {}
         st.markdown("#### 🦠 VirusTotal")
-        a, b, c, d = st.columns(4)
+        a,b,c,d = st.columns(4)
         a.metric("Maliciosos", stats.get("malicious", 0))
         b.metric("Suspeitos", stats.get("suspicious", 0))
         c.metric("Benignos", stats.get("harmless", 0))
@@ -1748,11 +1576,10 @@ def render_osint_unified_report(query_value, query_kind, results):
                 vt_context.append({"Atributo": k, "Valor": vt_attrs.get(k)})
         if vt_context:
             st.dataframe(pd.DataFrame(vt_context), use_container_width=True, hide_index=True)
-
     abuse = results.get("AbuseIPDB", {})
     if isinstance(abuse, dict) and "error" not in abuse and "message" not in abuse:
         st.markdown("#### 🛡️ AbuseIPDB")
-        x, y, z = st.columns(3)
+        x,y,z = st.columns(3)
         x.metric("Abuse Confidence", abuse.get("score", "N/D"))
         y.metric("Reports", abuse.get("reports", 0))
         z.metric("País", abuse.get("country_name") or abuse.get("country") or "N/D")
@@ -1760,18 +1587,6 @@ def render_osint_unified_report(query_value, query_kind, results):
             st.write(pd.DataFrame(abuse["top_categories"], columns=["Categoria", "Ocorrências"]))
     elif isinstance(abuse, dict) and abuse.get("error"):
         st.warning(f"AbuseIPDB: {abuse['error']}")
-
-    gn = results.get("GreyNoise", {})
-    if isinstance(gn, dict) and "error" not in gn and "message" not in gn:
-        report = extract_greynoise_report(gn)
-        st.markdown("#### 📡 GreyNoise")
-        p, q, r, s = st.columns(4)
-        p.metric("Classificação", str(report.get("classification", "unknown")).upper())
-        q.metric("Noise", "Sim" if report.get("found_scanner") else "Não")
-        r.metric("RIOT", "Sim" if report.get("found_business") else "Não")
-        s.metric("Last Seen", report.get("last_seen", "N/D"))
-        st.caption(f"Ator: {report.get('actor', 'N/D')} · Organização: {report.get('organization', 'N/D')} · ASN: {report.get('asn', 'N/D')}")
-
     urlscan = results.get("urlscan", {})
     if isinstance(urlscan, dict) and "error" not in urlscan:
         scans = urlscan.get("scans") if "scans" in urlscan else urlscan.get("results", [])
@@ -1793,7 +1608,6 @@ def render_osint_unified_report(query_value, query_kind, results):
                 st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
         elif urlscan.get("results"):
             st.json(urlscan.get("results"))
-
     sh = results.get("Shodan InternetDB", {})
     if isinstance(sh, dict) and "error" not in sh and "message" not in sh:
         st.markdown("#### 🔎 Shodan InternetDB")
@@ -1804,20 +1618,15 @@ def render_osint_unified_report(query_value, query_kind, results):
         cc[3].metric("Tags", len(sh.get("tags", []) or []))
         if sh.get("ports") or sh.get("vulns"):
             st.write({"ports": sh.get("ports", []), "vulns": sh.get("vulns", []), "tags": sh.get("tags", [])})
-
     geo = results.get("ip-api.com", {})
     if isinstance(geo, dict) and "error" not in geo and geo.get("status") == "success":
         st.markdown("#### 🌍 ip-api.com")
-        geo_rows = [{"País": geo.get("country"), "Região": geo.get("regionName"), "Cidade": geo.get("city"),
-                     "ISP": geo.get("isp"), "Organização": geo.get("org"), "ASN": geo.get("as"),
-                     "Proxy": geo.get("proxy"), "Hosting": geo.get("hosting")}]
+        geo_rows = [{"País": geo.get("country"), "Região": geo.get("regionName"), "Cidade": geo.get("city"), "ISP": geo.get("isp"), "Organização": geo.get("org"), "ASN": geo.get("as"), "Proxy": geo.get("proxy"), "Hosting": geo.get("hosting")}]
         st.dataframe(pd.DataFrame(geo_rows), use_container_width=True, hide_index=True)
-
     bs = results.get("BotScout", {})
     if isinstance(bs, dict) and "error" not in bs:
         st.markdown("#### 🤖 BotScout")
         st.info(f"Match: {'SIM' if bs.get('matched') else 'NÃO' if bs.get('matched') is not None else 'N/D'} · Correspondências: {bs.get('count', 'N/D')}")
-
     xo = results.get("XposedOrNot", {})
     if isinstance(xo, dict) and "error" not in xo and query_kind == "EMAIL":
         st.markdown("#### 🔓 XposedOrNot")
@@ -1825,7 +1634,6 @@ def render_osint_unified_report(query_value, query_kind, results):
         if isinstance(breaches, dict):
             breaches = breaches.get("breaches_details") or breaches.get("breaches") or []
         st.metric("Vazamentos encontrados", len(breaches) if isinstance(breaches, list) else 0)
-
     with st.expander("🔍 JSON consolidado (debug)"):
         st.json(results)
 
@@ -1855,7 +1663,7 @@ def check_xposedornot_analytics(email):
     tab_abuseipdb,
     tab_hypotheses,
     tab_urlscan,
-    tab_greynoise,
+    tab_ctr_intel,
     tab_vazamento,
     tab_osint,
     tab_cross,
@@ -1864,7 +1672,7 @@ def check_xposedornot_analytics(email):
     lang["tab_abuseipdb"],
     lang["tab_hypotheses"],
     lang["tab_urlscan"],
-    lang["tab_greynoise"],
+    lang["tab_ctr_intel"],
     lang["tab_vazamento"],
     lang["tab_osint"],
     lang["tab_cross"],
@@ -2037,13 +1845,10 @@ with tab_urlscan:
     else:
         st.info("🆓 **Modo Anônimo Ativo (sem chave):** o urlscan.io permite enviar e buscar scans mesmo sem API Key, com cota menor e visibilidade pública.")
 
-    # Sub-abas para organizar
     urlscan_sub_tab1, urlscan_sub_tab2 = st.tabs(["🚀 Submeter URL para Scan", "🔍 Buscar por Domínio/IP"])
 
-    # --- Sub-aba: Submeter URL ---
     with urlscan_sub_tab1:
         target_scan_url = st.text_input("Insira a URL suspeita:", placeholder="https://exemplo-phishing.com", key="urlscan_target_input")
-
         pending_uuid = st.session_state.get("urlscan_pending_uuid")
         retry_scan = False
 
@@ -2100,18 +1905,13 @@ with tab_urlscan:
             render_urlscan_report(st.session_state["urlscan_last_result"],
                                   st.session_state.get("urlscan_last_target", target_scan_url))
 
-    # --- Sub-aba: Buscar por Domínio/IP ---
     with urlscan_sub_tab2:
         st.markdown("### Buscar no histórico do urlscan.io")
         search_query = st.text_input("Termo de busca (domínio, IP, URL parcial):",
                                      placeholder="Ex: exemplo.com | 8.8.8.8 | login", key="urlscan_search_input")
-
-        col_search1, col_search2 = st.columns([1, 3])
+        col_search1, _ = st.columns([1, 3])
         with col_search1:
             search_size = st.number_input("Resultados:", min_value=1, max_value=50, value=10, key="urlscan_search_size")
-        with col_search2:
-            pass
-
         if st.button("🔍 Buscar no urlscan.io", type="primary", key="urlscan_search_btn"):
             if not search_query or not search_query.strip():
                 st.warning("Informe um termo de busca.")
@@ -2124,7 +1924,6 @@ with tab_urlscan:
                         hits = search_res.get("results", []) or []
                         total = search_res.get("total", len(hits))
                         st.success(f"🔍 Encontrados **{total}** resultados (exibindo {len(hits)})")
-
                         if hits:
                             search_rows = []
                             for hit in hits:
@@ -2148,65 +1947,147 @@ with tab_urlscan:
                             st.info("Nenhum resultado encontrado para esta busca.")
 
 # =============================================================================
-# ABA 5: GREYNOISE (V3.8 - MELHORADO)
+# ABA 5: CTR-INTELLIGENCE (nova, substitui GreyNoise)
 # =============================================================================
-with tab_greynoise:
-    st.header(lang["tab_greynoise"])
-    st.caption("Descubra se o IP examinado é um scanner inofensivo conhecido, botnet ou IP malicioso.")
+with tab_ctr_intel:
+    st.header(lang["tab_ctr_intel"])
+    st.caption("Relatório consolidado de inteligência com enriquecimento de múltiplas fontes públicas e integrações opcionais (IVRE, MISP, IntelOwl, CrowdSec).")
+    st.info("ℹ️ Para integrar IVRE, MISP, IntelOwl e CrowdSec, configure os endpoints e chaves na barra lateral (ainda não implementado). As fontes públicas já fornecem dados de domains, certificates, malware families, MITRE techniques e related IPs.")
 
-    if not GREYNOISE_API_KEY:
-        st.info("ℹ️ **Modo Comunitário Gratuito Ativo:** Exibindo dados básicos. Adicione uma API Key na barra lateral para habilitar todos os campos enriquecidos.")
-    else:
-        st.success("🔑 **Modo Autenticado Business/Enterprise Ativo:** Trazendo contexto completo de inteligência.")
-
-    # Área de consulta
-    col_gn_input, col_gn_btn = st.columns([3, 1])
-    with col_gn_input:
-        gn_ip = st.text_input("Insira o endereço IP para consulta no GreyNoise:",
-                              placeholder="8.8.8.8", key="gn_ip_input", label_visibility="collapsed")
-    with col_gn_btn:
-        consultar_gn = st.button("📡 Consultar", type="primary", use_container_width=True, key="gn_consult_btn")
-
-    # Histórico de consultas
-    if "greynoise_history" not in st.session_state:
-        st.session_state["greynoise_history"] = []
-
-    if consultar_gn:
-        if not gn_ip:
-            st.warning("Informe um endereço IP.")
-        elif not is_valid_ipv4(gn_ip.strip()):
-            st.error("Informe um endereço IPv4 válido.")
+    input_value = st.text_input("IP ou URL/Domínio para investigação:", key="ctr_input", placeholder="Ex: 8.8.8.8 ou exemplo.com")
+    if st.button("🧠 Gerar Relatório CTR-Intelligence", type="primary", use_container_width=True):
+        if not input_value:
+            st.warning("Informe um IP ou domínio/URL.")
         else:
-            gn_ip = gn_ip.strip()
-            with st.spinner("Consultando GreyNoise..."):
-                gn_res = check_greynoise(gn_ip)
-                if "error" in gn_res:
-                    st.error(gn_res["error"])
-                elif "message" in gn_res:
-                    st.warning(gn_res["message"])
+            input_value = input_value.strip()
+            kind = detect_osint_query_type(input_value)
+            if kind not in ("IP", "DOMAIN", "URL"):
+                st.error("Tipo de indicador não suportado. Forneça um IP ou URL/domínio.")
+            else:
+                with st.spinner("Consultando fontes públicas de enriquecimento..."):
+                    results = {}
+                    if kind == "IP":
+                        results["AbuseIPDB"] = check_abuseipdb(input_value) if ABUSE_API_KEY else {"error": "Sem API Key"}
+                        results["Shodan InternetDB"] = check_shodan_internetdb(input_value)
+                        results["ip-api.com"] = check_ip_api_geo(input_value)
+                        results["urlscan"] = check_urlscan_by_ip(input_value)
+                        if VT_API_KEY:
+                            results["VirusTotal"] = parse_vt_details(get_vt_data("ip_addresses", input_value))
+                    else:
+                        domain = input_value if kind == "DOMAIN" else urllib.parse.urlparse(input_value).netloc
+                        results["crt.sh"] = get_certificates(domain)
+                        results["urlscan"] = search_urlscan(f'page.domain:"{domain}"', size=10) if kind == "DOMAIN" else search_urlscan(f'page.url:"{input_value}"', size=10)
+                        if VT_API_KEY:
+                            results["VirusTotal"] = parse_vt_details(get_vt_data("domains", domain)) if kind == "DOMAIN" else parse_vt_details(get_vt_data("urls", vt_url_id(input_value)))
+
+                st.subheader("📊 Resumo Consolidado")
+                source_summary = []
+                for src, res in results.items():
+                    if isinstance(res, dict):
+                        if res.get("error"):
+                            status = "🔴 Erro"
+                        elif res.get("message"):
+                            status = "🟡 Sem dados"
+                        else:
+                            status = "🟢 OK"
+                        source_summary.append({"Fonte": src, "Status": status})
+                st.dataframe(pd.DataFrame(source_summary), use_container_width=True, hide_index=True)
+
+                # Domains
+                st.markdown("### 🌐 Domains Relacionados")
+                domains = set()
+                if "urlscan" in results and isinstance(results["urlscan"], dict):
+                    scans = results["urlscan"].get("scans", results["urlscan"].get("results", []))
+                    for scan in scans or []:
+                        page = scan.get("page", {}) or {}
+                        dom = page.get("domain")
+                        if dom:
+                            domains.add(dom)
+                if "VirusTotal" in results and isinstance(results["VirusTotal"], dict):
+                    vt = results["VirusTotal"]
+                    if "domain" in vt:
+                        domains.add(vt["domain"])
+                if domains:
+                    st.write(", ".join(f"`{d}`" for d in sorted(domains)))
                 else:
-                    report_snapshot = extract_greynoise_report(gn_res)
-                    history_entry = {
-                        "ip": gn_ip,
-                        "classification": report_snapshot.get("classification", "unknown"),
-                        "actor": report_snapshot.get("actor", "N/D"),
-                        "last_seen": report_snapshot.get("last_seen", "N/D"),
-                        "timestamp": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-                    }
-                    # Evitar duplicados
-                    st.session_state["greynoise_history"] = [
-                        entry for entry in st.session_state["greynoise_history"] if entry["ip"] != gn_ip
-                    ]
-                    st.session_state["greynoise_history"].insert(0, history_entry)
-                    st.session_state["greynoise_history"] = st.session_state["greynoise_history"][:10]
+                    st.caption("Nenhum domínio adicional encontrado.")
 
-                    render_greynoise_report(gn_res, gn_ip)
+                # Certificates
+                st.markdown("### 📜 Certificados (crt.sh / CertSpotter)")
+                crt_data = results.get("crt.sh", {})
+                if isinstance(crt_data, list) and crt_data:
+                    cert_rows = []
+                    for cert in crt_data[:20]:
+                        cert_rows.append({
+                            "Common Name": cert.get("common_name", "N/D"),
+                            "Name Value": cert.get("name_value", "N/D"),
+                            "Issuer": cert.get("issuer_name", "N/D"),
+                            "Not Before": cert.get("not_before", "N/D"),
+                            "Not After": cert.get("not_after", "N/D"),
+                        })
+                    st.dataframe(pd.DataFrame(cert_rows), use_container_width=True, hide_index=True)
+                elif isinstance(crt_data, dict) and "error" in crt_data:
+                    st.warning(crt_data["error"])
+                else:
+                    st.caption("Nenhum certificado encontrado ou consulta não realizada.")
 
-    # Exibir histórico
-    if st.session_state.get("greynoise_history"):
-        with st.expander(f"📜 Histórico de Consultas ({len(st.session_state['greynoise_history'])})", expanded=False):
-            hist_df = pd.DataFrame(st.session_state["greynoise_history"])
-            st.dataframe(hist_df, use_container_width=True, hide_index=True)
+                # Malware Families
+                st.markdown("### ☣️ Malware Families")
+                malware_families = set()
+                if "VirusTotal" in results and isinstance(results["VirusTotal"], dict):
+                    vt = results["VirusTotal"]
+                    if vt.get("tags") and vt["tags"] != "Sem Tags":
+                        for tag in vt["tags"].split(", "):
+                            if any(kw in tag.lower() for kw in ["malware", "trojan", "rat", "ransom", "stealer"]):
+                                malware_families.add(tag)
+                if malware_families:
+                    st.write(", ".join(f"`{m}`" for m in sorted(malware_families)))
+                else:
+                    st.caption("Nenhuma família de malware identificada nas fontes públicas.")
+
+                # MITRE Techniques
+                st.markdown("### 🎯 MITRE ATT&CK Techniques")
+                mitre_techniques = []
+                if "VirusTotal" in results and isinstance(results["VirusTotal"], dict):
+                    vt = results["VirusTotal"]
+                    ptc = vt.get("popular_threat_classification", {})
+                    if ptc:
+                        mitre_techniques = ptc.get("suggested_threat_label", [])
+                if mitre_techniques:
+                    st.write(mitre_techniques)
+                else:
+                    st.info("Para obter técnicas MITRE, é necessário integração com MISP/IntelOwl ou análise de amostra de malware. Nenhuma técnica encontrada nas fontes públicas.")
+
+                # Related IPs
+                st.markdown("### 🔗 Related IPs")
+                related_ips = set()
+                if "Shodan InternetDB" in results and isinstance(results["Shodan InternetDB"], dict):
+                    shodan = results["Shodan InternetDB"]
+                    hostnames = shodan.get("hostnames", [])
+                    for h in hostnames:
+                        try:
+                            resolved = requests.get(f"https://dns.google/resolve?name={h}&type=A", timeout=5).json()
+                            if "Answer" in resolved:
+                                for ans in resolved["Answer"]:
+                                    if ans.get("type") == 1:
+                                        related_ips.add(ans["data"])
+                        except:
+                            pass
+                if "urlscan" in results and isinstance(results["urlscan"], dict):
+                    scans = results["urlscan"].get("scans", results["urlscan"].get("results", []))
+                    for scan in scans or []:
+                        page = scan.get("page", {}) or {}
+                        ip = page.get("ip")
+                        if ip and ip != input_value:
+                            related_ips.add(ip)
+                if related_ips:
+                    st.write(", ".join(f"`{ip}`" for ip in sorted(related_ips)))
+                else:
+                    st.caption("Nenhum IP relacionado encontrado.")
+
+                st.divider()
+                st.markdown("### 🧩 Integrações Opcionais (IVRE, MISP, IntelOwl, CrowdSec)")
+                st.info("Configure os endpoints e chaves dessas ferramentas na barra lateral para obter relatórios mais profundos. Atualmente apenas fontes públicas são consultadas.")
 
 # =============================================================================
 # ABA 6: VAZAMENTO-EMAIL (XposedOrNot)
@@ -2265,40 +2146,33 @@ with tab_vazamento:
                                 st.markdown(f"- **{name}** ({date_raw}): {details}")
 
 # =============================================================================
-# ABA 7: APT-HUNTER & OSINT (V3.8 - MELHORADO)
+# ABA 7: APT-HUNTER & OSINT
 # =============================================================================
 with tab_osint:
     st.header(lang["tab_osint"])
     st.caption("Consulta unificada: informe um IP, domínio, URL, hash, e-mail ou CVE e a aplicação executará todas as integrações compatíveis.")
-    st.info("A consulta automática usa somente integrações que realmente retornam dados: VirusTotal, AbuseIPDB, GreyNoise, urlscan.io, Shodan InternetDB, ip-api.com, BotScout, XposedOrNot.")
-
+    st.info("A consulta automática usa somente integrações que realmente retornam dados: VirusTotal, AbuseIPDB, urlscan.io, Shodan InternetDB, ip-api.com, BotScout, XposedOrNot.")
     query_value = st.text_input("🔎 Indicador para investigação:",
                                 placeholder="Ex.: 8.8.8.8 | exemplo.com | https://exemplo.com | SHA256 | usuario@empresa.com | CVE-2024-21410",
                                 key="osint_unified_query")
-
     auto_kind = detect_osint_query_type(query_value)
-
     kind_emoji_map = {"IP": "🌐", "DOMAIN": "🏷️", "URL": "🔗", "MD5": "🔢", "SHA1": "🔢", "SHA256": "🔢", "EMAIL": "📧", "CVE": "⚠️", "TERM": "🔤"}
     kind_emoji = kind_emoji_map.get(auto_kind, "🔤")
     st.markdown(f"**Tipo detectado:** {kind_emoji} **{auto_kind}**")
-
     q1, q2 = st.columns([1, 1])
     with q1:
         query_mode = st.selectbox("Modo de consulta", ["Automático", "IP", "Domínio", "URL", "Hash", "E-mail", "CVE/Termo"], key="osint_query_mode")
     with q2:
         st.markdown("**Fontes automáticas**")
         st.caption("O sistema só dispara uma fonte quando ela aceita o tipo do indicador informado.")
-
     col_run, col_clear = st.columns([3, 1])
     with col_run:
         run_osint = st.button("🚀 Consultar Todas as Fontes Compatíveis", type="primary", use_container_width=True, key="run_osint_unified")
     with col_clear:
         clear_osint = st.button("🗑️ Limpar Resultados", use_container_width=True, key="clear_osint_results")
-
     if clear_osint:
         st.session_state.pop("osint_unified_last", None)
         st.rerun()
-
     if run_osint:
         raw = (query_value or "").strip()
         if not raw:
@@ -2318,7 +2192,6 @@ with tab_osint:
                             futures["VirusTotal"] = executor.submit(query_vt_universal, raw, kind)
                         if kind == "IP":
                             futures["AbuseIPDB"] = executor.submit(check_abuseipdb, raw)
-                            futures["GreyNoise"] = executor.submit(check_greynoise, raw)
                             futures["urlscan"] = executor.submit(query_urlscan_universal, raw, kind)
                             futures["Shodan InternetDB"] = executor.submit(check_shodan_internetdb, raw)
                             futures["ip-api.com"] = executor.submit(check_ip_api_geo, raw)
@@ -2335,34 +2208,29 @@ with tab_osint:
                             except Exception as exc:
                                 unified[source] = {"error": str(exc)}
                 st.session_state["osint_unified_last"] = {"value": raw, "kind": kind, "results": unified}
-
     last = st.session_state.get("osint_unified_last")
     if last:
         st.divider()
         render_osint_unified_report(last["value"], last["kind"], last["results"])
 
 # =============================================================================
-# ABA 8: CROSS-INTEL (V3.8 - MELHORADO)
+# ABA 8: CROSS-INTEL
 # =============================================================================
 with tab_cross:
     st.header(lang["tab_cross"])
-    st.caption("Consulte simultaneamente VirusTotal, AbuseIPDB, GreyNoise e urlscan.io para obter um contexto unificado da ameaça.")
-    st.caption("🟢 GreyNoise, urlscan.io, Shodan InternetDB e ip-api.com funcionam mesmo sem chave. VT e AbuseIPDB exigem chave própria.")
-
+    st.caption("Consulte simultaneamente VirusTotal, AbuseIPDB e urlscan.io para obter um contexto unificado da ameaça.")
+    st.caption("🟢 urlscan.io, Shodan InternetDB e ip-api.com funcionam mesmo sem chave. VT e AbuseIPDB exigem chave própria.")
     cross_ip = st.text_input("Insira o indicador para correlação:", placeholder="IP, domínio, URL, hash, e-mail ou CVE", key="cross_ip_input")
     cross_kind = detect_osint_query_type(cross_ip)
     st.caption(f"Tipo detectado: **{cross_kind}** · Para relatório completo multiprotocolo, use também a aba APT-Hunter & OSINT.")
-
     col_cross_btn, col_cross_clear = st.columns([3, 1])
     with col_cross_btn:
         run_cross = st.button("🚀 Iniciar Correlação", type="primary", use_container_width=True, key="run_cross_intel")
     with col_cross_clear:
         clear_cross = st.button("🗑️ Limpar", use_container_width=True, key="clear_cross")
-
     if clear_cross:
         st.session_state.pop("cross_intel_last", None)
         st.rerun()
-
     if run_cross:
         cross_ip = (cross_ip or "").strip()
         if not cross_ip:
@@ -2375,7 +2243,6 @@ with tab_cross:
                     futures = {
                         "vt": executor.submit(lambda: parse_vt_details(get_vt_data("ip_addresses", cross_ip))),
                         "abuse": executor.submit(check_abuseipdb, cross_ip),
-                        "gn": executor.submit(check_greynoise, cross_ip),
                         "urlscan": executor.submit(check_urlscan_by_ip, cross_ip),
                         "free_ctx": executor.submit(get_free_ip_context, cross_ip),
                     }
@@ -2386,18 +2253,14 @@ with tab_cross:
                         except Exception as exc:
                             results[key] = {"error": str(exc)}
                 st.session_state["cross_intel_last"] = {"ip": cross_ip, "results": results}
-
     cross_last = st.session_state.get("cross_intel_last")
     if cross_last:
         cross_ip = cross_last["ip"]
         results = cross_last["results"]
-
         vt_res = results["vt"] if isinstance(results["vt"], dict) else {}
         abuse_res = results["abuse"] if isinstance(results["abuse"], dict) else {}
-        gn_res = results["gn"] if isinstance(results["gn"], dict) else {}
         urlscan_res = results["urlscan"] if isinstance(results["urlscan"], dict) else {}
         free_ctx = results["free_ctx"] if isinstance(results["free_ctx"], dict) else {}
-
         vt_verdict = vt_res.get("verdict", "N/A")
         vt_error = vt_res.get("error")
         vt_malicious = vt_res.get("malicious", 0)
@@ -2408,7 +2271,6 @@ with tab_cross:
         vt_asn = vt_res.get("asn", "N/D")
         vt_tags = vt_res.get("tags", "Sem tags")
         vt_last_seen = vt_res.get("last_analysis_human", "N/D")
-
         abuse_error = abuse_res.get("error")
         if abuse_error:
             abuse_score_num = None
@@ -2418,40 +2280,22 @@ with tab_cross:
             abuse_score_num = abuse_res.get("score_raw", 0)
             abuse_score_display = abuse_res.get("score", "N/A")
             abuse_isp = abuse_res.get("isp", "N/A")
-
-        gn_report = None
-        if "error" in gn_res:
-            gn_class_display = f"Erro: {gn_res['error']}"
-            gn_actor = "N/A"
-        elif "message" in gn_res:
-            gn_class_display = "Não Catalogado (Limpo/Desconhecido)"
-            gn_actor = "N/A"
-        else:
-            gn_report = extract_greynoise_report(gn_res)
-            gn_class_display = str(gn_report.get("classification", "unknown")).upper()
-            gn_actor = gn_report.get("actor", "Desconhecido")
-
         urlscan_error = urlscan_res.get("error")
         urlscan_scans = urlscan_res.get("scans", []) if not urlscan_error else []
         urlscan_total = urlscan_res.get("total", 0) if not urlscan_error else 0
         urlscan_malicious_count = urlscan_res.get("malicious_count", 0) if not urlscan_error else 0
-
         free_ctx_country = free_ctx.get("country", "N/D") if isinstance(free_ctx, dict) else "N/D"
         botscout_res = check_botscout_ip(cross_ip)
-
-        # Cálculo de risco
         risk_points = 0
         risk_reasons = []
         mitigating_factors = []
         additional_signals = []
-
         if vt_malicious > 0:
             risk_points += 2
             risk_reasons.append(f"VirusTotal: {vt_malicious}/{vt_total_engines} motores classificaram como malicioso")
         elif vt_suspicious > 0:
             risk_points += 1
             risk_reasons.append(f"VirusTotal: {vt_suspicious}/{vt_total_engines} motores classificaram como suspeito")
-
         if abuse_score_num is not None:
             if abuse_score_num >= 75:
                 risk_points += 2
@@ -2459,58 +2303,20 @@ with tab_cross:
             elif abuse_score_num >= 25:
                 risk_points += 1
                 risk_reasons.append(f"AbuseIPDB com confiança de abuso moderada ({abuse_score_display})")
-
         if abuse_res.get("is_whitelisted"):
             mitigating_factors.append("AbuseIPDB: IP consta na whitelist (uso legítimo conhecido)")
         if abuse_res.get("top_categories"):
             cats = ", ".join(name for name, _ in abuse_res["top_categories"][:3])
             risk_reasons.append(f"AbuseIPDB — categorias mais reportadas: {cats}")
-
-        if gn_report and gn_report.get("mode") == "full":
-            gn_classification = (gn_report.get("classification") or "").lower()
-            if gn_classification == "malicious":
-                risk_points += 2
-                risk_reasons.append("GreyNoise classificou o comportamento de rede como MALICIOUS")
-            elif gn_classification == "suspicious":
-                risk_points += 1
-                risk_reasons.append("GreyNoise classificou o comportamento de rede como SUSPICIOUS")
-            if any(t.get("recommend_block") for t in (gn_report.get("tags_detail") or []) if isinstance(t, dict)):
-                risk_points += 1
-                risk_reasons.append("GreyNoise sinalizou tags com bloqueio recomendado (recommend_block)")
-            if gn_report.get("cves"):
-                risk_points += 1
-                risk_reasons.append(f"GreyNoise: IP associado à exploração das CVEs {', '.join(gn_report['cves'])}")
-            if gn_report.get("found_business"):
-                risk_points = max(0, risk_points - 1)
-                mitigating_factors.append(f"GreyNoise RIOT: serviço empresarial legítimo conhecido ({gn_report.get('business_name', 'N/D')})")
-            if gn_report.get("tor"):
-                additional_signals.append("🧅 Nó de saída Tor")
-            if gn_report.get("vpn"):
-                additional_signals.append(f"🔒 VPN detectada ({gn_report.get('vpn_service') or 'serviço não identificado'})")
-            if gn_report.get("bot"):
-                additional_signals.append("🤖 Tráfego associado a bot")
-            if gn_report.get("spoofable"):
-                additional_signals.append("🎭 IP de origem 'spoofable' (fácil de forjar)")
-        elif gn_class_display == "MALICIOUS":
-            risk_points += 2
-            risk_reasons.append("GreyNoise classificou como MALICIOUS")
-        elif gn_class_display == "SUSPICIOUS":
-            risk_points += 1
-
-        if abuse_res.get("is_tor"):
-            additional_signals.append("🧅 AbuseIPDB também reporta este IP como nó Tor")
-
         if not urlscan_error:
             if urlscan_malicious_count > 0:
                 risk_points += 2
                 risk_reasons.append(f"urlscan.io: {urlscan_malicious_count} scan(s) hospedados neste IP marcados como MALICIOSOS")
             elif urlscan_total > 0:
                 risk_reasons.append(f"urlscan.io: {urlscan_total} scan(s) históricos encontrados para páginas hospedadas neste IP (nenhum malicioso)")
-
         if isinstance(free_ctx, dict) and free_ctx.get("vulns"):
             risk_points += 1
             risk_reasons.append(f"Shodan InternetDB: IP expõe serviço(s) associados às CVEs {', '.join(free_ctx['vulns'][:5])}")
-
         if risk_points >= 4:
             risk_label, risk_color = "🔴 ALTO RISCO", "error"
             risk_percent = min(100, risk_points * 20)
@@ -2523,11 +2329,8 @@ with tab_cross:
         else:
             risk_label, risk_color = "🟢 BAIXO RISCO / SEM SINAIS", "success"
             risk_percent = 0
-
         st.subheader("🎯 Resultado Consolidado")
         getattr(st, risk_color)(f"**{risk_label}** — IP `{cross_ip}`  ·  Pontuação de risco: `{risk_points}`")
-
-        # Barra de risco visual corrigida (sem chaves desbalanceadas)
         risk_bar_html = f"""
         <div class="risk-meter-container">
             <div class="risk-meter-bar">
@@ -2537,7 +2340,6 @@ with tab_cross:
         </div>
         """
         st.markdown(risk_bar_html, unsafe_allow_html=True)
-
         if risk_reasons:
             st.markdown("**⚠️ Motivos que elevam o risco:**")
             for reason in risk_reasons:
@@ -2548,15 +2350,13 @@ with tab_cross:
                 st.markdown(f"- {factor}")
         if additional_signals:
             st.caption("Sinais adicionais de contexto: " + " · ".join(additional_signals))
-
         st.markdown("### 🌍 Contexto de Rede & Geolocalização")
         gctx1, gctx2, gctx3 = st.columns(3)
         gctx1.metric("País (VirusTotal)", vt_country if not vt_error else "N/D")
         gctx2.metric("País (AbuseIPDB)", abuse_res.get("country_name") or abuse_res.get("country") or "N/D")
-        gctx3.metric("País (GreyNoise)", gn_report.get("country") if gn_report and gn_report.get("mode") == "full" else "N/D")
-        st.caption(f"🏢 AS Owner (VT): {vt_as_owner} (`{vt_asn}`)  ·  🏢 Organização (GreyNoise): {gn_report.get('organization') if gn_report and gn_report.get('mode') == 'full' else 'N/D'}  ·  🏢 ISP (AbuseIPDB): {abuse_isp}")
-
-        col_c1, col_c2, col_c3 = st.columns(3)
+        gctx3.metric("País (ip-api.com)", free_ctx_country)
+        st.caption(f"🏢 AS Owner (VT): {vt_as_owner} (`{vt_asn}`)  ·  🏢 ISP (AbuseIPDB): {abuse_isp}")
+        col_c1, col_c2 = st.columns(2)
         with col_c1:
             if vt_error:
                 st.error(f"**VirusTotal**\n\nFalha na consulta: {vt_error}")
@@ -2567,67 +2367,29 @@ with tab_cross:
                 st.error(f"**AbuseIPDB**\n\nFalha na consulta: {abuse_error}")
             else:
                 st.warning(f"**AbuseIPDB**\n\nScore de Abuso: {abuse_score_display}  ({abuse_res.get('reports', 0)} reports de {abuse_res.get('distinct_reporters', 0)} usuários)\n\nISP: {abuse_isp}  ·  Uso: {abuse_res.get('usage_type', 'N/D')}\n\nWhitelisted: {'Sim' if abuse_res.get('is_whitelisted') else 'Não'}  ·  Último report: {abuse_res.get('last_reported_at', 'N/D')}")
-        with col_c3:
-            if "error" in gn_res:
-                st.error(f"**GreyNoise**\n\nFalha na consulta: {gn_res['error']}")
-            elif "message" in gn_res:
-                st.info(f"**GreyNoise**\n\n{gn_res['message']}")
-            elif gn_report and gn_report.get("mode") == "full":
-                st.error(f"**GreyNoise**\n\nClassificação: {gn_class_display}\n\nAtor: {gn_actor}  ·  Organização: {gn_report.get('organization', 'N/D')}\n\nRIOT (Serviço Confiável): {'Sim' if gn_report.get('found_business') else 'Não'}\n\nÚltima Atividade: {gn_report.get('last_seen', 'N/D')}")
-            else:
-                st.error(f"**GreyNoise**\n\nClassificação: {gn_class_display}\n\nAtor: {gn_actor}")
-
         st.markdown("### 📋 Tabela de Atributos Cruzados")
-        gn_tags_text = "Sem tags"
-        gn_last_seen_text = "N/D"
-        gn_score_text = "N/D"
-        gn_country_text = "N/D"
-        gn_org_text = "N/D"
-        if gn_report and gn_report.get("mode") == "full":
-            tag_bits = list(gn_report.get("tags") or [])
-            if gn_report.get("cves"):
-                tag_bits += [f"CVE:{c}" for c in gn_report["cves"]]
-            gn_tags_text = ", ".join(tag_bits) if tag_bits else "Sem tags"
-            gn_last_seen_text = gn_report.get("last_seen", "N/D")
-            gn_score_text = f"Trust Level: {gn_report.get('business_trust_level', 'N/D')}" if gn_report.get("found_business") else ("Noise: Sim" if gn_report.get("found_scanner") else "Sem classificação")
-            gn_country_text = gn_report.get("country", "N/D")
-            gn_org_text = f"{gn_report.get('organization', 'N/D')} (`{gn_report.get('asn', 'N/D')}`)"
-        elif gn_report:
-            gn_last_seen_text = gn_report.get("last_seen", "N/D")
-            gn_score_text = "Noise: Sim" if gn_report.get("found_scanner") else "Noise: Não"
-
-        abuse_tags_bits = []
-        if not abuse_error:
-            if abuse_res.get("domain") and abuse_res.get("domain") != "N/D":
-                abuse_tags_bits.append(f"domínio: {abuse_res['domain']}")
-            if abuse_res.get("top_categories"):
-                abuse_tags_bits.append("categorias: " + ", ".join(n for n, _ in abuse_res["top_categories"][:3]))
-            if abuse_res.get("is_tor"):
-                abuse_tags_bits.append("Tor")
-
         cross_data = {
-            "Fonte": ["VirusTotal", "AbuseIPDB", "GreyNoise"],
+            "Fonte": ["VirusTotal", "AbuseIPDB", "urlscan.io"],
             "Veredito / Classificação": [vt_verdict if not vt_error else f"Erro: {vt_error}",
                                           abuse_score_display if not abuse_error else f"Erro: {abuse_error}",
-                                          gn_class_display],
+                                          f"{urlscan_malicious_count} maliciosos / {urlscan_total} scans" if not urlscan_error else f"Erro: {urlscan_error}"],
             "Score / Confiança": [f"{vt_malicious}/{vt_total_engines} motores" if not vt_error else "N/A",
                                    f"{abuse_res.get('reports', 'N/A')} reports" if not abuse_error else "N/A",
-                                   gn_score_text],
+                                   "—"],
             "País": [vt_country if not vt_error else "N/D",
                      (abuse_res.get("country_name") or abuse_res.get("country") or "N/D") if not abuse_error else "N/D",
-                     gn_country_text],
+                     "—"],
             "Organização / ISP / AS": [f"{vt_as_owner} ({vt_asn})" if not vt_error else "N/D",
                                        abuse_isp if not abuse_error else "N/D",
-                                       gn_org_text],
-            "Tags / Contexto Adicional": [vt_tags, ", ".join(abuse_tags_bits) if abuse_tags_bits else "—", gn_tags_text],
+                                       "—"],
+            "Tags / Contexto Adicional": [vt_tags, ", ".join(cats) if (not abuse_error and abuse_res.get("top_categories")) else "—", "—"],
             "Última Atividade": [vt_last_seen if not vt_error else "N/D",
                                   abuse_res.get("last_reported_at", "N/D") if not abuse_error else "N/D",
-                                  gn_last_seen_text],
+                                  "—"],
         }
         st.dataframe(pd.DataFrame(cross_data), use_container_width=True, hide_index=True)
-
         st.markdown("### 🤖 Novas Fontes Correlacionadas")
-        nc1, nc2 = st.columns(2)
+        nc1, _ = st.columns(2)
         with nc1:
             if "error" in botscout_res:
                 st.error(f"**BotScout**\n\n{botscout_res['error']}")
@@ -2635,20 +2397,15 @@ with tab_cross:
                 matched = botscout_res.get("matched")
                 label = "🚨 Encontrado" if matched else ("✅ Não encontrado" if matched is not None else "⚪ Sem avaliação")
                 st.info(f"**BotScout**\n\nResultado: {label}\n\nCorrespondências: `{botscout_res.get('count', 'N/D')}`")
-        with nc2:
-            st.caption("AttackerKB removido conforme solicitado.")
-
         if vt_res.get("malicious_engines"):
             st.caption("🧪 Motores AV que sinalizaram este IP no VirusTotal: " + ", ".join(vt_res["malicious_engines"]))
-
         st.markdown("### 🔗 Links Diretos")
         link_col1, link_col2, link_col3 = st.columns(3)
         link_col1.link_button("Abrir no VirusTotal", f"https://www.virustotal.com/gui/ip-address/{cross_ip}")
         link_col2.link_button("Abrir no AbuseIPDB", f"https://www.abuseipdb.com/check/{cross_ip}")
-        link_col3.link_button("Abrir no GreyNoise", f"https://viz.greynoise.io/ip/{cross_ip}")
-
+        link_col3.link_button("Abrir no urlscan.io", f"https://urlscan.io/ip/{cross_ip}")
         with st.expander("🔍 Ver respostas brutas (JSON) para depuração"):
-            st.json({"virustotal": vt_res, "abuseipdb": abuse_res, "greynoise": gn_res})
+            st.json({"virustotal": vt_res, "abuseipdb": abuse_res, "urlscan": urlscan_res})
 
 # -----------------------------------------------------------------------------
 # 8. RODAPÉ
