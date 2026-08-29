@@ -78,6 +78,41 @@ def check_password():
             </div>
         """, unsafe_allow_html=True)
 
+        # Disclaimer de responsabilidade exibido antes da autenticação.
+        st.markdown("""
+            <div style="
+                background: rgba(15, 23, 42, 0.82);
+                border: 1px solid rgba(245, 158, 11, 0.45);
+                border-left: 4px solid #f59e0b;
+                border-radius: 10px;
+                padding: 18px 20px;
+                margin: 0 auto 22px auto;
+                max-width: 980px;
+                color: #cbd5e1;
+                font-size: 0.92rem;
+                line-height: 1.55;
+            ">
+                <div style="font-family: 'JetBrains Mono', monospace; color: #fbbf24; font-size: 1.05rem; font-weight: 700; margin-bottom: 10px;">
+                    ⚖️ Responsabilidade do usuário
+                </div>
+                <p style="margin: 0 0 10px 0;">
+                    O usuário é integralmente responsável pelas consultas realizadas e pelo uso dos resultados obtidos.
+                </p>
+                <p style="margin: 0 0 10px 0;">
+                    As informações fornecidas pelas fontes de inteligência podem estar <strong>incompletas, desatualizadas, incorretas ou sujeitas a alterações</strong>. Os resultados devem ser tratados como informações de apoio e, quando necessário, validados por fontes oficiais ou pelos responsáveis pelos ativos.
+                </p>
+                <p style="margin: 0 0 6px 0;"><strong>O desenvolvedor da ferramenta não se responsabiliza por:</strong></p>
+                <ul style="margin: 0; padding-left: 22px;">
+                    <li>Uso indevido da aplicação;</li>
+                    <li>Consultas realizadas sem autorização;</li>
+                    <li>Violação de legislação, contratos ou políticas internas;</li>
+                    <li>Danos decorrentes da interpretação ou utilização dos resultados;</li>
+                    <li>Tratamento irregular de dados pessoais;</li>
+                    <li>Ações realizadas pelo usuário com base nas informações apresentadas pela ferramenta.</li>
+                </ul>
+            </div>
+        """, unsafe_allow_html=True)
+
         now = time.time()
         locked = now < st.session_state.login_locked_until
         if locked:
@@ -520,7 +555,7 @@ st.markdown("""
 # -----------------------------------------------------------------------------
 translations = {
     "Português": {
-        "app_title": "Cyber Threat Research - Caçador de Ameaças V3.8",
+        "app_title": "Cyber Threat Research - Caçador de Ameaças V3.9",
         "app_subtitle": "Threat Hunting, Detection Engineering & Dynamic Threat Mapping",
         "sidebar_credentials": "🔑 Credenciais API",
         "vt_key": "VirusTotal API Key:",
@@ -539,10 +574,10 @@ translations = {
         "tab_vazamento": "🔓 Vazamento-Email",
         "tab_osint": "🧭 APT-Hunter & OSINT",
         "tab_cross": "🔗 Cross-Intel",
-        "footer": "CTRDEFENSE.BLOG © 2026 | Cyber Threat Research - Caçador de Ameaças V3.8"
+        "footer": "CTRDEFENSE.IO © 2026 | Cyber Threat Research - Caçador de Ameaças V3.9"
     },
     "English": {
-        "app_title": "Cyber Threat Research - Threat Hunter V3.8",
+        "app_title": "Cyber Threat Research - Threat Hunter V3.9",
         "app_subtitle": "Threat Hunting, Detection Engineering & Dynamic Threat Mapping",
         "sidebar_credentials": "🔑 API Credentials",
         "vt_key": "VirusTotal API Key:",
@@ -561,10 +596,10 @@ translations = {
         "tab_vazamento": "🔓 Email Leak",
         "tab_osint": "🧭 APT-Hunter & OSINT",
         "tab_cross": "🔗 Cross-Intel",
-        "footer": "CTRDEFENSE.BLOG © 2026 | Cyber Threat Research - Threat Hunter V3.8"
+        "footer": "CTRDEFENSE.BLOG © 2026 | Cyber Threat Research - Threat Hunter V3.9"
     },
     "Español": {
-        "app_title": "Cyber Threat Research - Cazador de Amenazas V3.8",
+        "app_title": "Cyber Threat Research - Cazador de Amenazas V3.9",
         "app_subtitle": "Threat Hunting, Detection Engineering & Dynamic Threat Mapping",
         "sidebar_credentials": "🔑 Credenciales API",
         "vt_key": "Clave API VirusTotal:",
@@ -583,10 +618,10 @@ translations = {
         "tab_vazamento": "🔓 Fuga de Email",
         "tab_osint": "🧭 APT-Hunter & OSINT",
         "tab_cross": "🔗 Cross-Intel",
-        "footer": "CTRDEFENSE.BLOG © 2026 | Cyber Threat Research - Cazador de Amenazas V3.8"
+        "footer": "CTRDEFENSE.IO © 2026 | Cyber Threat Research - Cazador de Amenazas V3.9"
     },
     "Français": {
-        "app_title": "Cyber Threat Research - Chasseur de Menaces V3.8",
+        "app_title": "Cyber Threat Research - Chasseur de Menaces V3.9",
         "app_subtitle": "Threat Hunting, Detection Engineering & Dynamic Threat Mapping",
         "sidebar_credentials": "🔑 Identifiants API",
         "vt_key": "Clé API VirusTotal :",
@@ -605,10 +640,10 @@ translations = {
         "tab_vazamento": "🔓 Fuite d'email",
         "tab_osint": "🧭 APT-Hunter & OSINT",
         "tab_cross": "🔗 Cross-Intel",
-        "footer": "CTRDEFENSE.BLOG © 2026 | Cyber Threat Research - Chasseur de Menaces V3.8"
+        "footer": "CTRDEFENSE.IO © 2026 | Cyber Threat Research - Chasseur de Menaces V3.9"
     },
     "Deutsch": {
-        "app_title": "Cyber Threat Research - Bedrohungsjäger V3.8",
+        "app_title": "Cyber Threat Research - Bedrohungsjäger V3.9",
         "app_subtitle": "Threat Hunting, Detection Engineering & Dynamic Threat Mapping",
         "sidebar_credentials": "🔑 API-Zugangsdaten",
         "vt_key": "VirusTotal API-Schlüssel:",
@@ -627,7 +662,7 @@ translations = {
         "tab_vazamento": "🔓 E-Mail-Leck",
         "tab_osint": "🧭 APT-Hunter & OSINT",
         "tab_cross": "🔗 Cross-Intel",
-        "footer": "CTRDEFENSE.BLOG © 2026 | Cyber Threat Research - Bedrohungsjäger V3.8"
+        "footer": "CTRDEFENSE.IO © 2026 | Cyber Threat Research - Bedrohungsjäger V3.98"
     }
 }
 
