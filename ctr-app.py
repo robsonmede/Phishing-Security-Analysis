@@ -38,7 +38,7 @@ def check_password():
                 <h1 style="color: #00f2fe; font-family: 'JetBrains Mono', monospace; font-size: 2.2rem; margin-bottom: 0.5rem;">🛡️ Cyber Threat Research - Threat Intel</h1>
                 <p style="color: #94a3b8; font-size: 1.1rem;">
                     Acesse o sistema em 
-                    <a href="https://ctrdefense.io" target="_blank" style="color: #4facfe; text-decoration: none; font-weight: 600;">ctrdefense.blog</a>
+                    <a href="https://ctrdefense.io" target="_blank" style="color: #4facfe; text-decoration: none; font-weight: 600;">ctrdefense.io</a>
                 </p>
                 <hr style="border: 1px solid #1e293b; margin: 1.5rem 0;">
             </div>
