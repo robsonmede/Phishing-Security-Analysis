@@ -78,6 +78,41 @@ def check_password():
             </div>
         """, unsafe_allow_html=True)
 
+        # Disclaimer de responsabilidade exibido antes da autenticação.
+        st.markdown("""
+            <div style="
+                background: rgba(15, 23, 42, 0.82);
+                border: 1px solid rgba(245, 158, 11, 0.45);
+                border-left: 4px solid #f59e0b;
+                border-radius: 10px;
+                padding: 18px 20px;
+                margin: 0 auto 22px auto;
+                max-width: 980px;
+                color: #cbd5e1;
+                font-size: 0.92rem;
+                line-height: 1.55;
+            ">
+                <div style="font-family: 'JetBrains Mono', monospace; color: #fbbf24; font-size: 1.05rem; font-weight: 700; margin-bottom: 10px;">
+                    ⚖️ Responsabilidade do usuário
+                </div>
+                <p style="margin: 0 0 10px 0;">
+                    O usuário é integralmente responsável pelas consultas realizadas e pelo uso dos resultados obtidos.
+                </p>
+                <p style="margin: 0 0 10px 0;">
+                    As informações fornecidas pelas fontes de inteligência podem estar <strong>incompletas, desatualizadas, incorretas ou sujeitas a alterações</strong>. Os resultados devem ser tratados como informações de apoio e, quando necessário, validados por fontes oficiais ou pelos responsáveis pelos ativos.
+                </p>
+                <p style="margin: 0 0 6px 0;"><strong>O desenvolvedor da ferramenta não se responsabiliza por:</strong></p>
+                <ul style="margin: 0; padding-left: 22px;">
+                    <li>Uso indevido da aplicação;</li>
+                    <li>Consultas realizadas sem autorização;</li>
+                    <li>Violação de legislação, contratos ou políticas internas;</li>
+                    <li>Danos decorrentes da interpretação ou utilização dos resultados;</li>
+                    <li>Tratamento irregular de dados pessoais;</li>
+                    <li>Ações realizadas pelo usuário com base nas informações apresentadas pela ferramenta.</li>
+                </ul>
+            </div>
+        """, unsafe_allow_html=True)
+
         now = time.time()
         locked = now < st.session_state.login_locked_until
         if locked:
@@ -520,7 +555,7 @@ st.markdown("""
 # -----------------------------------------------------------------------------
 translations = {
     "Português": {
-        "app_title": "Cyber Threat Research - Caçador de Ameaças V3.8",
+        "app_title": "Cyber Threat Research - Caçador de Ameaças V3.9",
         "app_subtitle": "Threat Hunting, Detection Engineering & Dynamic Threat Mapping",
         "sidebar_credentials": "🔑 Credenciais API",
         "vt_key": "VirusTotal API Key:",
@@ -539,10 +574,10 @@ translations = {
         "tab_vazamento": "🔓 Vazamento-Email",
         "tab_osint": "🧭 APT-Hunter & OSINT",
         "tab_cross": "🔗 Cross-Intel",
-        "footer": "CTRDEFENSE.BLOG © 2026 | Cyber Threat Research - Caçador de Ameaças V3.8"
+        "footer": "CTRDEFENSE.IO © 2026 | Cyber Threat Research - Caçador de Ameaças V3.9"
     },
     "English": {
-        "app_title": "Cyber Threat Research - Threat Hunter V3.8",
+        "app_title": "Cyber Threat Research - Threat Hunter V3.9",
         "app_subtitle": "Threat Hunting, Detection Engineering & Dynamic Threat Mapping",
         "sidebar_credentials": "🔑 API Credentials",
         "vt_key": "VirusTotal API Key:",
@@ -561,10 +596,10 @@ translations = {
         "tab_vazamento": "🔓 Email Leak",
         "tab_osint": "🧭 APT-Hunter & OSINT",
         "tab_cross": "🔗 Cross-Intel",
-        "footer": "CTRDEFENSE.BLOG © 2026 | Cyber Threat Research - Threat Hunter V3.8"
+        "footer": "CTRDEFENSE.BLOG © 2026 | Cyber Threat Research - Threat Hunter V3.9"
     },
     "Español": {
-        "app_title": "Cyber Threat Research - Cazador de Amenazas V3.8",
+        "app_title": "Cyber Threat Research - Cazador de Amenazas V3.9",
         "app_subtitle": "Threat Hunting, Detection Engineering & Dynamic Threat Mapping",
         "sidebar_credentials": "🔑 Credenciales API",
         "vt_key": "Clave API VirusTotal:",
@@ -583,10 +618,10 @@ translations = {
         "tab_vazamento": "🔓 Fuga de Email",
         "tab_osint": "🧭 APT-Hunter & OSINT",
         "tab_cross": "🔗 Cross-Intel",
-        "footer": "CTRDEFENSE.BLOG © 2026 | Cyber Threat Research - Cazador de Amenazas V3.8"
+        "footer": "CTRDEFENSE.IO © 2026 | Cyber Threat Research - Cazador de Amenazas V3.9"
     },
     "Français": {
-        "app_title": "Cyber Threat Research - Chasseur de Menaces V3.8",
+        "app_title": "Cyber Threat Research - Chasseur de Menaces V3.9",
         "app_subtitle": "Threat Hunting, Detection Engineering & Dynamic Threat Mapping",
         "sidebar_credentials": "🔑 Identifiants API",
         "vt_key": "Clé API VirusTotal :",
@@ -605,10 +640,10 @@ translations = {
         "tab_vazamento": "🔓 Fuite d'email",
         "tab_osint": "🧭 APT-Hunter & OSINT",
         "tab_cross": "🔗 Cross-Intel",
-        "footer": "CTRDEFENSE.BLOG © 2026 | Cyber Threat Research - Chasseur de Menaces V3.8"
+        "footer": "CTRDEFENSE.IO © 2026 | Cyber Threat Research - Chasseur de Menaces V3.9"
     },
     "Deutsch": {
-        "app_title": "Cyber Threat Research - Bedrohungsjäger V3.8",
+        "app_title": "Cyber Threat Research - Bedrohungsjäger V3.9",
         "app_subtitle": "Threat Hunting, Detection Engineering & Dynamic Threat Mapping",
         "sidebar_credentials": "🔑 API-Zugangsdaten",
         "vt_key": "VirusTotal API-Schlüssel:",
@@ -627,7 +662,7 @@ translations = {
         "tab_vazamento": "🔓 E-Mail-Leck",
         "tab_osint": "🧭 APT-Hunter & OSINT",
         "tab_cross": "🔗 Cross-Intel",
-        "footer": "CTRDEFENSE.BLOG © 2026 | Cyber Threat Research - Bedrohungsjäger V3.8"
+        "footer": "CTRDEFENSE.IO © 2026 | Cyber Threat Research - Bedrohungsjäger V3.98"
     }
 }
 
@@ -903,6 +938,311 @@ def get_free_ip_context(ip_address):
         "shodan_error": shodan_data.get("error"),
         "geo_error": geo_data.get("error"),
     }
+
+
+# --- WHOIS moderno sem chave (RDAP) ---
+# MELHORIA (Enriquecimento): RDAP (RFC 7482/7483) é o sucessor padronizado do
+# protocolo WHOIS clássico. Ele responde em JSON via HTTPS (porta 443), o que é
+# muito mais confiável em hospedagens como Streamlit Cloud do que abrir sockets
+# crus na porta 43 do WHOIS tradicional (frequentemente bloqueada por firewalls
+# de saída em PaaS). O endpoint público rdap.org faz o "bootstrap" automático:
+# ele descobre e consulta o RIR (ARIN/RIPE/APNIC/LACNIC/AFRINIC) ou o registro
+# de domínio correto, sem necessidade de nenhuma chave de API.
+@st.cache_data(ttl=3600, show_spinner=False)
+def check_rdap_ip(ip_address):
+    if not is_valid_ipv4(ip_address):
+        return {"error": "IPv4 inválido."}
+    try:
+        res = HTTP.get(f"https://rdap.org/ip/{ip_address}", timeout=10, headers={"Accept": "application/rdap+json"})
+        if res.status_code == 200:
+            try:
+                data = res.json()
+            except ValueError:
+                return {"error": "Resposta RDAP inválida (JSON malformado)."}
+            data["_source"] = "RDAP / WHOIS (rdap.org, sem chave)"
+            return data
+        if res.status_code == 404:
+            return {"message": "Nenhum registro RDAP/WHOIS encontrado para este IP."}
+        return {"error": f"HTTP {res.status_code}"}
+    except requests.RequestException as exc:
+        return {"error": f"Falha de comunicação com o serviço RDAP: {exc}"}
+
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def check_rdap_domain(domain):
+    domain = (domain or "").strip().lower().rstrip(".")
+    if not domain:
+        return {"error": "Domínio vazio."}
+    try:
+        res = HTTP.get(f"https://rdap.org/domain/{domain}", timeout=10, headers={"Accept": "application/rdap+json"})
+        if res.status_code == 200:
+            try:
+                data = res.json()
+            except ValueError:
+                return {"error": "Resposta RDAP inválida (JSON malformado)."}
+            data["_source"] = "RDAP / WHOIS (rdap.org, sem chave)"
+            return data
+        if res.status_code == 404:
+            return {"message": "Nenhum registro RDAP/WHOIS encontrado (TLD pode não ter suporte a RDAP ainda)."}
+        return {"error": f"HTTP {res.status_code}"}
+    except requests.RequestException as exc:
+        return {"error": f"Falha de comunicação com o serviço RDAP: {exc}"}
+
+
+def _rdap_vcard_field(entity, field_name):
+    vcard = entity.get("vcardArray")
+    if isinstance(vcard, list) and len(vcard) > 1:
+        for field in vcard[1]:
+            if isinstance(field, list) and len(field) >= 4 and field[0] == field_name:
+                return field[3]
+    return None
+
+
+def parse_rdap_ip(rdap_data):
+    """Extrai um resumo legível do JSON RDAP de um bloco de IP (equivalente ao WHOIS de rede)."""
+    if not isinstance(rdap_data, dict) or "error" in rdap_data or "message" in rdap_data:
+        return None
+    org_name, abuse_email, abuse_phone = None, None, None
+    for ent in rdap_data.get("entities", []) or []:
+        roles = ent.get("roles", []) or []
+        name = _rdap_vcard_field(ent, "fn")
+        if name and not org_name:
+            org_name = name
+        if "abuse" in roles or "registrant" in roles:
+            for sub_ent in ([ent] + (ent.get("entities") or [])):
+                if "abuse" in (sub_ent.get("roles") or []) or sub_ent is ent:
+                    email = _rdap_vcard_field(sub_ent, "email")
+                    tel = _rdap_vcard_field(sub_ent, "tel")
+                    if email and not abuse_email:
+                        abuse_email = email
+                    if tel and not abuse_phone:
+                        abuse_phone = tel
+    cidrs = []
+    for c in rdap_data.get("cidr0_cidrs", []) or []:
+        prefix = c.get("v4prefix") or c.get("v6prefix")
+        length = c.get("length")
+        if prefix and length is not None:
+            cidrs.append(f"{prefix}/{length}")
+    return {
+        "handle": rdap_data.get("handle", "N/D"),
+        "name": rdap_data.get("name", "N/D"),
+        "network_type": rdap_data.get("type", "N/D"),
+        "start_address": rdap_data.get("startAddress", "N/D"),
+        "end_address": rdap_data.get("endAddress", "N/D"),
+        "cidr": ", ".join(cidrs) if cidrs else "N/D",
+        "country": rdap_data.get("country") or "N/D",
+        "org_name": org_name or "N/D",
+        "abuse_email": abuse_email or "N/D",
+        "abuse_phone": abuse_phone or "N/D",
+        "parent_handle": rdap_data.get("parentHandle") or "N/D",
+        "status": ", ".join(rdap_data.get("status", []) or []) or "N/D",
+        "port43": rdap_data.get("port43", "N/D"),
+        "rdap_links": [l.get("href") for l in (rdap_data.get("links") or []) if l.get("href")],
+    }
+
+
+def parse_rdap_domain(rdap_data):
+    """Extrai um resumo legível do JSON RDAP de um domínio (equivalente ao WHOIS de domínio)."""
+    if not isinstance(rdap_data, dict) or "error" in rdap_data or "message" in rdap_data:
+        return None
+    events = {e.get("eventAction"): e.get("eventDate") for e in rdap_data.get("events", []) or []}
+    registrar = None
+    registrar_abuse_email = None
+    for ent in rdap_data.get("entities", []) or []:
+        roles = ent.get("roles", []) or []
+        if "registrar" in roles:
+            registrar = _rdap_vcard_field(ent, "fn") or registrar
+            for sub_ent in ent.get("entities") or []:
+                if "abuse" in (sub_ent.get("roles") or []):
+                    registrar_abuse_email = _rdap_vcard_field(sub_ent, "email") or registrar_abuse_email
+    nameservers = [ns.get("ldhName") for ns in rdap_data.get("nameservers", []) or [] if ns.get("ldhName")]
+    return {
+        "domain": rdap_data.get("ldhName", "N/D"),
+        "registrar": registrar or "N/D",
+        "registrar_abuse_email": registrar_abuse_email or "N/D",
+        "status": ", ".join(rdap_data.get("status", []) or []) or "N/D",
+        "created": events.get("registration", "N/D"),
+        "updated": events.get("last changed", "N/D"),
+        "expires": events.get("expiration", "N/D"),
+        "nameservers": ", ".join(nameservers) if nameservers else "N/D",
+    }
+
+
+def render_rdap_ip_block(rdap_raw):
+    """Renderiza na UI o bloco de WHOIS/RDAP de um IP, com aviso amigável se indisponível."""
+    if isinstance(rdap_raw, dict) and rdap_raw.get("error"):
+        st.warning(f"WHOIS/RDAP (IP): {rdap_raw['error']}")
+        return
+    if isinstance(rdap_raw, dict) and rdap_raw.get("message"):
+        st.caption(f"WHOIS/RDAP (IP): {rdap_raw['message']}")
+        return
+    parsed = parse_rdap_ip(rdap_raw)
+    if not parsed:
+        st.caption("WHOIS/RDAP (IP): sem dados para exibir.")
+        return
+    w1, w2, w3 = st.columns(3)
+    w1.metric("Organização / Rede", parsed["org_name"] if parsed["org_name"] != "N/D" else parsed["name"])
+    w2.metric("País (Registro)", parsed["country"])
+    w3.metric("Bloco CIDR", parsed["cidr"])
+    st.markdown(
+        f"**Handle RDAP:** `{parsed['handle']}`  ·  **Faixa:** `{parsed['start_address']}` — `{parsed['end_address']}`  ·  "
+        f"**Tipo:** {parsed['network_type']}  ·  **Status:** {parsed['status']}"
+    )
+    st.markdown(f"**📧 Contato de Abuso:** {parsed['abuse_email']}  ·  **☎️ Telefone:** {parsed['abuse_phone']}")
+    if parsed["parent_handle"] != "N/D":
+        st.caption(f"Bloco pai (alocação superior): `{parsed['parent_handle']}`")
+
+
+def render_rdap_domain_block(rdap_raw):
+    """Renderiza na UI o bloco de WHOIS/RDAP de um domínio, com aviso amigável se indisponível."""
+    if isinstance(rdap_raw, dict) and rdap_raw.get("error"):
+        st.warning(f"WHOIS/RDAP (Domínio): {rdap_raw['error']}")
+        return
+    if isinstance(rdap_raw, dict) and rdap_raw.get("message"):
+        st.caption(f"WHOIS/RDAP (Domínio): {rdap_raw['message']}")
+        return
+    parsed = parse_rdap_domain(rdap_raw)
+    if not parsed:
+        st.caption("WHOIS/RDAP (Domínio): sem dados para exibir.")
+        return
+    w1, w2, w3 = st.columns(3)
+    w1.metric("Registrado em", parsed["created"])
+    w2.metric("Expira em", parsed["expires"])
+    w3.metric("Última atualização", parsed["updated"])
+    st.markdown(f"**🏢 Registrar:** {parsed['registrar']}  ·  **📧 Abuso do Registrar:** {parsed['registrar_abuse_email']}")
+    st.markdown(f"**Status:** {parsed['status']}")
+    st.markdown(f"**🧭 Nameservers:** {parsed['nameservers']}")
+    st.caption("Nota: para muitos gTLDs, dados pessoais de registrante são redigidos (GDPR/ICANN Temp Spec) — apenas dados de registrador/nameservers ficam públicos.")
+
+
+# --- Enriquecimento de CVEs (NVD - National Vulnerability Database, sem chave) ---
+# MELHORIA (Enriquecimento): a Shodan InternetDB já retorna os IDs de CVE
+# associados a serviços expostos no IP, mas sem descrição/severidade. Para
+# transformar esses IDs em algo acionável para o analista, consultamos a API
+# pública 2.0 da NVD (services.nvd.nist.gov), que não exige chave de API (o
+# uso sem chave tem um limite de ~5 requisições / 30s, por isso os resultados
+# são cacheados por 24h e as buscas em lote usam poucos workers em paralelo).
+@st.cache_data(ttl=86400, show_spinner=False)
+def get_cve_details(cve_id):
+    cve_id = (cve_id or "").strip().upper()
+    if not re.fullmatch(r"CVE-\d{4}-\d{4,7}", cve_id):
+        return {"error": "ID de CVE inválido."}
+    try:
+        res = HTTP.get(
+            "https://services.nvd.nist.gov/rest/json/cves/2.0",
+            params={"cveId": cve_id},
+            timeout=12,
+        )
+        if res.status_code == 200:
+            data = res.json()
+            vulns = data.get("vulnerabilities", []) or []
+            if not vulns:
+                return {"message": "CVE não encontrado na base da NVD."}
+            cve = vulns[0].get("cve", {}) or {}
+            descriptions = cve.get("descriptions", []) or []
+            desc_en = next((d.get("value") for d in descriptions if d.get("lang") == "en"), None) \
+                or (descriptions[0].get("value") if descriptions else "Sem descrição disponível.")
+            metrics = cve.get("metrics", {}) or {}
+            cvss_score, cvss_severity, cvss_vector = "N/D", "N/D", "N/D"
+            for key in ("cvssMetricV31", "cvssMetricV30", "cvssMetricV2"):
+                metric_list = metrics.get(key)
+                if metric_list:
+                    cvss_data = metric_list[0].get("cvssData", {}) or {}
+                    cvss_score = cvss_data.get("baseScore", "N/D")
+                    cvss_severity = metric_list[0].get("baseSeverity") or cvss_data.get("baseSeverity", "N/D")
+                    cvss_vector = cvss_data.get("vectorString", "N/D")
+                    break
+            weaknesses = []
+            for w in cve.get("weaknesses", []) or []:
+                for desc in w.get("description", []) or []:
+                    if desc.get("value"):
+                        weaknesses.append(desc["value"])
+            return {
+                "cve_id": cve_id,
+                "description": (desc_en or "Sem descrição disponível.")[:500],
+                "cvss_score": cvss_score,
+                "cvss_severity": cvss_severity,
+                "cvss_vector": cvss_vector,
+                "cwe": ", ".join(sorted(set(weaknesses))) or "N/D",
+                "published": cve.get("published", "N/D"),
+                "last_modified": cve.get("lastModified", "N/D"),
+                "link": f"https://nvd.nist.gov/vuln/detail/{cve_id}",
+            }
+        if res.status_code == 404:
+            return {"message": "CVE não encontrado na base da NVD."}
+        if res.status_code in (403, 429):
+            return {"error": "Limite de requisições da NVD atingido (API pública sem chave). Tente novamente em instantes."}
+        return {"error": f"HTTP {res.status_code}"}
+    except requests.RequestException as exc:
+        return {"error": f"Falha de comunicação com a NVD: {exc}"}
+
+
+def get_cve_details_bulk(cve_ids, max_workers=3):
+    """Busca detalhes (descrição, CVSS, severidade) de múltiplos CVEs em paralelo,
+    respeitando o rate-limit generoso da API pública da NVD (sem chave)."""
+    unique_ids = sorted(set((c or "").strip().upper() for c in cve_ids if c))
+    results = {}
+    if not unique_ids:
+        return results
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {executor.submit(get_cve_details, cve): cve for cve in unique_ids}
+        for future in concurrent.futures.as_completed(futures):
+            cve = futures[future]
+            try:
+                results[cve] = future.result(timeout=15)
+            except Exception as exc:
+                results[cve] = {"error": str(exc)}
+    return results
+
+
+def render_cve_table(cve_ids, context_caption=None):
+    """Renderiza uma tabela de CVEs enriquecida com descrição/CVSS/severidade a partir da NVD."""
+    cve_ids = [c for c in (cve_ids or []) if c]
+    if not cve_ids:
+        st.caption("Nenhuma CVE reportada pelas fontes públicas para este indicador.")
+        return
+    if context_caption:
+        st.caption(context_caption)
+    with st.spinner(f"Consultando detalhes de {len(cve_ids)} CVE(s) na NVD..."):
+        details = get_cve_details_bulk(cve_ids)
+    rows = []
+    for cve_id in cve_ids:
+        info = details.get(cve_id, {})
+        if info.get("error"):
+            rows.append({"CVE": cve_id, "Severidade": "—", "CVSS": "—", "Descrição": f"⚠️ {info['error']}", "Link": f"https://nvd.nist.gov/vuln/detail/{cve_id}"})
+        elif info.get("message"):
+            rows.append({"CVE": cve_id, "Severidade": "—", "CVSS": "—", "Descrição": info["message"], "Link": f"https://nvd.nist.gov/vuln/detail/{cve_id}"})
+        else:
+            rows.append({
+                "CVE": cve_id,
+                "Severidade": info.get("cvss_severity", "N/D"),
+                "CVSS": info.get("cvss_score", "N/D"),
+                "Descrição": info.get("description", "N/D"),
+                "Link": info.get("link", f"https://nvd.nist.gov/vuln/detail/{cve_id}"),
+            })
+    st.dataframe(
+        pd.DataFrame(rows),
+        column_config={"Link": st.column_config.LinkColumn("NVD ↗")},
+        use_container_width=True, hide_index=True,
+    )
+
+
+@st.cache_data(ttl=600, show_spinner=False)
+def resolve_domain_to_ips(domain, record_type="A"):
+    """Resolve um domínio para IPs via DNS-over-HTTPS público (Google), sem qualquer
+    varredura ativa contra o alvo — apenas consulta a infraestrutura de DNS pública."""
+    domain = (domain or "").strip().lower()
+    if not domain:
+        return []
+    try:
+        res = HTTP.get("https://dns.google/resolve", params={"name": domain, "type": record_type}, timeout=6)
+        if res.status_code == 200:
+            data = res.json()
+            ips = [ans["data"] for ans in (data.get("Answer") or []) if ans.get("type") == 1]
+            return sorted(set(ips))
+    except requests.RequestException:
+        pass
+    return []
 
 
 # --- VirusTotal ---
@@ -1635,6 +1975,10 @@ def render_osint_unified_report(query_value, query_kind, results):
     st.caption(f"Indicador: `{query_value}` · Tipo detectado: **{query_kind}**")
     source_rows = []
     for source, result in results.items():
+        if source == "IP(s) Resolvido(s)":
+            ips = result.get("ips", []) if isinstance(result, dict) else []
+            source_rows.append({"Fonte": source, "Status": "🟢 OK (DNS público)", "Resumo": ", ".join(ips) or "Nenhum IP resolvido"})
+            continue
         if not isinstance(result, dict):
             status = "Erro"
             detail = str(result)[:160]
@@ -1701,6 +2045,9 @@ def render_osint_unified_report(query_value, query_kind, results):
         elif urlscan.get("results"):
             st.json(urlscan.get("results"))
     sh = results.get("Shodan InternetDB", {})
+    resolved_info = results.get("IP(s) Resolvido(s)", {})
+    resolved_ips = resolved_info.get("ips", []) if isinstance(resolved_info, dict) else []
+    sh_resolved = results.get("Shodan InternetDB (IP resolvido)", {})
     if isinstance(sh, dict) and "error" not in sh and "message" not in sh:
         st.markdown("#### 🔎 Shodan InternetDB")
         cc = st.columns(4)
@@ -1710,6 +2057,37 @@ def render_osint_unified_report(query_value, query_kind, results):
         cc[3].metric("Tags", len(sh.get("tags", []) or []))
         if sh.get("ports") or sh.get("vulns"):
             st.write({"ports": sh.get("ports", []), "vulns": sh.get("vulns", []), "tags": sh.get("tags", [])})
+    elif resolved_ips:
+        st.markdown("#### 🔎 Shodan InternetDB (via IP resolvido por DNS público)")
+        st.caption(f"Domínio resolvido passivamente para: {', '.join(f'`{ip}`' for ip in resolved_ips[:5])} (nenhuma varredura ativa foi disparada)")
+        if isinstance(sh_resolved, dict) and "error" not in sh_resolved and "message" not in sh_resolved:
+            cc = st.columns(4)
+            cc[0].metric("Portas", len(sh_resolved.get("ports", []) or []))
+            cc[1].metric("CVEs", len(sh_resolved.get("vulns", []) or []))
+            cc[2].metric("Hostnames", len(sh_resolved.get("hostnames", []) or []))
+            cc[3].metric("Tags", len(sh_resolved.get("tags", []) or []))
+            if sh_resolved.get("ports") or sh_resolved.get("vulns"):
+                st.write({"ports": sh_resolved.get("ports", []), "vulns": sh_resolved.get("vulns", []), "tags": sh_resolved.get("tags", [])})
+
+    # WHOIS / RDAP (sem chave de API)
+    rdap_raw = results.get("RDAP / WHOIS")
+    if rdap_raw is not None:
+        st.markdown("#### 🕵️ WHOIS / RDAP (sem chave de API)")
+        if query_kind == "IP":
+            render_rdap_ip_block(rdap_raw)
+        else:
+            render_rdap_domain_block(rdap_raw)
+
+    # Vulnerabilidades (CVEs) — enriquecidas via NVD (descrição, severidade, CVSS)
+    cve_ids_osint = []
+    if query_kind == "IP" and isinstance(sh, dict):
+        cve_ids_osint = sh.get("vulns", []) or []
+    elif query_kind in {"DOMAIN", "URL"} and isinstance(sh_resolved, dict):
+        cve_ids_osint = sh_resolved.get("vulns", []) or []
+    if cve_ids_osint or query_kind in {"IP", "DOMAIN", "URL"}:
+        st.markdown("#### 🛡️ Vulnerabilidades (CVEs) — detalhes via NVD")
+        render_cve_table(cve_ids_osint, "Fonte primária dos IDs de CVE: Shodan InternetDB (passivo, sem varredura ativa contra o alvo).")
+
     geo = results.get("ip-api.com", {})
     if isinstance(geo, dict) and "error" not in geo and geo.get("status") == "success":
         st.markdown("#### 🌍 ip-api.com")
@@ -2058,17 +2436,25 @@ with tab_ctr_intel:
             else:
                 with st.spinner("Consultando fontes públicas de enriquecimento..."):
                     results = {}
+                    resolved_ips_for_domain = []
                     if kind == "IP":
                         results["AbuseIPDB"] = check_abuseipdb(input_value) if ABUSE_API_KEY else {"error": "Sem API Key"}
                         results["Shodan InternetDB"] = check_shodan_internetdb(input_value)
                         results["ip-api.com"] = check_ip_api_geo(input_value)
                         results["urlscan"] = check_urlscan_by_ip(input_value)
+                        results["RDAP / WHOIS"] = check_rdap_ip(input_value)
                         if VT_API_KEY:
                             results["VirusTotal"] = parse_vt_details(get_vt_data("ip_addresses", input_value))
                     else:
                         domain = input_value if kind == "DOMAIN" else urllib.parse.urlparse(input_value).netloc
                         results["crt.sh"] = get_certificates(domain)
                         results["urlscan"] = search_urlscan(f'page.domain:"{domain}"', size=10) if kind == "DOMAIN" else search_urlscan(f'page.url:"{input_value}"', size=10)
+                        results["RDAP / WHOIS"] = check_rdap_domain(domain)
+                        # Resolução passiva via DNS público (sem varredura ativa) para
+                        # trazer o contexto de portas/CVEs do host que hospeda o domínio.
+                        resolved_ips_for_domain = resolve_domain_to_ips(domain)
+                        if resolved_ips_for_domain:
+                            results["Shodan InternetDB (IP resolvido)"] = check_shodan_internetdb(resolved_ips_for_domain[0])
                         if VT_API_KEY:
                             results["VirusTotal"] = parse_vt_details(get_vt_data("domains", domain)) if kind == "DOMAIN" else parse_vt_details(get_vt_data("urls", vt_url_id(input_value)))
 
@@ -2084,6 +2470,39 @@ with tab_ctr_intel:
                             status = "🟢 OK"
                         source_summary.append({"Fonte": src, "Status": status})
                 st.dataframe(pd.DataFrame(source_summary), use_container_width=True, hide_index=True)
+
+                # WHOIS / RDAP (sem chave de API)
+                st.markdown("### 🕵️ WHOIS / RDAP (sem chave de API)")
+                rdap_raw = results.get("RDAP / WHOIS")
+                if kind == "IP":
+                    render_rdap_ip_block(rdap_raw)
+                else:
+                    render_rdap_domain_block(rdap_raw)
+                    if resolved_ips_for_domain:
+                        st.caption(f"🌐 IP(s) resolvido(s) via DNS público: {', '.join(f'`{ip}`' for ip in resolved_ips_for_domain[:5])}")
+                        with st.expander("📋 WHOIS / RDAP do IP resolvido"):
+                            render_rdap_ip_block(check_rdap_ip(resolved_ips_for_domain[0]))
+
+                st.divider()
+
+                # Vulnerabilidades (CVEs) — enriquecidas via NVD (sem chave)
+                st.markdown("### 🛡️ Vulnerabilidades (CVEs) — descrição, severidade e CVSS via NVD")
+                cve_ids_ctr = []
+                if kind == "IP":
+                    sh = results.get("Shodan InternetDB", {})
+                    if isinstance(sh, dict):
+                        cve_ids_ctr = sh.get("vulns", []) or []
+                    render_cve_table(cve_ids_ctr, "Fonte primária dos IDs de CVE: Shodan InternetDB (passivo, sem varredura ativa contra o alvo).")
+                else:
+                    sh_resolved = results.get("Shodan InternetDB (IP resolvido)", {})
+                    if isinstance(sh_resolved, dict):
+                        cve_ids_ctr = sh_resolved.get("vulns", []) or []
+                    if resolved_ips_for_domain:
+                        render_cve_table(cve_ids_ctr, f"CVEs associadas ao IP resolvido `{resolved_ips_for_domain[0]}` (Shodan InternetDB, passivo).")
+                    else:
+                        st.caption("Não foi possível resolver um IP para este domínio — sem base para consultar CVEs.")
+
+                st.divider()
 
                 # Domains
                 st.markdown("### 🌐 Domains Relacionados")
@@ -2279,6 +2698,7 @@ with tab_osint:
             else:
                 with st.spinner("Consultando as fontes compatíveis em paralelo..."):
                     futures = {}
+                    osint_domain = raw if kind == "DOMAIN" else (urllib.parse.urlparse(raw).netloc if kind == "URL" else None)
                     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
                         if kind in {"IP", "DOMAIN", "URL", "MD5", "SHA1", "SHA256"}:
                             futures["VirusTotal"] = executor.submit(query_vt_universal, raw, kind)
@@ -2288,8 +2708,11 @@ with tab_osint:
                             futures["Shodan InternetDB"] = executor.submit(check_shodan_internetdb, raw)
                             futures["ip-api.com"] = executor.submit(check_ip_api_geo, raw)
                             futures["BotScout"] = executor.submit(check_botscout_ip, raw)
+                            futures["RDAP / WHOIS"] = executor.submit(check_rdap_ip, raw)
                         elif kind in {"DOMAIN", "URL"}:
                             futures["urlscan"] = executor.submit(query_urlscan_universal, raw, kind)
+                            if osint_domain:
+                                futures["RDAP / WHOIS"] = executor.submit(check_rdap_domain, osint_domain)
                         if kind == "EMAIL":
                             futures["BotScout"] = executor.submit(check_botscout_email, raw)
                             futures["XposedOrNot"] = executor.submit(check_xposedornot_analytics, raw)
@@ -2299,6 +2722,13 @@ with tab_osint:
                                 unified[source] = future.result(timeout=60)
                             except Exception as exc:
                                 unified[source] = {"error": str(exc)}
+                    # Enriquecimento passivo adicional para DOMAIN/URL: resolve o IP via
+                    # DNS público (sem varredura ativa) para trazer portas/CVEs (Shodan InternetDB).
+                    if kind in {"DOMAIN", "URL"} and osint_domain:
+                        resolved = resolve_domain_to_ips(osint_domain)
+                        if resolved:
+                            unified["IP(s) Resolvido(s)"] = {"ips": resolved}
+                            unified["Shodan InternetDB (IP resolvido)"] = check_shodan_internetdb(resolved[0])
                 st.session_state["osint_unified_last"] = {"value": raw, "kind": kind, "results": unified}
     last = st.session_state.get("osint_unified_last")
     if last:
