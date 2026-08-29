@@ -20,6 +20,8 @@ Consulte somente aquilo que você possui autorização para consultar e utilize 
 
 Ao utilizar esta ferramenta, o usuário declara estar ciente de suas responsabilidades legais, técnicas e éticas, comprometendo-se a respeitar a LGPD, legislação aplicável, políticas de segurança, termos de uso das fontes consultadas e os princípios de Responsible Disclosure e Ethical Hacking.
 
+📌 A aplicação prioriza mecanismos de coleta e enriquecimento passivo, utilizando informações disponibilizadas por fontes públicas e serviços de inteligência, como RDAP/WHOIS, NVD/CVE, Shodan InternetDB e outras fontes autorizadas.
+
 🛡️ Cyber Threat Research - Caçador de Ameaças V3.9
 Aplicação web desenvolvida em Streamlit para automação de Threat Hunting, Detection Engineering e Triagem de IOCs (Indicadores de Comprometimento).
 
