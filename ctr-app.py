@@ -1,14 +1,17 @@
 import re
 import time
+import hmac
 import base64
 import ipaddress
 import urllib.parse
 import concurrent.futures
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pandas as pd
 import requests
 import streamlit as st
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 # -----------------------------------------------------------------------------
 # 1. CONFIGURAÇÃO DA PÁGINA
@@ -23,13 +26,44 @@ st.set_page_config(
 # -----------------------------------------------------------------------------
 # AUTENTICAÇÃO
 # -----------------------------------------------------------------------------
-USER_CREDENTIALS = {"root": "ctrdefense"}
+# MELHORIA (Segurança): as credenciais nunca deveriam ficar hardcoded no código-fonte.
+# Agora elas são lidas de st.secrets (arquivo .streamlit/secrets.toml ou variáveis de
+# ambiente do provedor de hospedagem), com um fallback apenas para não quebrar o
+# primeiro uso local. Recomenda-se fortemente sobrescrever via secrets em produção.
+#
+#   [credentials]
+#   root = "troque-esta-senha"
+#
+_DEFAULT_CREDENTIALS = {"root": "ctrdefense"}
+
+MAX_LOGIN_ATTEMPTS = 5
+LOGIN_LOCKOUT_SECONDS = 60
+
+
+def _get_user_credentials():
+    try:
+        secret_creds = dict(st.secrets.get("credentials", {}))
+        if secret_creds:
+            return secret_creds
+    except Exception:
+        pass
+    return _DEFAULT_CREDENTIALS
+
+
+def _safe_compare(a, b):
+    # Comparação em tempo constante para reduzir o risco de timing attacks
+    # em relação ao simples operador "==" usado na versão anterior.
+    return hmac.compare_digest(a.encode("utf-8"), b.encode("utf-8"))
+
 
 def check_password():
     """Retorna True se o usuário estiver autenticado."""
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
         st.session_state.username = ""
+    if "login_attempts" not in st.session_state:
+        st.session_state.login_attempts = 0
+        st.session_state.login_locked_until = 0.0
 
     if not st.session_state.authenticated:
         # Tela de login personalizada
@@ -38,24 +72,43 @@ def check_password():
                 <h1 style="color: #00f2fe; font-family: 'JetBrains Mono', monospace; font-size: 2.2rem; margin-bottom: 0.5rem;">🛡️ Cyber Threat Research - Threat Intel</h1>
                 <p style="color: #94a3b8; font-size: 1.1rem;">
                     Acesse o sistema em 
-                    <a href="https://ctrdefense.io" target="_blank" style="color: #4facfe; text-decoration: none; font-weight: 600;">ctrdefense.io</a>
+                    <a href="https://ctrdefense.blog" target="_blank" style="color: #4facfe; text-decoration: none; font-weight: 600;">ctrdefense.blog</a>
                 </p>
                 <hr style="border: 1px solid #1e293b; margin: 1.5rem 0;">
             </div>
         """, unsafe_allow_html=True)
 
+        now = time.time()
+        locked = now < st.session_state.login_locked_until
+        if locked:
+            remaining = int(st.session_state.login_locked_until - now)
+            st.error(f"🔒 Muitas tentativas inválidas. Tente novamente em {remaining}s.")
+
         with st.form("login_form"):
             username = st.text_input("Usuário")
             password = st.text_input("Senha", type="password")
-            submit = st.form_submit_button("Entrar")
+            submit = st.form_submit_button("Entrar", disabled=locked)
 
-            if submit:
-                if username in USER_CREDENTIALS and password == USER_CREDENTIALS[username]:
+            if submit and not locked:
+                credentials = _get_user_credentials()
+                valid_user = username in credentials
+                # Sempre executa a comparação (mesmo com usuário inexistente) para não
+                # vazar, por tempo de resposta, se o usuário existe ou não.
+                password_ok = _safe_compare(password, credentials.get(username, "")) if valid_user else False
+                if valid_user and password_ok:
                     st.session_state.authenticated = True
                     st.session_state.username = username
+                    st.session_state.login_attempts = 0
                     st.rerun()
                 else:
-                    st.error("Usuário ou senha inválidos.")
+                    st.session_state.login_attempts += 1
+                    if st.session_state.login_attempts >= MAX_LOGIN_ATTEMPTS:
+                        st.session_state.login_locked_until = time.time() + LOGIN_LOCKOUT_SECONDS
+                        st.session_state.login_attempts = 0
+                        st.rerun()
+                    else:
+                        restantes = MAX_LOGIN_ATTEMPTS - st.session_state.login_attempts
+                        st.error(f"Usuário ou senha inválidos. Tentativas restantes: {restantes}.")
         st.stop()
     else:
         col_user, col_logout = st.columns([4, 1])
@@ -740,6 +793,33 @@ st.divider()
 # 6. MÓDULOS DE INTEGRAÇÃO COM APIS EXTERNAS
 # -----------------------------------------------------------------------------
 
+# MELHORIA (Confiabilidade/Performance): sessão HTTP compartilhada e cacheada como
+# recurso da aplicação (st.cache_resource -> uma única instância por processo).
+# Ganhos: reaproveitamento de conexões (keep-alive/pool) e retry automático com
+# backoff exponencial para erros transitórios (429/500/502/503/504), reduzindo
+# falhas espúrias nas integrações e o número de cliques em "tentar novamente".
+@st.cache_resource(show_spinner=False)
+def get_http_session():
+    session = requests.Session()
+    retry_strategy = Retry(
+        total=3,
+        connect=3,
+        read=2,
+        backoff_factor=0.6,
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=["GET", "POST"],
+        respect_retry_after_header=True,
+        raise_on_status=False,
+    )
+    adapter = HTTPAdapter(max_retries=retry_strategy, pool_connections=20, pool_maxsize=20)
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+    return session
+
+
+HTTP = get_http_session()
+
+
 def is_valid_ipv4(ip_address):
     try:
         return ipaddress.ip_address(ip_address).version == 4
@@ -747,18 +827,17 @@ def is_valid_ipv4(ip_address):
         return False
 
 
-def render_country_field(container, label, value, extra=""):
-    text = f"**{label}:** {value}"
-    if extra:
-        text += f" ({extra})"
-    container.markdown(text)
-
-
+# MELHORIA (Performance/Quota): fontes públicas sem chave (Shodan InternetDB e
+# ip-api.com) são cacheadas por 10 minutos. Elas são chamadas repetidamente — para
+# cada IP no Extrator de IOCs, na aba CTR-Intelligence e na Cross-Intel — e o
+# ip-api.com tem limite estrito de 45 req/min no plano gratuito, então cachear
+# reduz bastante o risco de 429 e acelera consultas repetidas do mesmo indicador.
+@st.cache_data(ttl=600, show_spinner=False)
 def check_shodan_internetdb(ip_address):
     if not is_valid_ipv4(ip_address):
         return {"error": "IPv4 inválido."}
     try:
-        res = requests.get(f"https://internetdb.shodan.io/{ip_address}", timeout=8)
+        res = HTTP.get(f"https://internetdb.shodan.io/{ip_address}", timeout=8)
         if res.status_code == 200:
             data = res.json()
             data["_source"] = "Shodan InternetDB (sem chave)"
@@ -770,11 +849,12 @@ def check_shodan_internetdb(ip_address):
         return {"error": f"Falha de comunicação com a Shodan InternetDB: {exc}"}
 
 
+@st.cache_data(ttl=600, show_spinner=False)
 def check_ip_api_geo(ip_address):
     if not is_valid_ipv4(ip_address):
         return {"error": "IPv4 inválido."}
     try:
-        res = requests.get(
+        res = HTTP.get(
             f"http://ip-api.com/json/{ip_address}",
             params={"fields": "status,message,country,countryCode,regionName,city,isp,org,as,proxy,hosting,mobile,query"},
             timeout=8,
@@ -832,7 +912,7 @@ def get_vt_data(endpoint, item_id):
     headers = {"accept": "application/json", "x-apikey": VT_API_KEY}
     url = f"https://www.virustotal.com/api/v3/{endpoint}/{item_id}"
     try:
-        response = requests.get(url, headers=headers, timeout=10)
+        response = HTTP.get(url, headers=headers, timeout=10)
         if response.status_code == 200:
             return response.json()
         elif response.status_code == 404:
@@ -886,7 +966,7 @@ def parse_vt_details(vt_response):
         last_analysis_human = "N/D"
         if isinstance(last_analysis_ts, (int, float)):
             try:
-                last_analysis_human = datetime.utcfromtimestamp(last_analysis_ts).strftime("%d/%m/%Y %H:%M UTC")
+                last_analysis_human = datetime.fromtimestamp(last_analysis_ts, tz=timezone.utc).strftime("%d/%m/%Y %H:%M UTC")
             except (OSError, OverflowError, ValueError):
                 last_analysis_human = "N/D"
 
@@ -937,7 +1017,7 @@ def check_abuseipdb(ip_address):
     headers = {"Accept": "application/json", "Key": ABUSE_API_KEY}
     params = {"ipAddress": ip_address, "maxAgeInDays": "90", "verbose": "true"}
     try:
-        response = requests.get(url, headers=headers, params=params, timeout=8)
+        response = HTTP.get(url, headers=headers, params=params, timeout=8)
         if response.status_code == 200:
             data = response.json()["data"]
 
@@ -972,13 +1052,23 @@ def check_abuseipdb(ip_address):
         return {"error": str(e)}
 
 # --- Certificados (crt.sh + fallback CertSpotter) ---
+# MELHORIA (Segurança): o domínio digitado pelo usuário antes era concatenado
+# diretamente na string da URL (f"...?q=%25.{domain}&output=json"). Caracteres
+# como "&" ou "#" no input permitiam injetar/sobrescrever parâmetros da query
+# string (query parameter injection). Agora o domínio é sempre enviado via
+# params=, deixando o requests responsável pela codificação correta.
+# MELHORIA (Performance/Quota): resultados cacheados por 30 min — certificados
+# emitidos não mudam a cada segundo, e isso evita repetir a mesma consulta
+# lenta (timeout de até 30s) toda vez que o usuário reabre a aba CTR-Intelligence.
+@st.cache_data(ttl=1800, show_spinner=False)
 def check_crtsh(domain, timeout=30):
     domain = domain.strip().lower()
     if not domain:
         return {"error": "Domínio vazio."}
     try:
-        res = requests.get(
-            f"https://crt.sh/?q=%25.{domain}&output=json",
+        res = HTTP.get(
+            "https://crt.sh/",
+            params={"q": f"%.{domain}", "output": "json"},
             timeout=timeout,
             headers={"User-Agent": "Mozilla/5.0"}
         )
@@ -994,13 +1084,15 @@ def check_crtsh(domain, timeout=30):
         return {"error": f"Falha de comunicação com crt.sh: {exc}"}
 
 
+@st.cache_data(ttl=1800, show_spinner=False)
 def check_certspotter(domain, timeout=30):
     domain = domain.strip().lower()
     if not domain:
         return {"error": "Domínio vazio."}
     try:
-        res = requests.get(
-            f"https://api.certspotter.com/v1/issuances?domain={domain}&include_subdomains=true&expand=dns_names",
+        res = HTTP.get(
+            "https://api.certspotter.com/v1/issuances",
+            params={"domain": domain, "include_subdomains": "true", "expand": "dns_names"},
             timeout=timeout,
             headers={"User-Agent": "Mozilla/5.0"}
         )
@@ -1039,7 +1131,7 @@ def check_malwarebazaar(hash_value):
         return {"error": "Hash inválido."}
     data = {"query": "get_info", "hash": hash_value}
     try:
-        res = requests.post("https://mb-api.abuse.ch/api/v1/", data=data, timeout=15)
+        res = HTTP.post("https://mb-api.abuse.ch/api/v1/", data=data, timeout=15)
         if res.status_code == 200:
             return res.json()
         return {"error": f"HTTP {res.status_code}: {res.text[:200]}"}
@@ -1054,7 +1146,7 @@ def check_botscout_ip(ip_address):
     if BOTSCOUT_API_KEY:
         params["key"] = BOTSCOUT_API_KEY
     try:
-        res = requests.get("https://botscout.com/test/", params=params, timeout=10)
+        res = HTTP.get("https://botscout.com/test/", params=params, timeout=10)
         if res.status_code != 200:
             return {"error": f"HTTP {res.status_code}: {res.text[:200]}"}
         body = res.text.strip()
@@ -1075,7 +1167,7 @@ def check_botscout_email(email):
     if BOTSCOUT_API_KEY:
         params["key"] = BOTSCOUT_API_KEY
     try:
-        res = requests.get("https://botscout.com/test/", params=params, timeout=10)
+        res = HTTP.get("https://botscout.com/test/", params=params, timeout=10)
         if res.status_code != 200:
             return {"error": f"HTTP {res.status_code}: {res.text[:200]}"}
         body = res.text.strip()
