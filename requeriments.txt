@@ -1,5 +1,6 @@
-streamlit>=1.30.0
-pandas>=2.0.0
-requests>=2.31.0
-weasyprint>=60.0
-argon2-cffi>=23.1.0,<26
+streamlit>=1.37,<2
+requests>=2.32,<3
+urllib3>=2.2,<3
+argon2-cffi>=23.1,<26
+pandas>=2.2,<3
+pytest>=8,<9
